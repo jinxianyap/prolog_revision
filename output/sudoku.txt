@@ -1,0 +1,17 @@
+ :- same_block(V1,V2); value(V1,V3); value(V2,V3).
+ :- same_row(V1,V2); value(V1,V3); value(V2,V3).
+ :- same_col(V1,V2); value(V1,V3); value(V2,V3).
+1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_row(V2,V1).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Pre-processing                          : 0.001s
+%% Hypothesis Space Generation             : 0.762s
+%% Conflict analysis                       : 1.905s
+%%   - Negative Examples                   : 0.692s
+%%   - Positive Examples                   : 1.213s
+%% Counterexample search                   : 0.09s
+%%   - CDOEs                               : 0.006s
+%%   - CDPIs                               : 0.085s
+%% Hypothesis Search                       : 0.688s
+%% Total                                   : 3.473s
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,14 @@
+:~ assigned(V1,V2), type(V1,V2,c2).[1@2, V1, V2]
+:~ assigned(V1,V4), assigned(V2,V3), V1 != V2.[1@1, V1, V2, V3, V4]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Pre-processing                          : 0.001s
+%% Hypothesis Space Generation             : 0.152s
+%% Conflict analysis                       : 0.351s
+%%   - Cautious Orders                     : 0.351s
+%% Counterexample search                   : 0.046s
+%%   - CDOEs                               : 0.02s
+%%   - CDPIs                               : 0.027s
+%% Hypothesis Search                       : 0.034s
+%% Total                                   : 0.592s
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

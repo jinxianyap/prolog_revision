@@ -1,0 +1,14 @@
+path(V1,V2) :- arc(V1,V2).
+path(V1,V2) :- arc(V1,V3); path(V3,V2).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Pre-processing                          : 0.001s
+%% Hypothesis Space Generation             : 0.061s
+%% Conflict analysis                       : 0.372s
+%%   - Positive Examples                   : 0.372s
+%% Counterexample search                   : 0.013s
+%%   - CDOEs                               : 0s
+%%   - CDPIs                               : 0.013s
+%% Hypothesis Search                       : 0.015s
+%% Total                                   : 0.474s
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

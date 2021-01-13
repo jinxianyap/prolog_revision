@@ -1,0 +1,14 @@
+ :- eats(V1,V2); own(V1); own(V2).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Pre-processing                          : 0s
+%% Hypothesis Space Generation             : 0.036s
+%% Conflict analysis                       : 0.025s
+%%   - Negative Examples                   : 0.007s
+%%   - Positive Examples                   : 0.018s
+%% Counterexample search                   : 0.036s
+%%   - CDOEs                               : 0.001s
+%%   - CDPIs                               : 0.036s
+%% Hypothesis Search                       : 0.009s
+%% Total                                   : 0.121s
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

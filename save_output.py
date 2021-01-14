@@ -1,6 +1,6 @@
 import subprocess
 
-example = "p"
+example = "del"
 option = ""
 f = open("output/" + example + ".txt", "w")
 subprocess = subprocess.Popen("ILASP --version=4 " + example + ".las " + option, shell=True, stdout=f)

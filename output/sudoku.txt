@@ -1,3 +1,574 @@
+1 ~  :- cell(V1).
+1 ~  :- same_col(V1,V2).
+1 ~  :- same_block(V1,V2).
+1 ~  :- same_row(V1,V2).
+1 ~  :- value(V1,V2).
+2 ~  :- cell(V1); same_row(V1,V2).
+2 ~  :- cell(V3); same_row(V1,V2).
+2 ~  :- not same_block(V1,V2); same_row(V1,V2).
+2 ~  :- not same_col(V2,V1); same_row(V1,V2).
+2 ~  :- cell(V1); value(V1,V2).
+2 ~  :- not same_row(V1,V2); same_col(V1,V2).
+2 ~  :- not cell(V1); same_row(V1,V2).
+2 ~  :- cell(V3); value(V1,V2).
+2 ~  :- not cell(V2); same_col(V1,V2).
+2 ~  :- same_block(V3,V1); same_col(V1,V2).
+2 ~  :- same_block(V2,V3); same_row(V1,V2).
+2 ~  :- not cell(V1); value(V1,V2).
+2 ~  :- not cell(V2); same_row(V1,V2).
+2 ~  :- cell(V2); same_col(V1,V2).
+2 ~  :- not same_col(V2,V1); same_block(V1,V2).
+2 ~  :- same_block(V2,V3); same_col(V1,V2).
+2 ~  :- same_block(V2,V1); same_row(V1,V2).
+2 ~  :- not same_col(V1,V2); same_row(V1,V2).
+2 ~  :- not same_row(V2,V1); same_block(V1,V2).
+2 ~  :- not same_block(V2,V1); same_col(V1,V2).
+2 ~  :- same_block(V1,V2); same_row(V1,V2).
+2 ~  :- same_block(V1,V3); same_col(V1,V2).
+2 ~  :- same_block(V2,V1); same_col(V1,V2).
+2 ~  :- same_block(V1,V3); value(V1,V2).
+2 ~  :- not cell(V2); same_block(V1,V2).
+2 ~  :- same_block(V1,V3); same_row(V1,V2).
+2 ~  :- cell(V2); same_block(V1,V2).
+2 ~  :- not cell(V1); same_block(V1,V2).
+2 ~  :- not same_block(V2,V1); same_row(V1,V2).
+2 ~  :- not same_row(V2,V1); same_col(V1,V2).
+2 ~  :- same_block(V3,V2); same_row(V1,V2).
+2 ~  :- cell(V3); same_col(V1,V2).
+2 ~  :- same_col(V3,V1); same_row(V1,V2).
+2 ~  :- same_col(V2,V3); same_row(V1,V2).
+2 ~  :- not cell(V1); same_col(V1,V2).
+2 ~  :- cell(V1); same_block(V1,V2).
+2 ~  :- same_col(V2,V1); same_row(V1,V2).
+2 ~  :- same_col(V1,V3); value(V1,V2).
+2 ~  :- not same_col(V1,V2); same_block(V1,V2).
+2 ~  :- same_col(V1,V3); same_row(V1,V2).
+2 ~  :- same_col(V3,V1); value(V1,V2).
+2 ~  :- same_col(V1,V2); same_row(V1,V2).
+2 ~  :- same_col(V3,V2); same_row(V1,V2).
+2 ~  :- same_row(V1,V3); value(V1,V2).
+2 ~  :- not same_block(V1,V2); same_col(V1,V2).
+2 ~  :- not same_row(V1,V2); same_block(V1,V2).
+2 ~  :- same_row(V3,V1); value(V1,V2).
+2 ~  :- cell(V2); same_row(V1,V2).
+2 ~  :- cell(V1); same_col(V1,V2).
+2 ~  :- same_block(V3,V2); same_col(V1,V2).
+2 ~  :- same_block(V3,V1); value(V1,V2).
+2 ~  :- same_block(V1,V2); same_col(V1,V2).
+2 ~  :- cell(V3); same_block(V1,V2).
+2 ~  :- same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not same_col(V3,V1); same_block(V3,V1); value(V1,V2).
+3 ~  :- not same_col(V1,V3); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- not same_col(V1,V3); same_block(V1,V3); value(V1,V2).
+3 ~  :- not same_col(V1,V3); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- not same_col(V1,V2); value(V1,V3); value(V2,V3).
+3 ~  :- not same_col(V1,V2); not same_row(V2,V1); same_block(V1,V2).
+3 ~  :- not same_col(V1,V2); same_block(V1,V2); same_row(V1,V2).
+3 ~  :- not same_col(V1,V2); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- not same_col(V1,V2); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not same_col(V1,V2); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- not same_col(V1,V2); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- not same_col(V1,V2); same_block(V2,V1); same_row(V1,V2).
+3 ~  :- not same_col(V1,V2); not same_row(V1,V2); same_block(V1,V2).
+3 ~  :- not same_col(V2,V1); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not cell(V3); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- not same_col(V3,V1); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not same_col(V3,V1); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- not same_col(V3,V1); same_block(V1,V3); value(V1,V2).
+3 ~  :- not same_col(V3,V1); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- not same_col(V2,V3); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- not same_col(V2,V3); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not same_col(V2,V3); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- not same_col(V2,V3); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- not same_col(V2,V1); value(V1,V3); value(V2,V3).
+3 ~  :- not same_col(V2,V1); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- not same_col(V1,V3); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not same_col(V2,V1); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- not same_col(V2,V1); same_block(V2,V1); same_row(V1,V2).
+3 ~  :- not same_col(V2,V1); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- not same_col(V2,V1); same_block(V1,V2); same_row(V1,V2).
+3 ~  :- not same_col(V2,V1); not same_row(V2,V1); same_block(V1,V2).
+3 ~  :- not same_col(V2,V1); not same_row(V1,V2); same_block(V1,V2).
+3 ~  :- not same_col(V1,V3); same_row(V3,V1); value(V1,V2).
+3 ~  :- not same_col(V1,V3); same_row(V1,V3); value(V1,V2).
+3 ~  :- not same_col(V1,V3); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- not same_col(V1,V3); same_block(V3,V1); value(V1,V2).
+3 ~  :- not same_block(V1,V2); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); not same_col(V2,V1); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); not same_col(V1,V2); same_row(V1,V2).
+3 ~  :- not same_block(V1,V3); same_row(V3,V1); value(V1,V2).
+3 ~  :- not same_block(V1,V3); same_row(V1,V3); value(V1,V2).
+3 ~  :- not same_block(V1,V3); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- not same_block(V1,V3); same_col(V3,V1); value(V1,V2).
+3 ~  :- not same_block(V1,V3); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not same_block(V1,V3); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- not same_block(V1,V3); same_col(V1,V3); value(V1,V2).
+3 ~  :- not same_block(V1,V3); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- not same_block(V1,V2); value(V1,V3); value(V2,V3).
+3 ~  :- not same_block(V1,V2); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); not same_row(V1,V2); same_col(V1,V2).
+3 ~  :- not same_block(V1,V2); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- not same_block(V1,V2); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- not same_block(V1,V2); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- not same_block(V1,V2); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- not same_block(V1,V2); not same_row(V2,V1); same_col(V1,V2).
+3 ~  :- not same_block(V1,V2); not same_row(V1,V2); same_col(V1,V2).
+3 ~  :- not same_block(V1,V2); not same_col(V2,V1); same_row(V1,V2).
+3 ~  :- not same_block(V1,V2); not same_col(V1,V2); same_row(V1,V2).
+3 ~  :- not cell(V3); same_row(V3,V1); value(V1,V2).
+3 ~  :- not cell(V3); same_row(V1,V3); value(V1,V2).
+3 ~  :- cell(V1); not same_block(V1,V2); same_col(V1,V2).
+3 ~  :- not same_block(V2,V3); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- not same_block(V3,V2); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not same_block(V3,V2); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- not same_block(V3,V2); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- not same_block(V3,V1); same_row(V3,V1); value(V1,V2).
+3 ~  :- not same_block(V3,V1); same_row(V1,V3); value(V1,V2).
+3 ~  :- not same_block(V3,V1); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- not same_block(V3,V1); same_col(V3,V1); value(V1,V2).
+3 ~  :- not same_block(V3,V1); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not same_block(V3,V1); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- not same_block(V3,V1); same_col(V1,V3); value(V1,V2).
+3 ~  :- not same_block(V3,V1); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- not same_block(V3,V2); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- not same_block(V2,V3); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not same_block(V2,V3); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- not same_block(V2,V3); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); value(V1,V3); value(V2,V3).
+3 ~  :- not same_block(V2,V1); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- not same_block(V2,V1); not same_row(V2,V1); same_col(V1,V2).
+3 ~  :- same_block(V1,V3); same_col(V3,V1); value(V1,V2).
+3 ~  :- same_block(V2,V3); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- same_block(V2,V3); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- same_block(V2,V3); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- same_block(V2,V1); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- same_block(V2,V1); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- same_block(V2,V1); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- same_block(V2,V1); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- same_block(V2,V1); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- same_block(V2,V1); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- same_block(V1,V3); same_row(V3,V1); value(V1,V2).
+3 ~  :- same_block(V1,V3); same_row(V1,V3); value(V1,V2).
+3 ~  :- same_block(V1,V3); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- same_block(V2,V3); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- same_block(V1,V3); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- same_block(V1,V3); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- same_block(V1,V3); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- same_block(V1,V3); same_col(V1,V3); value(V1,V2).
+3 ~  :- same_block(V1,V3); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- same_block(V1,V3); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- same_block(V1,V2); value(V1,V3); value(V2,V3).
+3 ~  :- same_block(V1,V2); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- same_block(V1,V2); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- same_block(V1,V2); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- same_block(V1,V2); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- same_block(V1,V2); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- same_block(V3,V1); same_row(V3,V1); value(V1,V2).
+3 ~  :- same_row(V1,V2); value(V1,V3); value(V2,V3).
+3 ~  :- same_col(V3,V1); same_row(V3,V1); value(V1,V2).
+3 ~  :- same_col(V3,V1); same_row(V1,V3); value(V1,V2).
+3 ~  :- same_col(V1,V3); same_row(V3,V1); value(V1,V2).
+3 ~  :- same_col(V1,V3); same_row(V1,V3); value(V1,V2).
+3 ~  :- same_col(V1,V2); value(V1,V3); value(V2,V3).
+3 ~  :- same_block(V3,V2); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- same_block(V3,V2); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- same_block(V3,V2); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- same_block(V3,V2); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- same_block(V3,V2); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- same_block(V3,V2); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- same_block(V1,V2); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- same_block(V3,V1); same_row(V1,V3); value(V1,V2).
+3 ~  :- same_block(V3,V1); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- same_block(V3,V1); same_col(V3,V1); value(V1,V2).
+3 ~  :- same_block(V3,V1); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- same_block(V3,V1); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- same_block(V3,V1); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- same_block(V3,V1); same_col(V1,V3); value(V1,V2).
+3 ~  :- same_block(V3,V1); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- same_block(V3,V1); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- same_block(V2,V3); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- same_block(V2,V3); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not same_row(V1,V2); value(V1,V3); value(V2,V3).
+3 ~  :- not same_row(V2,V1); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- not same_row(V2,V1); same_block(V2,V1); same_col(V1,V2).
+3 ~  :- not same_row(V2,V1); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- not same_row(V2,V1); same_block(V1,V2); same_col(V1,V2).
+3 ~  :- not same_row(V1,V3); same_col(V3,V1); value(V1,V2).
+3 ~  :- not same_row(V1,V3); same_col(V1,V3); value(V1,V2).
+3 ~  :- not same_row(V1,V3); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- not same_row(V1,V3); same_block(V3,V1); value(V1,V2).
+3 ~  :- not same_row(V1,V3); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not same_row(V1,V3); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- not same_row(V1,V3); same_block(V1,V3); value(V1,V2).
+3 ~  :- not same_row(V1,V3); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- not same_row(V2,V1); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not same_row(V1,V2); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- not same_row(V1,V2); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not same_row(V1,V2); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- not same_row(V1,V2); same_block(V2,V1); same_col(V1,V2).
+3 ~  :- not same_row(V1,V2); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- not same_row(V1,V2); same_block(V1,V2); same_col(V1,V2).
+3 ~  :- not same_col(V3,V2); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- not same_col(V3,V2); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not same_col(V3,V2); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- not same_col(V3,V2); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- not same_col(V3,V1); same_row(V3,V1); value(V1,V2).
+3 ~  :- not same_col(V3,V1); same_row(V1,V3); value(V1,V2).
+3 ~  :- not same_row(V3,V1); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- not value(V3,V2); same_row(V3,V1); value(V1,V2).
+3 ~  :- not value(V3,V2); same_row(V1,V3); value(V1,V2).
+3 ~  :- not value(V3,V2); same_col(V3,V1); value(V1,V2).
+3 ~  :- not value(V3,V2); same_col(V1,V3); value(V1,V2).
+3 ~  :- not value(V3,V2); same_block(V3,V1); value(V1,V2).
+3 ~  :- not value(V3,V2); same_block(V1,V3); value(V1,V2).
+3 ~  :- not same_row(V3,V2); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- not same_row(V3,V2); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not same_row(V3,V2); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- not same_row(V3,V2); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- not same_row(V3,V1); same_col(V3,V1); value(V1,V2).
+3 ~  :- not same_row(V3,V1); same_col(V1,V3); value(V1,V2).
+3 ~  :- not same_col(V3,V1); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- not same_row(V3,V1); same_block(V3,V1); value(V1,V2).
+3 ~  :- not same_row(V3,V1); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not same_row(V3,V1); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- not same_row(V3,V1); same_block(V1,V3); value(V1,V2).
+3 ~  :- not same_row(V3,V1); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- not same_row(V2,V3); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- not same_row(V2,V3); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not same_row(V2,V3); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- not same_row(V2,V3); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- not same_row(V2,V1); value(V1,V3); value(V2,V3).
+3 ~  :- not same_row(V2,V1); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- cell(V2); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- cell(V3); not same_block(V3,V2); same_col(V1,V2).
+3 ~  :- cell(V3); not same_block(V3,V1); value(V1,V2).
+3 ~  :- cell(V3); not same_block(V3,V1); same_row(V1,V2).
+3 ~  :- cell(V3); not same_block(V3,V1); same_col(V1,V2).
+3 ~  :- cell(V3); not same_block(V2,V3); same_row(V1,V2).
+3 ~  :- cell(V3); not same_block(V2,V3); same_col(V1,V2).
+3 ~  :- cell(V3); not same_block(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V3); not same_block(V2,V1); same_col(V1,V2).
+3 ~  :- cell(V3); not same_block(V1,V3); value(V1,V2).
+3 ~  :- cell(V3); not same_block(V1,V3); same_row(V1,V2).
+3 ~  :- cell(V3); not same_block(V1,V3); same_col(V1,V2).
+3 ~  :- cell(V3); not same_block(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V3); not same_block(V1,V2); same_col(V1,V2).
+3 ~  :- cell(V3); not same_block(V3,V2); same_row(V1,V2).
+3 ~  :- cell(V2); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- cell(V2); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- cell(V2); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V2); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- cell(V2); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V2); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- cell(V2); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- cell(V2); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- cell(V2); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not cell(V3); same_col(V3,V1); value(V1,V2).
+3 ~  :- cell(V1); not same_block(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V1); not same_block(V2,V1); same_col(V1,V2).
+3 ~  :- cell(V3); not same_col(V3,V2); same_block(V1,V2).
+3 ~  :- cell(V3); not same_row(V3,V2); same_block(V1,V2).
+3 ~  :- cell(V3); not same_row(V3,V1); value(V1,V2).
+3 ~  :- cell(V3); not same_row(V3,V1); same_block(V1,V2).
+3 ~  :- cell(V3); not same_row(V2,V3); same_col(V1,V2).
+3 ~  :- cell(V3); not same_row(V2,V3); same_block(V1,V2).
+3 ~  :- cell(V3); not same_row(V2,V1); same_col(V1,V2).
+3 ~  :- cell(V3); not same_row(V2,V1); same_block(V1,V2).
+3 ~  :- cell(V3); not same_row(V1,V3); value(V1,V2).
+3 ~  :- cell(V3); not same_row(V1,V3); same_col(V1,V2).
+3 ~  :- cell(V3); not same_row(V1,V3); same_block(V1,V2).
+3 ~  :- cell(V3); not same_row(V1,V2); same_col(V1,V2).
+3 ~  :- cell(V3); not same_row(V1,V2); same_block(V1,V2).
+3 ~  :- cell(V3); not same_col(V3,V2); same_row(V1,V2).
+3 ~  :- cell(V1); not same_block(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V3); not same_col(V3,V1); value(V1,V2).
+3 ~  :- cell(V3); not same_col(V3,V1); same_row(V1,V2).
+3 ~  :- cell(V3); not same_col(V3,V1); same_block(V1,V2).
+3 ~  :- cell(V3); not same_col(V2,V3); same_row(V1,V2).
+3 ~  :- cell(V3); not same_col(V2,V3); same_block(V1,V2).
+3 ~  :- cell(V3); not same_col(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V3); not same_col(V2,V1); same_block(V1,V2).
+3 ~  :- cell(V3); not same_col(V1,V3); value(V1,V2).
+3 ~  :- cell(V3); not same_col(V1,V3); same_row(V1,V2).
+3 ~  :- cell(V3); not same_col(V1,V3); same_block(V1,V2).
+3 ~  :- cell(V3); not same_col(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V3); not same_col(V1,V2); same_block(V1,V2).
+3 ~  :- cell(V1); same_block(V3,V1); value(V1,V2).
+3 ~  :- cell(V2); not same_block(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V2); not same_block(V1,V2); same_col(V1,V2).
+3 ~  :- cell(V1); same_block(V1,V2); same_col(V1,V2).
+3 ~  :- cell(V1); same_block(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V1); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- cell(V1); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- cell(V1); same_block(V1,V3); value(V1,V2).
+3 ~  :- cell(V1); same_block(V2,V1); same_col(V1,V2).
+3 ~  :- cell(V1); same_block(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V1); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- cell(V1); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- cell(V1); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- cell(V1); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- cell(V2); not same_block(V2,V1); same_col(V1,V2).
+3 ~  :- cell(V1); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- cell(V1); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- cell(V1); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V1); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- cell(V1); same_col(V1,V3); value(V1,V2).
+3 ~  :- cell(V1); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V1); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- cell(V1); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- cell(V1); same_col(V3,V1); value(V1,V2).
+3 ~  :- cell(V1); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- cell(V1); same_row(V1,V3); value(V1,V2).
+3 ~  :- cell(V1); same_row(V3,V1); value(V1,V2).
+3 ~  :- cell(V2); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- cell(V1); not same_col(V1,V2); same_block(V1,V2).
+3 ~  :- cell(V1); not same_col(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V1); not same_col(V2,V1); same_block(V1,V2).
+3 ~  :- cell(V1); not same_col(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V1); not same_row(V1,V2); same_block(V1,V2).
+3 ~  :- cell(V1); not same_row(V1,V2); same_col(V1,V2).
+3 ~  :- cell(V1); not same_row(V2,V1); same_block(V1,V2).
+3 ~  :- cell(V1); not same_row(V2,V1); same_col(V1,V2).
+3 ~  :- cell(V2); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- cell(V2); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- cell(V2); same_block(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V2); same_block(V2,V1); same_col(V1,V2).
+3 ~  :- cell(V3); not same_row(V3,V1); same_col(V1,V2).
+3 ~  :- cell(V2); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- cell(V2); same_block(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V2); same_block(V1,V2); same_col(V1,V2).
+3 ~  :- cell(V2); not same_row(V2,V1); same_col(V1,V2).
+3 ~  :- cell(V2); not same_row(V2,V1); same_block(V1,V2).
+3 ~  :- cell(V2); not same_row(V1,V2); same_col(V1,V2).
+3 ~  :- cell(V2); not same_row(V1,V2); same_block(V1,V2).
+3 ~  :- cell(V2); not same_col(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V2); not same_col(V2,V1); same_block(V1,V2).
+3 ~  :- cell(V2); not same_col(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V2); not same_col(V1,V2); same_block(V1,V2).
+3 ~  :- cell(V2); not same_block(V2,V1); same_row(V1,V2).
+3 ~  :- not cell(V2); not same_block(V2,V1); same_row(V1,V2).
+3 ~  :- not cell(V2); same_block(V2,V1); same_col(V1,V2).
+3 ~  :- not cell(V2); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- not cell(V2); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- not cell(V2); same_block(V1,V2); same_row(V1,V2).
+3 ~  :- not cell(V2); same_block(V1,V2); same_col(V1,V2).
+3 ~  :- not cell(V2); not same_row(V2,V1); same_col(V1,V2).
+3 ~  :- not cell(V2); not same_row(V2,V1); same_block(V1,V2).
+3 ~  :- not cell(V2); not same_row(V1,V2); same_col(V1,V2).
+3 ~  :- not cell(V2); not same_row(V1,V2); same_block(V1,V2).
+3 ~  :- not cell(V2); not same_col(V2,V1); same_row(V1,V2).
+3 ~  :- not cell(V2); not same_col(V2,V1); same_block(V1,V2).
+3 ~  :- not cell(V2); not same_col(V1,V2); same_row(V1,V2).
+3 ~  :- not cell(V2); not same_col(V1,V2); same_block(V1,V2).
+3 ~  :- not cell(V2); same_block(V2,V1); same_row(V1,V2).
+3 ~  :- not cell(V2); not same_block(V2,V1); same_col(V1,V2).
+3 ~  :- not cell(V2); not same_block(V1,V2); same_row(V1,V2).
+3 ~  :- not cell(V2); not same_block(V1,V2); same_col(V1,V2).
+3 ~  :- not cell(V1); same_row(V3,V1); value(V1,V2).
+3 ~  :- not cell(V1); same_row(V1,V3); value(V1,V2).
+3 ~  :- not cell(V1); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- not cell(V1); same_col(V3,V1); value(V1,V2).
+3 ~  :- not cell(V1); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not cell(V1); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- not cell(V1); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- not cell(V1); same_col(V1,V3); value(V1,V2).
+3 ~  :- cell(V3); not same_row(V3,V2); same_col(V1,V2).
+3 ~  :- not cell(V3); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- not cell(V3); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not cell(V3); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- not cell(V3); same_col(V1,V3); value(V1,V2).
+3 ~  :- not cell(V3); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- not cell(V3); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- not cell(V3); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- not cell(V3); same_block(V3,V1); value(V1,V2).
+3 ~  :- not cell(V3); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not cell(V3); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not cell(V3); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- not cell(V3); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- not cell(V3); same_block(V1,V3); value(V1,V2).
+3 ~  :- not cell(V3); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- not cell(V1); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- not cell(V2); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- not cell(V2); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- not cell(V2); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- not cell(V2); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- not cell(V2); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- not cell(V2); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- not cell(V2); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- not cell(V2); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- not cell(V2); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not cell(V2); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not cell(V2); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- not cell(V2); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- cell(V3); same_block(V3,V1); value(V1,V2).
+3 ~  :- not cell(V1); not same_block(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V3); same_row(V3,V1); value(V1,V2).
+3 ~  :- cell(V3); same_row(V1,V3); value(V1,V2).
+3 ~  :- cell(V3); same_col(V3,V2); same_row(V1,V2).
+3 ~  :- cell(V3); same_col(V3,V1); value(V1,V2).
+3 ~  :- cell(V3); same_col(V3,V1); same_row(V1,V2).
+3 ~  :- cell(V3); same_col(V2,V3); same_row(V1,V2).
+3 ~  :- cell(V3); same_col(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V3); same_col(V1,V3); value(V1,V2).
+3 ~  :- cell(V3); same_col(V1,V3); same_row(V1,V2).
+3 ~  :- cell(V3); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V3); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- cell(V3); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- not cell(V1); not same_block(V1,V2); same_col(V1,V2).
+3 ~  :- cell(V3); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- cell(V3); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- cell(V3); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- cell(V3); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- cell(V3); same_block(V2,V1); same_row(V1,V2).
+3 ~  :- cell(V3); same_block(V2,V1); same_col(V1,V2).
+3 ~  :- cell(V3); same_block(V1,V3); value(V1,V2).
+3 ~  :- cell(V3); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- cell(V3); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- cell(V3); same_block(V1,V2); same_row(V1,V2).
+3 ~  :- cell(V3); same_block(V1,V2); same_col(V1,V2).
+3 ~  :- cell(V3); not value(V3,V2); value(V1,V2).
+3 ~  :- not cell(V1); same_block(V1,V3); same_col(V1,V2).
+3 ~  :- not cell(V1); same_col(V1,V2); same_row(V1,V2).
+3 ~  :- not cell(V1); same_block(V3,V2); same_row(V1,V2).
+3 ~  :- not cell(V1); same_block(V3,V2); same_col(V1,V2).
+3 ~  :- not cell(V1); same_block(V3,V1); value(V1,V2).
+3 ~  :- not cell(V1); same_block(V3,V1); same_row(V1,V2).
+3 ~  :- not cell(V1); same_block(V3,V1); same_col(V1,V2).
+3 ~  :- not cell(V1); same_block(V2,V3); same_row(V1,V2).
+3 ~  :- not cell(V1); same_block(V2,V3); same_col(V1,V2).
+3 ~  :- not cell(V1); same_block(V2,V1); same_row(V1,V2).
+3 ~  :- not cell(V1); same_block(V2,V1); same_col(V1,V2).
+3 ~  :- not cell(V1); same_block(V1,V3); value(V1,V2).
+3 ~  :- not cell(V1); same_block(V1,V3); same_row(V1,V2).
+3 ~  :- not cell(V1); not same_block(V2,V1); same_col(V1,V2).
+3 ~  :- not cell(V1); same_block(V1,V2); same_row(V1,V2).
+3 ~  :- not cell(V1); same_block(V1,V2); same_col(V1,V2).
+3 ~  :- not cell(V1); not same_row(V2,V1); same_col(V1,V2).
+3 ~  :- not cell(V1); not same_row(V2,V1); same_block(V1,V2).
+3 ~  :- not cell(V1); not same_row(V1,V2); same_col(V1,V2).
+3 ~  :- not cell(V1); not same_row(V1,V2); same_block(V1,V2).
+3 ~  :- not cell(V1); not same_col(V2,V1); same_row(V1,V2).
+3 ~  :- not cell(V1); not same_col(V2,V1); same_block(V1,V2).
+3 ~  :- not cell(V1); not same_col(V1,V2); same_row(V1,V2).
+3 ~  :- not cell(V1); not same_col(V1,V2); same_block(V1,V2).
+3 ~  :- not cell(V1); not same_block(V2,V1); same_row(V1,V2).
+5 ~ 4 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V1,V2).
+5 ~ 4 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V2,V1).
+5 ~ 4 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V1,V2).
+5 ~ 4 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- value(V1,V2).
+5 ~ 4 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V2,V1).
+5 ~ 4 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- cell(V1).
+5 ~ 4 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V1,V2).
+5 ~ 4 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V2,V1).
+17 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_block(V2,V1).
+17 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_col(V1,V2).
+17 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_block(V2,V1).
+17 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_col(V1,V2).
+17 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_col(V2,V1).
+17 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_col(V2,V1).
+17 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_block(V1,V2).
+17 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_row(V1,V2).
+17 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_row(V1,V2).
+17 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- cell(V1).
+17 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_block(V1,V2).
+17 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- value(V1,V2).
+17 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_row(V2,V1).
+17 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_row(V2,V1).
+17 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- value(V1,V2).
+17 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- cell(V1).
+21 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- value(V1,V2).
+21 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V1,V2).
+21 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V1,V2).
+21 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_block(V2,V1).
+21 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_col(V2,V1).
+21 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- value(V1,V2).
+21 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V2,V1).
+21 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V2,V1).
+21 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V1,V2).
+21 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_row(V1,V2).
+21 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_row(V2,V1).
+21 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_block(V1,V2).
+21 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- cell(V1).
+21 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V2,V1).
+21 ~ 3 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- cell(V1).
+21 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 1 :- same_col(V1,V2).
+25 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_row(V2,V1).
+25 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_col(V1,V2).
+25 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_row(V1,V2).
+25 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_col(V2,V1).
+25 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- value(V1,V2).
+25 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- cell(V1).
+25 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_block(V1,V2).
+25 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_block(V2,V1).
+41 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_block(V1,V2).
+41 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_row(V2,V1).
+41 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- cell(V1).
+41 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_block(V1,V2).
+41 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_col(V2,V1).
+41 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_block(V2,V1).
+41 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_row(V1,V2).
+41 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_row(V1,V2).
+41 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_row(V2,V1).
+41 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_col(V1,V2).
+41 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_block(V2,V1).
+41 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- value(V1,V2).
+41 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_col(V1,V2).
+41 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- value(V1,V2).
+41 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- cell(V1).
+41 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_col(V2,V1).
+45 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- cell(V1).
+45 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- value(V1,V2).
+45 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_block(V1,V2).
+45 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_row(V2,V1).
+45 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- value(V1,V2).
+45 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V1,V2).
+45 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V1,V2).
+45 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V2,V1).
+45 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- cell(V1).
+45 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V2,V1).
+45 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V2,V1).
+45 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_row(V1,V2).
+45 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_block(V2,V1).
+45 ~ 2 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V1,V2).
+45 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_col(V2,V1).
+45 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 2 :- same_col(V1,V2).
+57 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_row(V1,V2).
+57 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- cell(V1).
+57 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_col(V2,V1).
+57 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_row(V2,V1).
+57 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- value(V1,V2).
+57 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_block(V2,V1).
+57 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_col(V1,V2).
+57 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_block(V1,V2).
+61 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- value(V1,V2).
+61 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- value(V1,V2).
+61 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_block(V2,V1).
+61 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_col(V2,V1).
+61 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- cell(V1).
+61 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_block(V1,V2).
+61 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V1,V2).
+61 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_col(V1,V2).
+61 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V1,V2).
+61 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_row(V1,V2).
+61 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V1,V2).
+61 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V2,V1).
+61 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 3 :- same_row(V2,V1).
+61 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V2,V1).
+61 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V2,V1).
+61 ~ 1 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- cell(V1).
+65 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- value(V1,V2).
+65 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- cell(V1).
+65 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V1,V2).
+65 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V2,V1).
+65 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V2,V1).
+65 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_col(V1,V2).
+65 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_row(V1,V2).
+65 ~ 0 {value(V1,1);value(V1,2);value(V1,3);value(V1,4) } 4 :- same_block(V2,V1).
  :- same_block(V1,V2); value(V1,V3); value(V2,V3).
  :- same_row(V1,V2); value(V1,V3); value(V2,V3).
  :- same_col(V1,V2); value(V1,V3); value(V2,V3).
@@ -5,13 +576,13 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Pre-processing                          : 0.001s
-%% Hypothesis Space Generation             : 0.762s
-%% Conflict analysis                       : 1.905s
-%%   - Negative Examples                   : 0.692s
-%%   - Positive Examples                   : 1.213s
-%% Counterexample search                   : 0.09s
+%% Hypothesis Space Generation             : 0.33s
+%% Conflict analysis                       : 2.011s
+%%   - Negative Examples                   : 0.862s
+%%   - Positive Examples                   : 1.149s
+%% Counterexample search                   : 0.092s
 %%   - CDOEs                               : 0.006s
-%%   - CDPIs                               : 0.085s
-%% Hypothesis Search                       : 0.688s
-%% Total                                   : 3.473s
+%%   - CDPIs                               : 0.083s
+%% Hypothesis Search                       : 0.861s
+%% Total                                   : 3.319s
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

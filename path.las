@@ -7,8 +7,8 @@ arc(3,5).
 arc(6,5).
 
 % Target program
-% path(X,Y) :- arc(X,Z); path(Z,Y).
 % path(X,Y) :- arc(X,Y).
+% path(X,Y) :- arc(X,Z); path(Z,Y).
 
 #pos(p1,{path(1,2),path(1,6),path(2,6)},{path(5,1)}).
 #neg(n1,{path(4,2)},{}).

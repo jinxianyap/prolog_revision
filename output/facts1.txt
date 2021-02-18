@@ -1,0 +1,18 @@
+1 ~ animal(cat).
+1 ~ animal(dog).
+1 ~ animal(fish).
+animal(cat).
+animal(dog).
+animal(fish).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Pre-processing                          : 0s
+%% Hypothesis Space Generation             : 0.016s
+%% Conflict analysis                       : 0.017s
+%%   - Positive Examples                   : 0.017s
+%% Counterexample search                   : 0.011s
+%%   - CDOEs                               : 0s
+%%   - CDPIs                               : 0.01s
+%% Hypothesis Search                       : 0.002s
+%% Total                                   : 0.056s
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

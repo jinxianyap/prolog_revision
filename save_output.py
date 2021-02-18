@@ -1,6 +1,6 @@
 import subprocess
 
-example = "add2"
+example = "facts1"
 f = open("output/" + example + ".txt", "w")
 proc = subprocess.Popen("ILASP --version=4 --max-rule-length=3 " + example + ".las -s", shell=True, stdout=f)
 proc = subprocess.Popen("ILASP --version=4 --max-rule-length=3 " + example + ".las ", shell=True, stdout=f)

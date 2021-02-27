@@ -14,7 +14,7 @@ head(R, path(X, Y)) :- node(X), node(Y), rule(R).
 
 %REVISABLE:
 path(X,Y) :- head(R, path(X, Y)), pbl(r1, arc(X, Y)).
-path(X,Y) :- head(R, path(X, Y)), pbl(r2, arc(X, Z)), pbl(r2, path(Z, Y)).
+path(X,Y) :- head(R, path(X, Y)), pbl(r2, path(Y, X)).
 
 %BG:
 rule_bg(rbg1).

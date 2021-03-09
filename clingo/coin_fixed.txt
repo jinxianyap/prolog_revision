@@ -1,6 +1,0 @@
-coin(c1)
-coin(c2)
-coin(c3)
-tails(c1)
-tails(c2)
-tails(c3)

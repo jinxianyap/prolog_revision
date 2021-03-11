@@ -1,4 +1,4 @@
-var_num(1..2).
+var_num(1).
 ground(cat).
 ground(fish).
 %ground(dog).
@@ -7,7 +7,7 @@ ground(fish).
 %length(var(X, XS), N + 1) :- ground(X), length(XS, N), var_num(n).
 
 length(end, 0, MAX) :- var_num(MAX).
-length(vars(X, XS), N + 1, MAX) :- ground(X), length(XS, N, MAX), var_num(MAX), N < MAX.
+length(vars(X, XS), N, MAX) :- ground(X), length(XS, N - 1, MAX), var_num(MAX), N < MAX.
 
 defined_length(end, 0).
 defined_length(vars(X, XS), N1) :- length(vars(X, XS), N1, MAX), var_num(N1), var_num(MAX).

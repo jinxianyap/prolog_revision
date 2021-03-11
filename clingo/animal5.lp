@@ -28,7 +28,7 @@ head(r5, mammal(cat), vars(cat, end)).
 % is_subset(X, Y) checks that the set/list of variables X is a subset of Y.
 var_num(1..5).
 length(end, 0, MAX) :- var_num(MAX).
-length(vars(X, XS), N + 1, MAX) :- ground(X), length(XS, N, MAX), var_num(MAX), N < MAX.
+length(vars(X, XS), N, MAX) :- ground(X), length(XS, N - 1, MAX), var_num(MAX), N < MAX.
 
 defined_length(end, 0).
 defined_length(vars(X, XS), N1) :- length(vars(X, XS), N1, MAX), var_num(N1), var_num(MAX).
@@ -40,8 +40,8 @@ in_set(X, vars(Y, YS), vars(Y, YSS)) :- ground(X), ground(Y), X != Y, in_set(X, 
 is_subset_helper(end, Y) :- defined_length(Y, _).
 is_subset_helper(vars(X, XS), Y) :- check_sets_length(vars(X, XS), Y), ground(X), in_set(X, Y, YS), is_subset_helper(XS, YS).
 
-is_subset(X, Y) :- pbl(R1, N1, P1, X), head(R2, N2, Y), is_subset_helper(X, Y).
-is_subset(X, Y) :- nbl(R1, N1, P1, X), head(R2, N2, Y), is_subset_helper(X, Y).
+is_subset(X, Y) :- pbl(R1, N1, P1, X), head(R1, N2, Y), is_subset_helper(X, Y).
+is_subset(X, Y) :- nbl(R1, N1, P1, X), head(R1, N2, Y), is_subset_helper(X, Y).
 
 in_AS(X, R, VARS) :- head(R, X, VARS), body_true(R, VARS).
 

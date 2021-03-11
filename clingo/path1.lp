@@ -35,7 +35,7 @@ head(r9, arc(2,3), vars(2, vars(3, end))).
 
 var_num(1..3).
 length(end, 0, MAX) :- var_num(MAX).
-length(vars(X, XS), N + 1, MAX) :- ground(X), length(XS, N, MAX), var_num(MAX), N < MAX.
+length(vars(X, XS), N, MAX) :- ground(X), length(XS, N - 1, MAX), var_num(MAX), N < MAX.
 
 defined_length(end, 0).
 defined_length(vars(X, XS), N1) :- length(vars(X, XS), N1, MAX), var_num(N1), var_num(MAX).

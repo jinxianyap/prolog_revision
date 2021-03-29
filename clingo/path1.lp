@@ -30,10 +30,19 @@ head(r8, arc(1,2), vars(1, vars(2, end))).
 rule(r9).
 head(r9, arc(2,3), vars(2, vars(3, end))).
 
+order(r3, r4).
+order(r4, r5).
+order(r5, r6).
+order(r6, r7).
+order(r7, r8).
+order(r8, r9).
+order(r9, r1).
+order(r1, r2).
+
 % ------------------------------------------------------------------------------------------------------------------
 % CHECKING FOR SUBSETS
 
-var_num(1..3).
+var_num(1..4).
 length(end, 0, MAX) :- var_num(MAX).
 length(vars(X, XS), N, MAX) :- ground(X), length(XS, N - 1, MAX), var_num(MAX), N < MAX.
 
@@ -62,17 +71,13 @@ bl_inbetween(R, X, Y) :- bl(R, N1, X), bl(R, N2, Y), bl(R, N3, Z), N1 < N3, N3 <
 bl_notlast(R, X) :- bl(R, N1, X), bl(R, N2, Y), N1 < N2.
 bl_notfirst(R, X) :- bl(R, N, X), N > 1.
 
-satisfied(R, N, X, VARS, pos) :- is_subset(BODY_VARS, VARS), pbl(R, N, X, BODY_VARS), in_AS(X, R1, VARS), rule(R1).
+satisfied(R, N, X, VARS, pos) :- is_subset(BODY_VARS, VARS), pbl(R, N, X, BODY_VARS), in_AS(X, R1, BODY_VARS), rule(R1).
 satisfied(R, N, X, VARS, neg) :- is_subset(BODY_VARS, VARS), nbl(R, N, X, BODY_VARS), not in_AS(X, _, _).
 
 body_true_upto(R, N, X, VARS, T) :- satisfied(R, N, X, VARS, T), not bl_notfirst(R, X).
 body_true_upto(R, N1, X, VARS, T1) :- satisfied(R, N1, X, VARS, T1), N2 < N1, body_true_upto(R, N2, Y, VARS, T2), not bl_inbetween(R, Y, X).
 body_true(R, VARS) :- body_true_upto(R, N, Y, VARS, T), not bl_notlast(R, Y).
 
-order(r3, r4).
-order(r4, r5). 
-order(r5, r1).
-order(r1, r2).
 rule_not_first(R) :- order(R_OTHER, R), rule(R), rule(R_OTHER).
 seen_rule(R) :- not rule_not_first(R), rule(R), in_AS(X, R, SUBJECT), head(R, X, SUBJECT).
 seen_rule(R) :- not rule_not_first(R), rule(R), not in_AS(X, R, SUBJECT), head(R, X, SUBJECT).
@@ -88,3 +93,6 @@ seen_rule(R) :- seen_rule(R_PREV), order(R_PREV, R), rule(R), rule(R_PREV), not 
 %#show bl_notlast/2.
 %#show seen_rule/1.
 %#show bl/3.
+%#show is_subset/2.
+
+%#show satisfied/5.

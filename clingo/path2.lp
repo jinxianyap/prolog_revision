@@ -1,11 +1,12 @@
-%pet(X) :- animal(X), not mammal(X), wild(X).
-%wild(X) :- animal(X).
+%path(X, Y) :- arc(X, Y).
+%path(X, Y) :- arc(X, Z), path(Z, Y).
 
 % DEFINING GROUND TERMS AND VARIABLES.
 
-ground(cat).
-ground(fish).
+ground(1..6).
 var(x).
+var(y).
+var(z).
 
 bl(R, N, X) :- pbl(R, N, X, VARS).
 bl(R, N, X) :- nbl(R, N, X, VARS).
@@ -18,25 +19,36 @@ var_val_equal(VVX, VVY) :- is_var_val(VVX), is_var_val(VVY), VVX = var_val(R, X,
 % PROGRAM-SPECIFIC
 
 rule(r1).
-head(r1, pet(VX), var_vals(X, end)) :- ground(VX), X = var_val(r1, x, VX).
-pbl(r1, 1, animal(VX), var_vals(X, end)) :- ground(VX), X = var_val(r1, x, VX).
-nbl(r1, 2, mammal(VX), var_vals(X, end)) :- ground(VX), X = var_val(r1, x, VX).
-pbl(r1, 3, wild(VX), var_vals(X, end)) :- ground(VX), X = var_val(r1, x, VX).
+head(r1, path(VX, VY), var_vals(X, var_vals(Y, end))) :- ground(VX), ground(VY), X = var_val(r1, x, VX), Y = var_val(r1, y, VY).
+pbl(r1, 1, arc(VX, VY), var_vals(X, var_vals(Y, end))) :- ground(VX), ground(VY), X = var_val(r1, x, VX), Y = var_val(r1, y, VY).
 
 rule(r2).
-head(r2, wild(VX), var_vals(X, end)) :- ground(VX), X = var_val(r2, x, VX).
-pbl(r2, 1, animal(VX), var_vals(X, end)) :- ground(VX), X = var_val(r2, x, VX).
+head(r2, path(VX, VY), var_vals(X, var_vals(Y, var_vals(Z, end)))) :- ground(VX), ground(VY), ground(VZ), X = var_val(r2, x, VX), Y = var_val(r2, y, VY), Z = var_val(r2, z, VZ).
+pbl(r2, 1, arc(VX, VZ), var_vals(X, var_vals(Z, end))) :- ground(VX), ground(VZ), X = var_val(r2, x, VX), Z = var_val(r2, z, VZ).
+pbl(r2, 2, path(VZ, VY), var_vals(Y, var_vals(Z, end))) :- ground(VZ), ground(VY), Z = var_val(r2, z, VZ), Y = var_val(r2, y, VY).
 
 rule(r3).
-head(r3, animal(cat), var_vals(X, end)) :- X = var_val(r3, x, cat).
+head(r3, arc(2,4), var_vals(X, var_vals(Y, end))) :- X = var_val(r3, x, 2), Y = var_val(r3, y, 4).
 rule(r4).
-head(r4, animal(fish), var_vals(X, end)) :- X = var_val(r4, x, fish).
+head(r4, arc(3,6), var_vals(X, var_vals(Y, end))) :- X = var_val(r4, x, 3), Y = var_val(r4, y, 6).
 rule(r5).
-head(r5, mammal(cat), var_vals(X, end)) :- X = var_val(r5, x, cat).
+head(r5, arc(4,6), var_vals(X, var_vals(Y, end))) :- X = var_val(r5, x, 4), Y = var_val(r5, y, 6).
+rule(r6).
+head(r6, arc(3,5), var_vals(X, var_vals(Y, end))) :- X = var_val(r6, x, 3), Y = var_val(r6, y, 5).
+rule(r7).
+head(r7, arc(6,5), var_vals(X, var_vals(Y, end))) :- X = var_val(r7, x, 6), Y = var_val(r7, y, 5).
+rule(r8).
+head(r8, arc(1,2), var_vals(X, var_vals(Y, end))) :- X = var_val(r8, x, 1), Y = var_val(r8, y, 2).
+rule(r9).
+head(r9, arc(2,3), var_vals(X, var_vals(Y, end))) :- X = var_val(r9, x, 2), Y = var_val(r9, y, 2).
 
 order(r3, r4).
-order(r4, r5). 
-order(r5, r1).
+order(r4, r5).
+order(r5, r6).
+order(r6, r7).
+order(r7, r8).
+order(r8, r9).
+order(r9, r1).
 order(r1, r2).
 
 % ------------------------------------------------------------------------------------------------------------------
@@ -99,8 +111,7 @@ seen_rule(R) :- seen_rule(R_PREV), order(R_PREV, R), rule(R), rule(R_PREV), not 
 #show in_AS/3.
 %#show body_true/2.
 %#show body_true_upto/5.
-%#show satisfied/5.
-%#show is_subset/2.
-%#show is_subset_helper/2.
 %#show pbl/4.
 
+%#show is_subset/3.
+%#show satisfied/5.

@@ -1,4 +1,4 @@
-% animal(cat).
+% animal(X) :- living(X).
 
 % DEFINING GROUND TERMS AND VARIABLES.
 
@@ -18,21 +18,27 @@ var_val_equal(VVX, VVY) :- is_var_val(VVX), is_var_val(VVY), VVX = var_val(R, X,
 % PROGRAM-SPECIFIC
 
 rule(r1).
-head(r1, animal(cat), var_vals(var_val(r1, x, cat), end)).
+head(r1, animal(VX), var_vals(var_val(r1, x, VX), end)) :- ground(VX).
+pbl(r1, 1, living(VX), var_vals(var_val(r1, x, VX), end)) :- ground(VX).
+
+rule(r2).
+head(r2, living(cat), var_vals(var_val(r2, x, cat), end)).
+rule(r3).
+head(r3, furniture(table), var_vals(var_val(r3, x, table), end)).
+rule(r4).
+head(r4, furniture(chair), var_vals(var_val(r4, x, chair), end)).
+
+order(r2, r3).
+order(r3, r4).
+order(r4, r1).
 
 % ------------------------------------------------------------------------------------------------------------------
 % CHECKING FOR SUBSETS
 
 var_list(vars(x, end)).
-var_list(vars(y, end)).
-var_list(vars(z, end)).
-var_list(vars(x, vars(y, end))).
-var_list(vars(x, vars(z, end))).
-var_list(vars(y, vars(z, end))).
-var_list(vars(x, vars(y, vars(z, end)))).
 
-var_num(1..4).
-var_max(4).
+var_num(1..2).
+var_max(2).
 
 valid_var_val(RULE_NO, var_val(R, X, V), VAR) :- var(VAR), rule(R), R = RULE_NO, X = VAR, ground(V). 
 length(R, end, 0, MAX, end) :- var_max(MAX), rule(R).

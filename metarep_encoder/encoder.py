@@ -26,16 +26,70 @@ def generateSubsetRules():
     length_recursive_rule = Rule([Literal_length('R', Literal_var_vals('VV', 'VVS'), 'N', 'MAX', Literal_variables('V', 'VS'))], [Literal_valid_var_val('R', 'VV', 'V'), Literal_length('R', 'VVS', 'N - 1', 'MAX', 'VS'), Literal_var_max('MAX'), LTLiteral('N', 'MAX')])
     defined_length_base_rule = Rule([Literal_defined_length('R', 'end', '0')], [Literal_rule('R')])
     defined_length_recursive_rule = Rule([Literal_defined_length('R', 'VVS', 'N')], [Literal_variable_list('VS'), Literal_length('R', 'VVS', 'N', 'MAX', 'VS'), Literal_var_num('N'), Literal_var_num('MAX')])
-    
+    check_sets_length_rule = Rule([Literal_check_sets_length('R', 'VVXS', 'VVYS')], [Literal_defined_length('R', 'VVXS', 'NX'), Literal_defined_length('R', 'VVYS', 'NY'), Literal_var_num('NX'), Literal_var_num('NY'), LELiteral('NX', 'NY')])
     
     # is_subset
+    is_subset_helper_base_rule = Rule([Literal_is_subset_helper('R', 'end', 'VVYS')], [Literal_defined_length('R', 'VVYS', '_')])
+    is_subset_helper_recursive_rule_1 = Rule([Literal_is_subset_helper('R', Literal_var_vals('VVX', 'VVXS'), Literal_var_vals('VVY', 'VVYS'))], [Literal_check_sets_length('R', Literal_var_vals('VVX', 'VVXS'), Literal_var_vals('VVY', 'VVYS')), Literal_var_val_equal('VVX', 'VVY'), Literal_is_subset_helper('R', 'VVXS', 'VVYS')])
+    is_subset_helper_recursive_rule_2 = Rule([Literal_is_subset_helper('R', Literal_var_vals('VVX', 'VVXS'), Literal_var_vals('VVY', 'VVYS'))], [Literal_check_sets_length('R', Literal_var_vals('VVX', 'VVXS'), Literal_var_vals('VVY', 'VVYS')), NotLiteral(Literal_var_val_equal('VVX', 'VVY')), Literal_is_subset_helper('R', Literal_var_vals('VVX', 'VVXS'), 'VVYS')])
+    is_subset_pbl_rule = Rule([Literal_is_subset('R', 'VVXS', 'VVYS')], [Literal_pbl('R', 'PX', 'X', 'VVXS'), Literal_head('R', 'Y', 'VVYS'), Literal_is_subset_helper('R', 'VVXS', 'VVYS')])
+    is_subset_nbl_rule = Rule([Literal_is_subset('R', 'VVXS', 'VVYS')], [Literal_nbl('R', 'PX', 'X', 'VVXS'), Literal_head('R', 'Y', 'VVYS'), Literal_is_subset_helper('R', 'VVXS', 'VVYS')])    
     
     print(length_base_rule)
     print(length_recursive_rule)
     print(defined_length_base_rule)
-    print(defined_length_recursive_rule)    
+    print(defined_length_recursive_rule)  
+    print(check_sets_length_rule)  
+    print(is_subset_helper_base_rule)
+    print(is_subset_helper_recursive_rule_1)
+    print(is_subset_helper_recursive_rule_2)
+    print(is_subset_pbl_rule)
+    print(is_subset_nbl_rule)
     
+def generateSeenOrderingRules():
+    rule_not_first_rule = Rule([Literal_rule_not_first('R')], [Literal_order('R_OTHER', 'R'), Literal_rule('R'), Literal_rule('R_OTHER')])
+    rule_seen_rule_1 = Rule([Literal_seen_rule('R')], [NotLiteral(Literal_rule_not_first('R')), Literal_rule('R'), Literal_in_AS('X', 'R', 'VVXS'), Literal_head('R', 'X', 'VVXS')])
+    rule_seen_rule_2 = Rule([Literal_seen_rule('R')], [NotLiteral(Literal_rule_not_first('R')), Literal_rule('R'), NotLiteral(Literal_in_AS('X', 'R', 'VVXS')), Literal_head('R', 'X', 'VVXS')])
+    rule_seen_rule_3 = Rule([Literal_seen_rule('R')], [Literal_seen_rule('R_PREV'), Literal_order('R_PREV', 'R'), Literal_rule('R'), Literal_rule('R_PREV'), Literal_in_AS('X', 'R', 'VVXS'), Literal_head('R', 'X', 'VVXS')])
+    rule_seen_rule_4 = Rule([Literal_seen_rule('R')], [Literal_seen_rule('R_PREV'), Literal_order('R_PREV', 'R'), Literal_rule('R'), Literal_rule('R_PREV'), NotLiteral(Literal_in_AS('X', 'R', 'VVXS')), Literal_head('R', 'X', 'VVXS')])
+    
+    print(rule_not_first_rule)
+    print(rule_seen_rule_1)
+    print(rule_seen_rule_2)
+    print(rule_seen_rule_3)
+    print(rule_seen_rule_4)
+    
+def generateSatisfiedRules():
+    in_AS_rule = Rule([Literal_in_AS('X', 'R', 'VVXS')], [Literal_head('R', 'X', 'VVXS'), Literal_body_true('R', 'VVXS')])
+    
+    bl_inbetween_rule = Rule([Literal_bl_inbetween('R', 'X', 'Y')], [Literal_bl('R', 'PX', 'X'), Literal_bl('R', 'PY', 'Y'), Literal_bl('R', 'PZ', 'Z'), LTLiteral('PX', 'PZ'), LTLiteral('PZ', 'PY')])
+    bl_notlast_rule = Rule([Literal_bl_notlast('R', 'X')], [Literal_bl('R', 'PX', 'X'), Literal_bl('R', 'PY', 'Y'), LTLiteral('PX', 'PY')])
+    bl_notfirst_rule = Rule([Literal_bl_notfirst('R', 'X')], [Literal_bl('R', 'PX', 'X'), GTLiteral('PX', '1')])
+    
+    satisfied_pos_rule = Rule([Literal_satisfied('R', 'PX', 'X', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'X', 'VVXS'), Literal_in_AS('X', 'R_OTHER', 'VVS_OTHER'), Literal_rule('R_OTHER')])
+    satisfied_neg_rule = Rule([Literal_satisfied('R', 'PX', 'X', 'VVYS', 'neg')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_nbl('R', 'PX', 'X', 'VVXS'), NotLiteral(Literal_in_AS('X', '_', '_'))])
+    
+    body_true_upto_rule_1 = Rule([Literal_body_true_upto('R', 'PX', 'X', 'VVYS', 'PN')], [Literal_satisfied('R', 'PX', 'X', 'VVYS', 'PN'), NotLiteral(Literal_bl_notfirst('R', 'X'))])
+    body_true_upto_rule_2 = Rule([Literal_body_true_upto('R', 'PX', 'X', 'VVS', 'PNX')], [Literal_satisfied('R', 'PX', 'X', 'VVS', 'PNX'), GTLiteral('PX', 'PY'), Literal_body_true_upto('R', 'PY', 'Y', 'VVS', 'PNY'), NotLiteral(Literal_bl_inbetween('R', 'Y', 'X'))])
+    
+    body_exists_rule = Rule([Literal_body_exists('R')], [Literal_bl('R', 'P', 'X')])
+    body_true_rule_1 = Rule([Literal_body_true('R', 'VVS')], [Literal_rule('R'), Literal_head('R', 'X', 'VVS'), NotLiteral(Literal_body_exists('R'))])
+    body_true_rule_2 = Rule([Literal_body_true('R', 'VVS')], [Literal_body_true_upto('R', 'P', 'X', 'VVS', 'PN'), NotLiteral(Literal_bl_notlast('R', 'X'))])
+    
+    print(in_AS_rule)
+    print(bl_inbetween_rule)
+    print(bl_notlast_rule)
+    print(bl_notfirst_rule)
+    print(satisfied_pos_rule)
+    print(satisfied_neg_rule)
+    print(body_true_upto_rule_1)
+    print(body_true_upto_rule_2)
+    print(body_exists_rule)
+    print(body_true_rule_1)
+    print(body_true_rule_2)
     
 generateBLRules()
 generateVarValRules()
 generateSubsetRules()
+generateSeenOrderingRules()
+generateSatisfiedRules()

@@ -34,7 +34,18 @@ class EqualsLiteral(Literal):
         return 'EqualsLiteral()'
     def __str__(self):
         return self.lhs + ' = ' + self.rhs.__str__()
-    
+
+class GTLiteral(Literal):
+    def __init__(self, lhs, rhs):
+        assertType(lhs, str)
+        assertType(rhs, str)
+        self.lhs = lhs
+        self.rhs = rhs
+    def __repr__(self):
+        return 'GTLiteral()'
+    def __str__(self):
+        return self.lhs + ' > ' + self.rhs
+        
 class LTLiteral(Literal):
     def __init__(self, lhs, rhs):
         assertType(lhs, str)
@@ -46,6 +57,25 @@ class LTLiteral(Literal):
     def __str__(self):
         return self.lhs + ' < ' + self.rhs
     
+class LELiteral(Literal):
+    def __init__(self, lhs, rhs):
+        assertType(lhs, str)
+        assertType(rhs, str)
+        self.lhs = lhs
+        self.rhs = rhs
+    def __repr__(self):
+        return 'LELiteral()'
+    def __str__(self):
+        return self.lhs + ' <= ' + self.rhs
+    
+class NotLiteral(Literal):
+    def __init__(self, literal):
+        self.literal = literal
+    def __repr__(self):
+        return 'NotLiteral()'
+    def __str__(self):
+        return 'not ' + self.literal.__str__()
+
 class Literal_rule(Literal):
     def __init__(self, rule_id):
         self.name = 'rule'
@@ -55,6 +85,21 @@ class Literal_rule(Literal):
         return 'Literal_rule()'
     def __str__(self):
         return self.name + '(' + self.rule_id + ')'
+    
+class Literal_head(Literal):
+    def __init__(self, rule_id, literal, var_vals):
+        self.name = 'head'
+        assertType(rule_id, str)
+        assertTypeChoice(literal, str, Literal)
+        assertTypeChoice(var_vals, str, Literal_var_vals)
+        self.rule_id = rule_id
+        self.literal = literal
+        self.var_vals = var_vals
+        self.args = [rule_id, literal, var_vals]
+    def __repr__(self):
+        return 'Literal_head()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
     
 class Literal_bl(Literal):
     def __init__(self, rule_id, index, literal):
@@ -120,6 +165,8 @@ class Literal_variables(Literal):
         self.name = 'variables'
         assertTypeChoice(arg, str, Literal_variable)
         assertTypeChoice(others, str, Literal_variables)
+        self.arg = arg
+        self.others = others
         self.args = [arg, others]
     def __repr__(self):
         return 'Literal_variables()'
@@ -166,6 +213,8 @@ class Literal_var_vals(Literal):
         self.name = 'var_vals'
         assertTypeChoice(arg, str, Literal_var_val)
         assertTypeChoice(others, str, Literal_var_vals)
+        self.arg = arg
+        self.others = others
         self.args = [arg, others]
     def __repr__(self):
         return 'Literal_var_vals()'
@@ -187,6 +236,8 @@ class Literal_var_val_equal(Literal):
         self.name = 'var_val_equal'
         assertTypeChoice(var_val_1, str, Literal_var_val)
         assertTypeChoice(var_val_2, str, Literal_var_val)
+        self.var_val_1 = var_val_1
+        self.var_val_2 = var_val_2
         self.args = [var_val_1, var_val_2]
     def __repr__(self):
         return 'Literal_var_val_equal()'
@@ -199,6 +250,9 @@ class Literal_valid_var_val(Literal):
         assertType(rule_id, str)
         assertTypeChoice(var_val, Literal_var_val, str)
         assertType(variable, str)
+        self.rule_id = rule_id
+        self.variable = variable
+        self.var_val = var_val
         self.args = [rule_id, var_val, variable]
     def __repr__(self):
         return 'Literal_valid_var_val()'
@@ -234,6 +288,11 @@ class Literal_length(Literal):
         assertType(length, str)
         assertType(max_length, str)
         assertTypeChoice(variables, Literal_variables, str)
+        self.rule_id = rule_id
+        self.var_vals = var_vals
+        self.length = length
+        self.max_length = max_length
+        self.variables = variables
         self.args = [rule_id, var_vals, length, max_length, variables]
     def __repr__(self):
         return 'Literal_length()'
@@ -246,12 +305,211 @@ class Literal_defined_length(Literal):
         assertType(rule_id, str)
         assertTypeChoice(var_vals, Literal_var_vals, str)
         assertType(length, str)
+        self.rule_id = rule_id
+        self.var_vals = var_vals
+        self.length = length
         self.args = [rule_id, var_vals, length]
     def __repr__(self):
         return 'Literal_defined_length()'
     def __str__(self):
         return self.name + '(' + join(self.args) + ')'
     
+class Literal_check_sets_length(Literal):
+    def __init__(self, rule_id, var_vals_1, var_vals_2):
+        self.name = 'check_sets_length'
+        assertType(rule_id, str)
+        assertTypeChoice(var_vals_1, Literal_var_vals, str)
+        assertTypeChoice(var_vals_2, Literal_var_vals, str)
+        self.rule_id = rule_id
+        self.var_vals_1 = var_vals_1
+        self.var_vals_2 = var_vals_2
+        self.args = [rule_id, var_vals_1, var_vals_2]
+    def __repr__(self):
+        return 'Literal_check_sets_length()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+
+class Literal_is_subset_helper(Literal):
+    def __init__(self, rule_id, var_vals_1, var_vals_2):
+        self.name = 'is_subset_helper'
+        assertType(rule_id, str)
+        assertTypeChoice(var_vals_1, Literal_var_vals, str)
+        assertTypeChoice(var_vals_2, Literal_var_vals, str)
+        self.rule_id = rule_id
+        self.var_vals_1 = var_vals_1
+        self.var_vals_2 = var_vals_2
+        self.args = [rule_id, var_vals_1, var_vals_2]
+    def __repr__(self):
+        return 'Literal_is_subset_helper()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+class Literal_is_subset(Literal):
+    def __init__(self, rule_id, var_vals_1, var_vals_2):
+        self.name = 'is_subset'
+        assertType(rule_id, str)
+        assertTypeChoice(var_vals_1, Literal_var_vals, str)
+        assertTypeChoice(var_vals_2, Literal_var_vals, str)
+        self.rule_id = rule_id
+        self.var_vals_1 = var_vals_1
+        self.var_vals_2 = var_vals_2
+        self.args = [rule_id, var_vals_1, var_vals_2]
+    def __repr__(self):
+        return 'Literal_is_subset()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+class Literal_order(Literal):
+    def __init__(self, rule_id_1, rule_id_2):
+        self.name = 'order'
+        assertType(rule_id_1, str)
+        assertType(rule_id_2, str)
+        self.rule_id_1 = rule_id_1
+        self.rule_id_2 = rule_id_2
+        self.args = [rule_id_1, rule_id_2]
+    def __repr__(self):
+        return 'Literal_order()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+class Literal_rule_not_first(Literal):
+    def __init__(self, rule_id):
+        self.name = 'rule_not_first'
+        assertType(rule_id, str)
+        self.rule_id = rule_id
+    def __repr__(self):
+        return 'Literal_rule_not_first()'
+    def __str__(self):
+        return self.name + '(' + self.rule_id + ')'
+    
+class Literal_seen_rule(Literal):
+    def __init__(self, rule_id):
+        self.name = 'seen_rule'
+        assertType(rule_id, str)
+        self.rule_id = rule_id
+    def __repr__(self):
+        return 'Literal_seen_rule()'
+    def __str__(self):
+        return self.name + '(' + self.rule_id + ')'
+    
+class Literal_in_AS(Literal):
+    def __init__(self, literal, rule_id, var_vals):
+        self.name = 'in_AS'
+        assertTypeChoice(literal, Literal, str)
+        assertType(rule_id, str)
+        assertTypeChoice(var_vals, Literal_var_vals, str)
+        self.literal = literal
+        self.rule_id = rule_id
+        self.var_vals = var_vals
+        self.args = [literal, rule_id, var_vals]
+    def __repr__(self):
+        return 'Literal_in_AS()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+class Literal_body_true(Literal):
+    def __init__(self, rule_id, var_vals):
+        self.name = 'body_true'
+        assertType(rule_id, str)
+        assertTypeChoice(var_vals, Literal_var_vals, str)
+        self.rule_id = rule_id
+        self.var_vals = var_vals
+        self.args = [rule_id, var_vals]
+    def __repr__(self):
+        return 'Literal_body_true()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+class Literal_body_exists(Literal):
+    def __init__(self, rule_id):
+        self.name = 'body_exists'
+        assertType(rule_id, str)
+        self.rule_id = rule_id
+    def __repr__(self):
+        return 'Literal_body_exists()'
+    def __str__(self):
+        return self.name + '(' + self.rule_id + ')'
+    
+class Literal_bl_inbetween(Literal):
+    def __init__(self, rule_id, literal_1, literal_2):
+        self.name = 'bl_inbetween'
+        assertType(rule_id, str)
+        assertTypeChoice(literal_1, Literal, str)
+        assertTypeChoice(literal_2, Literal, str)
+        self.rule_id = rule_id
+        self.literal_1 = literal_1
+        self.literal_2 = literal_2
+        self.args = [rule_id, literal_1, literal_2]
+    def __repr__(self):
+        return 'Literal_bl_inbetween()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+class Literal_bl_notlast(Literal):
+    def __init__(self, rule_id, literal):
+        self.name = 'bl_notlast'
+        assertType(rule_id, str)
+        assertTypeChoice(literal, Literal, str)
+        self.rule_id = rule_id
+        self.literal = literal
+        self.args = [rule_id, literal]
+    def __repr__(self):
+        return 'Literal_bl_notlast()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+class Literal_bl_notfirst(Literal):
+    def __init__(self, rule_id, literal):
+        self.name = 'bl_notfirst'
+        assertType(rule_id, str)
+        assertTypeChoice(literal, Literal, str)
+        self.rule_id = rule_id
+        self.literal = literal
+        self.args = [rule_id, literal]
+    def __repr__(self):
+        return 'Literal_bl_notfirst()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+class Literal_satisfied(Literal):
+    def __init__(self, rule_id, index, literal, var_vals, posneg):
+        self.name = 'satisfied'
+        assertType(rule_id, str)
+        assertType(index, str)
+        assertTypeChoice(literal, Literal, str)
+        assertTypeChoice(var_vals, Literal_var_vals, str)
+        assertType(posneg, str)
+        self.rule_id = rule_id
+        self.index = index
+        self.literal = literal
+        self.var_vals = var_vals
+        self.posneg = posneg
+        self.args = [rule_id, index, literal, var_vals, posneg]
+    def __repr__(self):
+        return 'Literal_satisfied()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+class Literal_body_true_upto(Literal):
+    def __init__(self, rule_id, index, literal, var_vals, posneg):
+        self.name = 'body_true_upto'
+        assertType(rule_id, str)
+        assertType(index, str)
+        assertTypeChoice(literal, Literal, str)
+        assertTypeChoice(var_vals, Literal_var_vals, str)
+        assertType(posneg, str)
+        self.rule_id = rule_id
+        self.index = index
+        self.literal = literal
+        self.var_vals = var_vals
+        self.posneg = posneg
+        self.args = [rule_id, index, literal, var_vals, posneg]
+    def __repr__(self):
+        return 'Literal_body_true_upto()'
+    def __str__(self):
+        return self.name + '(' + join(self.args) + ')'
+    
+        
 # test1 = Literal('animal', ['X'])
 # test2 = Literal('haha', [test1, 'B'])
 

@@ -1,18 +1,12 @@
 from classes import *
 from helper import *
 
-def generateVarVals(constants, rule_id, variables):
-    if len(constants) == 0:
-        return 'end'
-    else:
-        return 'var_vals(var_val(' + ', '.join([rule_id, variables[0], constants[0]]) + '),' + generateVarVals(constants[1:], rule_id, variables[1:]) + ')'
-
 def parseLiteral(rule_id, literal):
-    literal = literal.replace(' ', '')
+    literal = trim_front_back_whitespace(literal)
     split = literal.replace(')', '').split('(')
-    args = split[1].split(',')
-    constants = [x for x in args if x[0].islower()]
-    variables = [x for x in args if x not in constants]
+    args = [arg.replace(' ', '') for arg in split[1].split(',')]
+    variables = [x for x in args if is_variable(x)]
+    constants = [x for x in args if x not in variables]
 
     return ProcessingLiteral(rule_id, literal, args), constants, variables
 
@@ -27,40 +21,42 @@ def parseRule(rule_text, index):
     
     head_processing_literal, head_constants, head_variables = parseLiteral(rule_id, head_text)
     
-    constants = mergeStacks(constants, head_constants)
-    variables = mergeStacks(variables, head_variables)
+    constants = merge_stacks(constants, head_constants)
+    variables = merge_stacks(variables, head_variables)
     
     body_processing_literals = []
     if not body_text is None:
-        body_text = splitConjunction(body_text)
+        body_text = split_conjunction(body_text)
         for body_literal in body_text:
             body_processing_literal, body_constants, body_variables = parseLiteral(rule_id, body_literal)
             body_processing_literals.append(body_processing_literal)
-            constants = mergeStacks(constants, body_constants)
-            variables = mergeStacks(variables, body_variables)
+            constants = merge_stacks(constants, body_constants)
+            variables = merge_stacks(variables, body_variables)
             
     var_dict = {}
     for arg in head_processing_literal.args:
-        var_dict[variable_pool[len(var_dict)]] = arg
+        var_dict[arg] = variable_pool[len(var_dict)]
     
     for each in body_processing_literals:
         for arg in each.args:
-            if not arg in var_dict.values():
-                var_dict[variable_pool[len(var_dict)]] = arg
+            if not arg in var_dict.keys():
+                var_dict[arg] = variable_pool[len(var_dict)]
     # print(constants)
     # print(variables)
     # print(var_dict)
     return ProcessingRule(rule_id, head_processing_literal, body_processing_literals, constants, variables, var_dict)
     
 def parseText(text):
-    rules = text.split("\n")
+    rules = [x for x in text.split("\n") if len(x) > 0]
     processed = []
     for i in range(len(rules)):
-        processed.append(parseRule(rules[i], i))
+        if len(rules[i]) > 0:
+            processed.append(parseRule(rules[i], i))
 
-    for each in processed:
-        print(each)
-        
+    # for each in processed:
+    #     print(each)
+    
+    return processed    
     
 f = open("./test.txt", "r")
 parseText(f.read())

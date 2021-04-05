@@ -1,28 +1,34 @@
-var_num(1).
-ground(cat).
-ground(fish).
-%ground(dog).
+var_num(1..4).
+var_max(4).
 
-%length(end, 0).
-%length(var(X, XS), N + 1) :- ground(X), length(XS, N), var_num(n).
+ground(1).
+ground(2).
+ground(3).
+variable(var_x).
+variable(var_y).
+variable(var_z).
 
-length(end, 0, MAX) :- var_num(MAX).
-length(vars(X, XS), N, MAX) :- ground(X), length(XS, N - 1, MAX), var_num(MAX), N < MAX.
+variable_list(variables(var_x, end)).
+variable_list(variables(var_x, variables(var_y, end))).
+variable_list(variables(var_x, variables(var_y, variables(var_z, end)))).
+variable_list(variables(var_x, variables(var_z, end))).
+variable_list(variables(var_y, end)).
+variable_list(variables(var_y, variables(var_z, end))).
+variable_list(variables(var_z, end)).
 
-defined_length(end, 0).
-defined_length(vars(X, XS), N1) :- length(vars(X, XS), N1, MAX), var_num(N1), var_num(MAX).
-check_sets_length(X, Y) :- var_num(N1), var_num(N2), N1 <= N2, defined_length(X, N1), defined_length(Y, N2).
+rule(r1).
 
-%is_subset_helper(end, Y) :- defined_length(Y, _).
-%is_subset_helper(vars(X, XS), vars(Y, YS)) :- check_sets_length(vars(X, XS), vars(Y, YS)), ground(X), ground(Y), X = Y, is_subset_helper(XS, YS).
-%is_subset_helper(vars(X, XS), vars(Y, YS)) :- check_sets_length(vars(X, XS), vars(Y, YS)), ground(X), ground(Y), X != Y, is_subset_helper(vars(X, XS), YS).
+var_val(R, V, T) :- rule(R), variable(V), ground(T).
+is_var_val(var_val(R, V, T)) :- rule(R), variable(V), ground(T).
+var_val_equal(VVX, VVY) :- is_var_val(VVX), is_var_val(VVY), VVX = var_val(R, V, T), VVY = var_val(R, V, T).
+valid_var_val(RULE_NO, var_val(R, V, T), VAR) :- variable(VAR), rule(R), R = RULE_NO, V = VAR, ground(T).
 
-is_subset_helper(end, Y) :- defined_length(Y, _).
-is_subset_helper(vars(X, XS), Y) :- check_sets_length(vars(X, XS), Y), ground(X), in_set(X, Y, YS), is_subset_helper(XS, YS).
+length(R, end, 0, MAX, end) :- var_max(MAX), rule(R).
+length(R, var_vals(VV, VVS), N, MAX, variables(V, VS)) :- valid_var_val(R, VV, V), length(R, VVS, N - 1, MAX, VS), var_max(MAX), N < MAX.
 
-in_set(X, vars(Y, YS), YS) :- ground(X), ground(Y), X = Y, defined_length(YS, N).
-in_set(X, vars(Y, YS), vars(Y, YSS)) :- ground(X), ground(Y), X != Y, in_set(X, YS, YSS), var_num(N), defined_length(YS, N).
+defined_length(R, end, 0) :- rule(R).
+defined_length(R, VVS, N) :- variable_list(VS), length(R, VVS, N, MAX, VS), var_num(N), var_num(MAX).
+check_sets_length(R, VVXS, VVYS) :- defined_length(R, VVXS, NX), defined_length(R, VVYS, NY), var_num(NX), var_num(NY), NX <= NY.
 
-
-%#show is_subset_helper/2.
-#show in_set/3.
+%#show length/5.
+#show check_sets_length/3.

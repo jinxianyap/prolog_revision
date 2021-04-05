@@ -43,15 +43,9 @@ order(r1, r2).
 % CHECKING FOR SUBSETS
 
 var_list(vars(x, end)).
-var_list(vars(y, end)).
-var_list(vars(z, end)).
-var_list(vars(x, vars(y, end))).
-var_list(vars(x, vars(z, end))).
-var_list(vars(y, vars(z, end))).
-var_list(vars(x, vars(y, vars(z, end)))).
 
-var_num(1..4).
-var_max(4).
+var_num(1..2).
+var_max(2).
 
 valid_var_val(RULE_NO, var_val(R, X, V), VAR) :- var(VAR), rule(R), R = RULE_NO, X = VAR, ground(V). 
 length(R, end, 0, MAX, end) :- var_max(MAX), rule(R).
@@ -100,7 +94,7 @@ seen_rule(R) :- seen_rule(R_PREV), order(R_PREV, R), rule(R), rule(R_PREV), not 
 %#show body_true/2.
 %#show body_true_upto/5.
 %#show satisfied/5.
-%#show is_subset/2.
+%#show is_subset/3.
 %#show is_subset_helper/2.
 %#show pbl/4.
-
+%#show check_sets_length/3.

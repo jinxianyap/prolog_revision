@@ -42,7 +42,7 @@ rule(r3).
 head(r3, furniture(chair), var_vals(var_val(r3, var_x, chair), end)).
 rule(r4).
 head(r4, animal(X), var_vals(var_val(r4, var_x, X), end)) :- ground(X).
-pbl(r4, 1, living(X), var_vals(var_val(r4, var_x, X), end)) :- ground(X).
+pbl(r4, 1, furniture(X), var_vals(var_val(r4, var_x, X), end)) :- ground(X).
 order(r1, r2).
 order(r2, r3).
 order(r3, r4).

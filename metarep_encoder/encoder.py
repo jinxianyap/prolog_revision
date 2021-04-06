@@ -172,11 +172,14 @@ def generateProgramRules(processed_rules):
     
     return program
 
+def generateStaticRules():
+    return generateBLRules() + generateVarValRules() + generateSubsetRules() + generateSeenOrderingRules() + generateSatisfiedRules()
+
 def main(argv):
     if (len(argv) == 1):
-        f = open(argv[0], "r")
-        dest = open("../clingo/metarep1.lp", "w")
-        rules = generateBLRules() + generateVarValRules() + generateSubsetRules() + generateSeenOrderingRules() + generateSatisfiedRules()
+        f = open(argv[0], 'r')
+        dest = open('../clingo/metarep1.lp', 'w')
+        rules = generateStaticRules()
         rules = rules + generateProgramRules(parseText(f.read()))
         rules.append('#show in_AS/3.')
         for rule in rules:
@@ -186,5 +189,5 @@ def main(argv):
     else:
         print('Please provide an input file.')
     
-if __name__ == "__main__":
+if __name__ == '__main__':
     main(sys.argv[1:])

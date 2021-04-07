@@ -4,11 +4,14 @@ from helper import *
 def parseLiteral(rule_id, literal):
     literal = trim_front_back_whitespace(literal)
     split = literal.replace(')', '').split('(')
-    args = [arg.replace(' ', '') for arg in split[1].split(',')]
-    variables = [x for x in args if is_variable(x)]
-    constants = [x for x in args if x not in variables]
+    if len(split) == 1:
+        return ProcessingLiteral(rule_id, split[0].strip(), []), [], []
+    else:
+        args = [arg.replace(' ', '') for arg in split[1].split(',')]
+        variables = [x for x in args if is_variable(x)]
+        constants = [x for x in args if x not in variables]
 
-    return ProcessingLiteral(rule_id, literal, args), constants, variables
+        return ProcessingLiteral(rule_id, literal, args), constants, variables
 
 def parseRule(rule_text, index):
     rule_id = 'r' + str(index + 1)
@@ -47,7 +50,7 @@ def parseRule(rule_text, index):
     return ProcessingRule(rule_id, head_processing_literal, body_processing_literals, constants, variables, var_dict)
     
 def parseText(text):
-    rules = [x for x in text.split("\n") if len(x) > 0]
+    rules = [x for x in text.split("\n") if len(x) > 0 and x[0] is not '%']
     processed = []
     for i in range(len(rules)):
         if len(rules[i]) > 0:
@@ -58,6 +61,6 @@ def parseText(text):
     
     return processed    
     
-f = open("./test.txt", "r")
-parseText(f.read())
-f.close()
+# f = open("./test.txt", "r")
+# parseText(f.read())
+# f.close()

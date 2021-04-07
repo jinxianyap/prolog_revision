@@ -56,12 +56,11 @@ def transform(literal):
 def get_answer_set(filename):
     stream = os.popen('clingo ' + filename)
     output = stream.read()
-    lines = output.split('\n')
+    lines = output.split(' ')
     answer_set = []
     for each in lines:
         if each[:5] == 'in_AS':
-            answer_set = [transform(x) for x in each.split(' ')]
-            break
+            answer_set.append(transform(each))
     return answer_set
 
 def group_by_rule_id(answer_set):
@@ -84,11 +83,10 @@ def identify_discrepancies(set_a, set_b):
     set_b = [x for x in set_b if not x.match_exists]            
     
     return set_a, set_b
-        
 
-def main():
-    correct = get_answer_set('correct.txt')
-    user = get_answer_set("user.txt")
+def find_erroneous_rules():
+    correct = get_answer_set('correct.las')
+    user = get_answer_set("user.las")
     
     grouped_correct = group_by_rule_id(correct)
     grouped_user = group_by_rule_id(user)
@@ -96,11 +94,16 @@ def main():
     discrepancies = {}
     for each in grouped_correct.keys():
         rem_correct, rem_user = identify_discrepancies(grouped_correct[each], grouped_user[each])  
-        discrepancies[each] = [rem_correct, rem_user]
+        discrepancies[each] = (rem_correct, rem_user)
         if len(rem_correct) > 0 or len(rem_user) > 0:
             print('Consider modifying rule {}:'.format(each))
             print('-- {} positive example(s) not covered: {}'.format(len(rem_correct), '  '.join([x.__str__() for x in rem_correct])))
             print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
+    
+    return discrepancies
+
+def main():
+    find_erroneous_rules()
     
     
 if __name__ == '__main__':

@@ -42,11 +42,26 @@ rule(r3).
 head(r3, furniture(chair), var_vals(var_val(r3, var_x, chair), end)).
 rule(r4).
 head(r4, animal(X), var_vals(var_val(r4, var_x, X), end)) :- ground(X).
-pbl(r4, 1, living(X), var_vals(var_val(r4, var_x, X), end)) :- ground(X).
+%pbl(r4, 1, living(X), var_vals(var_val(r4, var_x, X), end)) :- ground(X).
+#revisable(rev1, (pbl(r4, 1, furniture(X), var_vals(var_val(r4, var_x, X), end)) :- ground(X).), (X: ground)).
 order(r1, r2).
 order(r2, r3).
 order(r3, r4).
 var_num(1..2).
 var_max(2).
 variable_list(variables(var_x, end)).
-#show in_AS/3.
+
+
+
+%#show in_AS/3.
+
+#pos(eg1, {in_AS(animal(cat), r4, var_vals(var_val(r4, var_x, cat), end))}, {}, {}).
+#neg(eg2, {in_AS(animal(chair), r4, var_vals(var_val(r4, var_x, chair), end))}, {}, {}).
+#neg(eg3, {in_AS(animal(table), r4, var_vals(var_val(r4, var_x, table), end))}, {}, {}).
+
+#modeh(pbl(const(rule), const(pos), living(var(ground)), var_vals(var_val(const(rule), const(variable), var(ground)), const(var_vals_end)))).
+
+#constant(rule, r4).
+#constant(pos, 1).
+#constant(variable, var_x).
+#constant(var_vals_end, end).

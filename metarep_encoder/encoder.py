@@ -133,7 +133,6 @@ def generateVariableListRules(variables):
 def generateProgramRules(processed_rules):
     # for each in processed_rules:
     #     print(each)
-        
     program = []
     
     rule_ids = []
@@ -175,19 +174,22 @@ def generateProgramRules(processed_rules):
 def generateStaticRules():
     return generateBLRules() + generateVarValRules() + generateSubsetRules() + generateSeenOrderingRules() + generateSatisfiedRules()
 
+def encode(text, output):
+    f = open('../examples/' + text, 'r')
+    dest = open(output, 'w')
+    rules = generateStaticRules()
+    rules = rules + generateProgramRules(parseText(f.read()))
+    # rules.append('#show in_AS/3.')
+    for rule in rules:
+        dest.write(rule.__str__() + '\n')
+    dest.close()
+    f.close()
+
 def main(argv):
-    if (len(argv) == 1):
-        f = open(argv[0], 'r')
-        dest = open('../clingo/metarep1.lp', 'w')
-        rules = generateStaticRules()
-        rules = rules + generateProgramRules(parseText(f.read()))
-        rules.append('#show in_AS/3.')
-        for rule in rules:
-            dest.write(rule.__str__() + '\n')
-        dest.close()
-        f.close()
+    if (len(argv) == 2):
+        encode(argv[0], argv[1])
     else:
-        print('Please provide an input file.')
+        print('Please provide an input file and an output destination.')
     
 if __name__ == '__main__':
     main(sys.argv[1:])

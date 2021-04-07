@@ -30,23 +30,29 @@ body_true_upto(R, PX, X, VVS, PNX) :- satisfied(R, PX, X, VVS, PNX), PX > PY, bo
 body_exists(R) :- bl(R, P, X).
 body_true(R, VVS) :- rule(R), head(R, X, VVS), not body_exists(R).
 body_true(R, VVS) :- body_true_upto(R, P, X, VVS, PN), not bl_notlast(R, X).
-ground(table).
+ground(dog).
 ground(cat).
-ground(chair).
+ground(fish).
 variable(var_x).
 rule(r1).
-head(r1, living(cat), var_vals(var_val(r1, var_x, cat), end)).
+head(r1, pet(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).
+pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).
+pbl(r1, 2, mammal(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).
 rule(r2).
-head(r2, furniture(table), var_vals(var_val(r2, var_x, table), end)).
+head(r2, animal(cat), var_vals(var_val(r2, var_x, cat), end)).
 rule(r3).
-head(r3, furniture(chair), var_vals(var_val(r3, var_x, chair), end)).
+head(r3, animal(dog), var_vals(var_val(r3, var_x, dog), end)).
 rule(r4).
-head(r4, animal(X), var_vals(var_val(r4, var_x, X), end)) :- ground(X).
-pbl(r4, 1, furniture(X), var_vals(var_val(r4, var_x, X), end)) :- ground(X).
+head(r4, animal(fish), var_vals(var_val(r4, var_x, fish), end)).
+rule(r5).
+head(r5, mammal(cat), var_vals(var_val(r5, var_x, cat), end)).
+rule(r6).
+head(r6, mammal(dog), var_vals(var_val(r6, var_x, dog), end)).
 order(r1, r2).
 order(r2, r3).
 order(r3, r4).
+order(r4, r5).
+order(r5, r6).
 var_num(1..2).
 var_max(2).
 variable_list(variables(var_x, end)).
-#show in_AS/3.

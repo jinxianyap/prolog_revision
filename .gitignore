@@ -3,3 +3,4 @@ metarep_encoder/test.txt
 .vscode
 examples/
 clingo/
+tr_ilasp/__pycache__/

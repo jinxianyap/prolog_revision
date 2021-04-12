@@ -1,5 +1,5 @@
-from classes import *
-from helper import *
+from metarep_encoder.classes import *
+from metarep_encoder.helper import *
 
 def parseLiteral(rule_id, literal):
     literal = trim_front_back_whitespace(literal)

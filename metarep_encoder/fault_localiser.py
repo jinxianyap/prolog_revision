@@ -1,11 +1,12 @@
 import os
-from encoder import *
+from metarep_encoder.encoder import *
 
 class DerivableFact:
-    def __init__(self, rule_id, literal, variables):
+    def __init__(self, rule_id, literal, variables_dict, original):
         self.rule_id = rule_id
         self.literal = literal
-        self.variables = variables
+        self.variables = variables_dict
+        self.original_str = original
         self.match_exists = False
     def __repr__(self):
         return 'DerivableFact()'
@@ -22,8 +23,8 @@ def variables_to_dict(variables):
         var_dict[split[1]] = split[2]
     return var_dict
 
-def transform(literal):
-    args = literal[6:-1]
+def transform(ori):
+    args = ori[6:-1]
     literal = None
     rule_id = None
     variables = None
@@ -50,18 +51,21 @@ def transform(literal):
             break
         ptr += 1
         
-    return DerivableFact(rule_id, literal, variables_to_dict(variables))
+    return DerivableFact(rule_id, literal, variables_to_dict(variables), ori)
     
 
 def get_answer_set(filename):
     stream = os.popen('clingo ' + filename)
     output = stream.read()
     lines = output.split(' ')
+    meta_answer_set = []
     answer_set = []
     for each in lines:
         if each[:5] == 'in_AS':
-            answer_set.append(transform(each))
-    return answer_set
+            fact_obj = transform(each)
+            meta_answer_set.append(fact_obj)
+            answer_set.append(fact_obj.literal)
+    return meta_answer_set, answer_set
 
 def group_by_rule_id(answer_set):
     groups = {}
@@ -85,26 +89,38 @@ def identify_discrepancies(set_a, set_b):
     return set_a, set_b
 
 def find_erroneous_rules():
-    correct = get_answer_set('correct.las')
-    user = get_answer_set("user.las")
+    meta_correct, correct = get_answer_set('correct.las')
+    meta_user, user = get_answer_set("user.las")
     
-    grouped_correct = group_by_rule_id(correct)
-    grouped_user = group_by_rule_id(user)
+    # Semantic checking
+    correct_excluded = [x for x in correct if x not in user]
+    if len(correct_excluded) > 0:
+        print('Positive examples not covered:')
+        [print(x) for x in correct_excluded]
+    user_included = [x for x in user if x not in correct]
+    if len(user_included) > 0:
+        print('Negative examples covered:')
+        [print(x) for x in user_included]
+    
+    # Syntactic/Declarative checking
+    # cannot just check with rule id, need some measure of similarity between rules
+    grouped_correct = group_by_rule_id(meta_correct)
+    grouped_user = group_by_rule_id(meta_user)
     
     discrepancies = {}
     for each in grouped_correct.keys():
         rem_correct, rem_user = identify_discrepancies(grouped_correct[each], grouped_user[each])  
-        discrepancies[each] = (rem_correct, rem_user)
         if len(rem_correct) > 0 or len(rem_user) > 0:
+            discrepancies[each] = (rem_correct, rem_user)
             print('Consider modifying rule {}:'.format(each))
             print('-- {} positive example(s) not covered: {}'.format(len(rem_correct), '  '.join([x.__str__() for x in rem_correct])))
             print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
     
-    return discrepancies
+    return discrepancies, meta_correct
 
-def main():
-    find_erroneous_rules()
+# def main():
+#     find_erroneous_rules()
     
     
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

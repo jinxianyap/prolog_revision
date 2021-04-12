@@ -1,8 +1,8 @@
 import sys
 import itertools
-from classes import *
-from parser import *
-from helper import *
+from metarep_encoder.classes import *
+from metarep_encoder.parser import *
+from metarep_encoder.helper import *
 
 def generateBLRules():
     # body literals
@@ -135,6 +135,7 @@ def generateProgramRules(processed_rules):
     #     print(each)
     program = []
     
+    body_literals = {}
     rule_ids = []
     variables = set()
     ground_constants = set()
@@ -148,10 +149,15 @@ def generateProgramRules(processed_rules):
         rules.append(rule_id)
         rules.append(head_rule)
         rules = rules + body_rules
+        
+        for each in body_rules:
+            name, arity = get_name_count_arity(each.head[0].literal)
+            if name not in body_literals:
+                body_literals[name] = arity
         rule_ids.append(rule.rule_id)
         variables.update(rule.variables)
         ground_constants.update(rule.constants)
-        
+    
     for each in ground_constants:
         program.append(Rule([Literal_ground(each)], []))
         
@@ -169,21 +175,22 @@ def generateProgramRules(processed_rules):
     
     program = program + [Rule([Literal_variable_list(x)], []) for x in generateVariableListRules(sorted(list(rule.var_dict.values()))) if x is not 'end']
     
-    return program
+    return body_literals, rule_ids, variables, ground_constants, program
 
 def generateStaticRules():
     return generateBLRules() + generateVarValRules() + generateSubsetRules() + generateSeenOrderingRules() + generateSatisfiedRules()
 
 def encode(text, output):
-    f = open('../examples/' + text, 'r')
+    f = open(text, 'r')
     dest = open(output, 'w')
-    rules = generateStaticRules()
-    rules = rules + generateProgramRules(parseText(f.read()))
-    # rules.append('#show in_AS/3.')
+    static_rules = generateStaticRules()
+    body_literals, rule_ids, variables, ground_constants, program = generateProgramRules(parseText(f.read()))
+    rules = static_rules + program
     for rule in rules:
         dest.write(rule.__str__() + '\n')
     dest.close()
     f.close()
+    return body_literals, rule_ids, variables, ground_constants, static_rules, program
 
 def main(argv):
     if (len(argv) == 2):

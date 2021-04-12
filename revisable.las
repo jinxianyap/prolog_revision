@@ -30,14 +30,14 @@ body_true_upto(R, PX, X, VVS, PNX) :- satisfied(R, PX, X, VVS, PNX), PX > PY, bo
 body_exists(R) :- bl(R, P, X).
 body_true(R, VVS) :- rule(R), head(R, X, VVS), not body_exists(R).
 body_true(R, VVS) :- body_true_upto(R, P, X, VVS, PN), not bl_notlast(R, X).
-ground(dog).
 ground(cat).
+ground(dog).
 ground(fish).
 variable(var_x).
 rule(r1).
 head(r1, pet(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).
-pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).
-pbl(r1, 2, mammal(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).
+%#revisable(rev1, (head(r1, pet(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).), (X: ground)).
+#revisable(rev2, (pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).), (X: ground)).
 rule(r2).
 head(r2, animal(cat), var_vals(var_val(r2, var_x, cat), end)).
 rule(r3).
@@ -56,3 +56,18 @@ order(r5, r6).
 var_num(1..2).
 var_max(2).
 variable_list(variables(var_x, end)).
+#constant(rule_id, r1).
+#constant(variable, var_x).
+#constant(ground_constant, cat).
+#constant(ground_constant, fish).
+#constant(ground_constant, dog).
+#constant(position, 1).
+#constant(var_vals_end, end).
+#pos(p5, {in_AS(pet(cat),r1,var_vals(var_val(r1,var_x,cat),end))}, {}, {}).
+#pos(p6, {in_AS(pet(dog),r1,var_vals(var_val(r1,var_x,dog),end))}, {}, {}).
+#neg(n0, {in_AS(pet(fish),r1,var_vals(var_val(r1,var_x,fish),end))}, {}, {}).
+#modeh(pbl(const(rule_id), const(position), animal(var(ground)), var_vals(var_val(const(rule_id), const(variable), var(ground)), const(var_vals_end)))).
+#modeh(nbl(const(rule_id), const(position), animal(var(ground)), var_vals(var_val(const(rule_id), const(variable), var(ground)), const(var_vals_end)))).
+#modeh(pbl(const(rule_id), const(position), mammal(var(ground)), var_vals(var_val(const(rule_id), const(variable), var(ground)), const(var_vals_end)))).
+#modeh(nbl(const(rule_id), const(position), mammal(var(ground)), var_vals(var_val(const(rule_id), const(variable), var(ground)), const(var_vals_end)))).
+#modeb(ground(var(ground))).

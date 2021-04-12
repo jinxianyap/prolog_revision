@@ -1,9 +1,11 @@
-from helper import *
+from metarep_encoder.helper import join, assert_type, assert_type_list, assert_type_is_list, assert_type_choice
  
 class Rule:
     def __init__(self, head, body):
         assert_type_list(head, Literal)
         self.head = head
+        self.rev_id = None
+        self.rev_vars = None
         if body is None:
             self.body = None
         else:
@@ -12,7 +14,19 @@ class Rule:
     def __repr__(self):
         return 'Rule()'
     def __str__(self):
-        return join(self.head) + ('' if len(self.body) == 0 else ' :- ' + join(self.body)) + '.'
+        rule = join(self.head) + ('' if len(self.body) == 0 else ' :- ' + join(self.body)) + '.'
+        if self.rev_id is not None:
+            if self.rev_vars is not None:
+                return '#revisable({}, ({}), ({})).'.format(self.rev_id, rule, self.rev_vars)
+            else:
+                return '#revisable({}, ({})).'.format(self.rev_id, rule)
+        else:
+            return rule
+    def make_revisable(self, rev_id, rev_vars=None):
+        self.revisable = True
+        assert_type(rev_id, str)
+        self.rev_id = rev_id
+        self.rev_vars = rev_vars
 
 class Literal:
     def __init__(self, name, args):
@@ -207,6 +221,8 @@ class Literal_var_val(Literal):
         return 'Literal_var_val()'
     def __str__(self):
         return self.name + '(' + join(self.args) + ')'
+    def to_metarep(self):
+        return 'var_val({}, {}, {})'.format(self.rule_id, self.variable, self.term)
     
 class Literal_var_vals(Literal):
     def __init__(self, arg, others):
@@ -220,6 +236,10 @@ class Literal_var_vals(Literal):
         return 'Literal_var_vals()'
     def __str__(self):
         return self.name + '(' + join(self.args) + ')'
+    def to_metarep(self):
+        arg = self.arg.to_metarep() if isinstance(self.arg, Literal_var_val) else self.arg
+        others = self.others.to_metarep() if isinstance(self.others, Literal_var_vals) else self.others
+        return 'var_vals({}, {})'.format(arg, others)
     
 class Literal_is_var_val(Literal):
     def __init__(self, var_val):
@@ -508,10 +528,49 @@ class Literal_body_true_upto(Literal):
         return 'Literal_body_true_upto()'
     def __str__(self):
         return self.name + '(' + join(self.args) + ')'
-    
-        
-# test1 = Literal('animal', ['X'])
-# test2 = Literal('haha', [test1, 'B'])
 
-# print(test1)
-# print(test2)
+class Declaration():
+    def __init__(self):
+        super.__init__() 
+class Declaration_pos_example(Declaration):
+    def __init__(self, rev_id, literal):
+        self.rev_id = rev_id
+        self.literal = literal
+    def __repr__(self):
+        return 'Declaration_pos_example()'
+    def __str__(self):
+        return '#pos(p{}, {{{}}}, {{}}, {{}}).'.format(self.rev_id, self.literal)
+    
+class Declaration_neg_example(Declaration):
+    def __init__(self, rev_id, literal):
+        self.rev_id = rev_id
+        self.literal = literal
+    def __repr__(self):
+        return 'Declaration_neg_example()'
+    def __str__(self):
+        return '#neg(n{}, {{{}}}, {{}}, {{}}).'.format(self.rev_id, self.literal)
+    
+class Declaration_const(Declaration):
+    def __init__(self, symbol, constant):
+        self.symbol = symbol
+        self.constant = constant
+    def __repr__(self):
+        return 'Declaration_const()'
+    def __str__(self):
+        return '#constant({}, {}).'.format(self.symbol, self.constant)
+    
+class Declaration_modeh(Declaration):
+    def __init__(self, string):
+        self.string = string
+    def __repr__(self):
+        return 'Declaration_modeh()'
+    def __str__(self):
+        return '#modeh({}).'.format(self.string)
+    
+class Declaration_modeb(Declaration):
+    def __init__(self, string):
+        self.string = string
+    def __repr__(self):
+        return 'Declaration_modeb()'
+    def __str__(self):
+        return '#modeb({}).'.format(self.string)

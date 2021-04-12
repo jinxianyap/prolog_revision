@@ -1,11 +1,39 @@
-from messages import *
+from metarep_encoder.messages import *
 
+# ------------------------------------------------------------------------------
+#  Declarations Generator
+
+RULE_ID_SYMBOL = 'rule_id'
+VARIABLE_SYMBOL = 'variable'
+GROUND_CONSTANT_SYMBOL = 'ground_constant'
+POS_SYMBOL = 'position'
+VAR_VALS_END_SYMBOL = 'var_vals_end'
+MAX_POS = 4
+    
+def var_vals_to_revisable_variables(var_vals):
+    if var_vals == 'end':
+        return []
+
+    if is_variable(var_vals.arg.term):
+        return [var_vals.arg.term] + var_vals_to_revisable_variables(var_vals.others)
+    else:
+        return var_vals_to_revisable_variables(var_vals.others)
+
+def generate_var_vals_declaration(n):
+    if n == 0: return 'const({})'.format(VAR_VALS_END_SYMBOL)
+    else:
+        return 'var_vals(var_val(const({}), const({}), var(ground)), {})'.format(RULE_ID_SYMBOL, VARIABLE_SYMBOL, generate_var_vals_declaration(n-1))
 # ------------------------------------------------------------------------------
 #  Encoder
 
 def join(literals):
     strings = (map(lambda x: x.__str__(), literals))
     return ', '.join(strings)
+
+def get_name_count_arity(literal):
+    literal = literal[:-1].split('(', 1)
+    name = literal[0]
+    return name, len(literal[1].split(', '))
 
 # ------------------------------------------------------------------------------
 #  Parser

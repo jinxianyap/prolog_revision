@@ -13,7 +13,7 @@ class DerivableFact:
     def __str__(self):
         return 'in_AS(' + ', '.join([self.literal, self.rule_id, self.variables.__str__()]) + ')'   
     def equal_to(self, other):
-        return self.rule_id == other.rule_id and self.literal == other.literal and self.variables == other.variables
+        return self.literal == other.literal and self.variables == other.variables
 
 def variables_to_dict(variables):
     variables = [x.split(')')[0] for x in variables.split('var_val(')[1:]]
@@ -23,11 +23,12 @@ def variables_to_dict(variables):
         var_dict[split[1]] = split[2]
     return var_dict
 
-def transform(ori):
+def transform(ori, mapping=None):
     args = ori[6:-1]
     literal = None
     rule_id = None
     variables = None
+    ori_str = None
     stack = []
     ptr = 0
 
@@ -46,15 +47,16 @@ def transform(ori):
     
     while rule_id is None:
         if args[ptr] == ',':
-            rule_id = args[:ptr]
+            ori_rule_id = args[:ptr]
+            rule_id = mapping[ori_rule_id] if mapping is not None else ori_rule_id
+            ori_str = ori.replace(ori_rule_id, rule_id)
             variables = args[ptr + 1:]
             break
         ptr += 1
         
-    return DerivableFact(rule_id, literal, variables_to_dict(variables), ori)
-    
+    return DerivableFact(rule_id, literal, variables_to_dict(variables), ori_str)    
 
-def get_answer_set(filename):
+def get_answer_set(filename, mapping=None):
     stream = os.popen('clingo ' + filename)
     output = stream.read()
     lines = output.split(' ')
@@ -62,7 +64,7 @@ def get_answer_set(filename):
     answer_set = []
     for each in lines:
         if each[:5] == 'in_AS':
-            fact_obj = transform(each)
+            fact_obj = transform(each, mapping)
             meta_answer_set.append(fact_obj)
             answer_set.append(fact_obj.literal)
     return meta_answer_set, answer_set
@@ -73,8 +75,7 @@ def group_by_rule_id(answer_set):
         if not each.rule_id in groups:
             groups[each.rule_id] = set()
         groups[each.rule_id].add(each)
-    return groups
-        
+    return groups    
 
 def identify_discrepancies(set_a, set_b):
     for i in set_a:
@@ -88,8 +89,8 @@ def identify_discrepancies(set_a, set_b):
     
     return set_a, set_b
 
-def find_erroneous_rules():
-    meta_correct, correct = get_answer_set('correct.las')
+def find_erroneous_rules(mapping):
+    meta_correct, correct = get_answer_set('correct.las', mapping)
     meta_user, user = get_answer_set("user.las")
     
     # Semantic checking
@@ -115,7 +116,7 @@ def find_erroneous_rules():
             print('Consider modifying rule {}:'.format(each))
             print('-- {} positive example(s) not covered: {}'.format(len(rem_correct), '  '.join([x.__str__() for x in rem_correct])))
             print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
-    
+
     return discrepancies, meta_correct
 
 # def main():

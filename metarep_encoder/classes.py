@@ -38,6 +38,34 @@ class Literal:
         return 'Literal()'
     def __str__(self):
         return self.name + '(' + join(self.args) + ')'
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if type(other) != Literal:
+            return similarity, differences + 1
+        
+        if self.name == other.name:
+            similarity += 1
+        else:
+            differences += 1
+        if len(self.args) == len(other.args):
+            similarity += 1
+        else:
+            differences += 1
+        if set(self.args) == set(other.args):
+            similarity += 1
+        else: differences += 1
+        for i in range(min(len(self.args), len(other.args))):
+            if self.args[i] is not str:
+                sim, diff = self.args[i].compare_to(other.args)
+                similarity += sim
+                differences += diff
+            else:
+                if self.args[i] == other.args[i]:
+                    similarity += 1
+                else:
+                    differences += 1
+        return similarity, differences
         
 class EqualsLiteral(Literal):
     def __init__(self, lhs, rhs):
@@ -48,6 +76,10 @@ class EqualsLiteral(Literal):
         return 'EqualsLiteral()'
     def __str__(self):
         return self.lhs + ' = ' + self.rhs.__str__()
+    # def get_weight(self):
+    #     lhs_weight = 1
+    #     rhs_weight = self.rhs.get_weight() if isinstance(self.rhs, Literal) else 1
+    #     return lhs_weight + rhs_weight
 
 class GTLiteral(Literal):
     def __init__(self, lhs, rhs):
@@ -59,6 +91,10 @@ class GTLiteral(Literal):
         return 'GTLiteral()'
     def __str__(self):
         return self.lhs + ' > ' + self.rhs
+    # def get_weight(self):
+    #     lhs_weight = 1
+    #     rhs_weight = self.rhs.get_weight() if isinstance(self.rhs, Literal) else 1
+    #     return lhs_weight + rhs_weight
         
 class LTLiteral(Literal):
     def __init__(self, lhs, rhs):
@@ -114,6 +150,31 @@ class Literal_head(Literal):
         return 'Literal_head()'
     def __str__(self):
         return self.name + '(' + join(self.args) + ')'
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if type(other) != Literal_head:
+            return similarity, differences + 1
+        if isinstance(self.literal, Literal):
+            sim, diff = self.literal.compare_to(other.literal)
+            similarity += sim
+            differences += diff
+        else:
+            if self.literal == other.literal:
+                similarity += 1
+            else:
+                differences += 1
+        if isinstance(self.var_vals, Literal_var_vals):
+            sim, diff = self.var_vals.compare_to(other.var_vals)
+            similarity += sim
+            differences += diff
+        else:
+            if self.var_vals == other.var_vals:
+                similarity += 1
+            else:
+                differences += 1
+                
+        return similarity, differences
     
 class Literal_bl(Literal):
     def __init__(self, rule_id, index, literal):
@@ -146,6 +207,36 @@ class Literal_pbl(Literal):
         return 'Literal_pbl()'
     def __str__(self):
         return self.name + '(' + join(self.args) + ')'
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if type(other) != Literal_pbl:
+            return similarity, differences + 1
+        
+        if self.index == other.index:
+            similarity += 1
+        else:
+            differences += 1
+        if isinstance(self.literal, Literal):
+            sim, diff = self.literal.compare_to(other.literal)
+            similarity += sim
+            differences += diff
+        else:
+            if self.literal == other.literal:
+                similarity += 1
+            else:
+                differences += 1
+        if isinstance(self.var_vals, Literal_var_vals):
+            sim, diff = self.var_vals.compare_to(other.var_vals)
+            similarity += sim
+            differences += diff
+        else:
+            if self.var_vals == other.var_vals:
+                similarity += 1
+            else:
+                differences += 1
+  
+        return similarity, differences
     
 class Literal_nbl(Literal):
     def __init__(self, rule_id, index, literal, var_vals):
@@ -163,7 +254,37 @@ class Literal_nbl(Literal):
         return 'Literal_nbl()'
     def __str__(self):
         return self.name + '(' + join(self.args) + ')'
-    
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if type(other) != Literal_nbl:
+            return similarity, differences + 1
+        
+        if self.index == other.index:
+            similarity += 1
+        else:
+            differences += 1
+        if isinstance(self.literal, Literal):
+            sim, diff = self.literal.compare_to(other.literal)
+            similarity += sim
+            differences += diff
+        else:
+            if self.literal == other.literal:
+                similarity += 1
+            else:
+                differences += 1
+        if isinstance(self.var_vals, Literal_var_vals):
+            sim, diff = self.var_vals.compare_to(other.var_vals)
+            similarity += sim
+            differences += diff
+        else:
+            if self.var_vals == other.var_vals:
+                similarity += 1
+            else:
+                differences += 1
+  
+        return similarity, differences   
+     
 class Literal_variable(Literal):
     def __init__(self, arg):
         self.name = 'variable'
@@ -173,6 +294,18 @@ class Literal_variable(Literal):
         return 'Literal_variable()'
     def __str__(self):
         return self.name + '(' + self.arg + ')'
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if type(other) != Literal_variable:
+            return similarity, differences + 1
+        
+        if self.arg == other.arg:
+            similarity += 1
+        else:
+            differences += 1
+  
+        return similarity, differences
     
 class Literal_variables(Literal):
     def __init__(self, arg, others):
@@ -206,6 +339,18 @@ class Literal_ground(Literal):
         return 'Literal_ground()'
     def __str__(self):
         return self.name + '(' + self.term + ')'
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if type(other) != Literal_ground:
+            return similarity, differences + 1
+        
+        if self.term == other.term:
+            similarity += 1
+        else:
+            differences += 1
+  
+        return similarity, differences
 
 class Literal_var_val(Literal):
     def __init__(self, rule_id, variable, term):
@@ -223,6 +368,26 @@ class Literal_var_val(Literal):
         return self.name + '(' + join(self.args) + ')'
     def to_metarep(self):
         return 'var_val({}, {}, {})'.format(self.rule_id, self.variable, self.term)
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if type(other) != Literal_var_val:
+            return similarity, differences + 1
+        
+        if self.rule_id == other.rule_id:
+            similarity += 1
+        else:
+            differences += 1
+        if self.variable == other.variable:
+            similarity += 1
+        else:
+            differences += 1
+        if self.term == other.term:
+            similarity += 1
+        else:
+            differences += 1
+  
+        return similarity, differences
     
 class Literal_var_vals(Literal):
     def __init__(self, arg, others):
@@ -240,6 +405,27 @@ class Literal_var_vals(Literal):
         arg = self.arg.to_metarep() if isinstance(self.arg, Literal_var_val) else self.arg
         others = self.others.to_metarep() if isinstance(self.others, Literal_var_vals) else self.others
         return 'var_vals({}, {})'.format(arg, others)
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if type(other) != Literal_var_vals:
+            return similarity, differences + 1
+        
+        if isinstance(self.arg, Literal_var_val):
+            sim_arg, diff_arg = self.arg.compare_to(other.arg)
+            similarity += sim_arg
+            differences += diff_arg
+        else:
+            differences += 1
+            
+        if isinstance(self.others, Literal_var_vals):
+            sim_others, diff_others = self.others.compare_to(other.others)
+            similarity += sim_others
+            differences += diff_others
+        else:
+            differences += 1
+  
+        return similarity, differences
     
 class Literal_is_var_val(Literal):
     def __init__(self, var_val):

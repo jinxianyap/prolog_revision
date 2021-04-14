@@ -35,18 +35,18 @@ ground(dog).
 ground(fish).
 variable(var_x).
 rule(r1).
-head(r1, pet(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).
-pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).
+head(r1, mammal(dog), var_vals(var_val(r1, var_x, dog), end)).
 rule(r2).
 head(r2, animal(cat), var_vals(var_val(r2, var_x, cat), end)).
 rule(r3).
-head(r3, animal(dog), var_vals(var_val(r3, var_x, dog), end)).
+head(r3, animal(fish), var_vals(var_val(r3, var_x, fish), end)).
 rule(r4).
-head(r4, animal(fish), var_vals(var_val(r4, var_x, fish), end)).
+head(r4, animal(dog), var_vals(var_val(r4, var_x, dog), end)).
 rule(r5).
 head(r5, mammal(cat), var_vals(var_val(r5, var_x, cat), end)).
 rule(r6).
-head(r6, mammal(dog), var_vals(var_val(r6, var_x, dog), end)).
+head(r6, pet(X), var_vals(var_val(r6, var_x, X), end)) :- ground(X).
+pbl(r6, 1, animal(X), var_vals(var_val(r6, var_x, X), end)) :- ground(X).
 order(r1, r2).
 order(r2, r3).
 order(r3, r4).

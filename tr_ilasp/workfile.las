@@ -35,18 +35,17 @@ ground(dog).
 ground(fish).
 variable(var_x).
 rule(r1).
-head(r1, pet(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).
-%#revisable(rev1, (head(r1, pet(X), var_vals(var_val(r1, var_x, X), end)) :- ground(X).), (X: ground)).
+head(r1, mammal(dog), var_vals(var_val(r1, var_x, dog), end)).
 rule(r2).
 head(r2, animal(cat), var_vals(var_val(r2, var_x, cat), end)).
 rule(r3).
-head(r3, animal(dog), var_vals(var_val(r3, var_x, dog), end)).
+head(r3, animal(fish), var_vals(var_val(r3, var_x, fish), end)).
 rule(r4).
-head(r4, animal(fish), var_vals(var_val(r4, var_x, fish), end)).
+head(r4, animal(dog), var_vals(var_val(r4, var_x, dog), end)).
 rule(r5).
 head(r5, mammal(cat), var_vals(var_val(r5, var_x, cat), end)).
 rule(r6).
-head(r6, mammal(dog), var_vals(var_val(r6, var_x, dog), end)).
+head(r6, pet(X), var_vals(var_val(r6, var_x, X), end)) :- ground(X).
 order(r1, r2).
 order(r2, r3).
 order(r3, r4).
@@ -55,22 +54,27 @@ order(r5, r6).
 var_num(1..2).
 var_max(2).
 variable_list(variables(var_x, end)).
-#constant(rule_id, r1).
+#constant(rule_id, r6).
 #constant(variable, var_x).
 #constant(ground_constant, cat).
-#constant(ground_constant, fish).
 #constant(ground_constant, dog).
+#constant(ground_constant, fish).
 #constant(position, 1).
 #constant(var_vals_end, end).
-#pos(p5, {in_AS(pet(cat),r1,var_vals(var_val(r1,var_x,cat),end))}, {}, {}).
-#pos(p6, {in_AS(pet(dog),r1,var_vals(var_val(r1,var_x,dog),end))}, {}, {}).
-#neg(n0, {in_AS(pet(fish),r1,var_vals(var_val(r1,var_x,fish),end))}, {}, {}).
+#pos(p0, {in_AS(mammal(dog),r1,var_vals(var_val(r1,var_x,dog),end))}, {}, {}).
+#pos(p1, {in_AS(mammal(cat),r5,var_vals(var_val(r5,var_x,cat),end))}, {}, {}).
+#pos(p2, {in_AS(animal(fish),r3,var_vals(var_val(r3,var_x,fish),end))}, {}, {}).
+#pos(p3, {in_AS(animal(dog),r4,var_vals(var_val(r4,var_x,dog),end))}, {}, {}).
+#pos(p4, {in_AS(animal(cat),r2,var_vals(var_val(r2,var_x,cat),end))}, {}, {}).
+#pos(p5, {in_AS(pet(cat),r6,var_vals(var_val(r6,var_x,cat),end))}, {}, {}).
+#pos(p6, {in_AS(pet(dog),r6,var_vals(var_val(r6,var_x,dog),end))}, {}, {}).
+#neg(n0, {in_AS(pet(fish),r6,var_vals(var_val(r6,var_x,fish),end))}, {}, {}).
 #modeb(ground(var(ground))).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Deletion rules
 
 #modeh(delete(const(revid_type), const(id_type))).
-#constant(revid_type, rev2).
+#constant(revid_type, rev1).
 #constant(id_type, ground_X).
 
 #bias(":- head(delete(_, _)), body(_).").
@@ -78,105 +82,75 @@ variable_list(variables(var_x, end)).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Extension rules and mode declaration
 
-#modeh(extension(rev2, v(var(ground)))).
+#modeh(extension(rev1, v(var(ground)))).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Mode for revising heads
 #modeh(head_delete(const(revid_type), const(hid_type))).
-#constant(hid_type, pbl_r1_1_animal_X_var_vals_var_val_r1_var_x_X_end).
+#constant(hid_type, pbl_r6_1_animal_X_var_vals_var_val_r6_var_x_X_end).
 
-#modeh(head_extension(rev2, const(head_extension_type), pbl(r1, 1, animal(var(ground)), var_vals(var_val(r1, var_x, var(ground)), end)))).
-#modeh(head_extension(rev2, const(head_extension_type), nbl(r1, 1, animal(var(ground)), var_vals(var_val(r1, var_x, var(ground)), end)))).
-#modeh(head_extension(rev2, const(head_extension_type), pbl(r1, 1, mammal(var(ground)), var_vals(var_val(r1, var_x, var(ground)), end)))).
-#modeh(head_extension(rev2, const(head_extension_type), nbl(r1, 1, mammal(var(ground)), var_vals(var_val(r1, var_x, var(ground)), end)))).
-#constant(head_extension_type, nbl_r1_1_mammal_X_var_vals_var_val_r1_var_x_X_end).
-#constant(head_extension_type, pbl_r1_1_mammal_X_var_vals_var_val_r1_var_x_X_end).
-#constant(head_extension_type, nbl_r1_1_animal_X_var_vals_var_val_r1_var_x_X_end).
-#constant(head_extension_type, pbl_r1_1_animal_X_var_vals_var_val_r1_var_x_X_end).
+#modeh(head_extension(rev1, const(head_extension_type), pbl(r6, 1, mammal(var(ground)), var_vals(var_val(r6, var_x, var(ground)), end)))).
+#constant(head_extension_type, pbl_r6_1_mammal_X_var_vals_var_val_r6_var_x_X_end).
 
 #bias(":- head(head_delete(_, _)), body(_).").
 #bias(":- head(head_extension(_, _, _)), body(_).").
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 prove(X) : possible_head(R, V, X) :- extension(R, V).
-pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end)) :- prove(pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))).
-pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end)) :- prove(pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))).
-nbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end)) :- prove(nbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))).
-pbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end)) :- prove(pbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))).
-nbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end)) :- prove(nbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))).
+pbl(r6, 1, animal(X), var_vals(var_val(r6, var_x, X), end)) :- prove(pbl(r6, 1, animal(X), var_vals(var_val(r6, var_x, X), end))).
+pbl(r6, 1, mammal(X), var_vals(var_val(r6, var_x, X), end)) :- prove(pbl(r6, 1, mammal(X), var_vals(var_val(r6, var_x, X), end))).
 
 %Try and extension rules
 
-possible_head(rev2, v(X), pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))) :-
-	not head_delete(rev2, pbl_r1_1_animal_X_var_vals_var_val_r1_var_x_X_end),
-	try(rev2, ground_X, ground(X)),
-	extension(rev2, v(X)).
+possible_head(rev1, v(X), pbl(r6, 1, animal(X), var_vals(var_val(r6, var_x, X), end))) :-
+	not head_delete(rev1, pbl_r6_1_animal_X_var_vals_var_val_r6_var_x_X_end),
+	try(rev1, ground_X, ground(X)),
+	extension(rev1, v(X)).
 
-possible_head(rev2, v(X), pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))) :-
-	head_extension(rev2, pbl_r1_1_animal_X_var_vals_var_val_r1_var_x_X_end, pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))),
-	try(rev2, ground_X, ground(X)),
-	extension(rev2, v(X)).
+possible_head(rev1, v(X), pbl(r6, 1, mammal(X), var_vals(var_val(r6, var_x, X), end))) :-
+	head_extension(rev1, pbl_r6_1_mammal_X_var_vals_var_val_r6_var_x_X_end, pbl(r6, 1, mammal(X), var_vals(var_val(r6, var_x, X), end))),
+	try(rev1, ground_X, ground(X)),
+	extension(rev1, v(X)).
 
-possible_head(rev2, v(X), nbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))) :-
-	head_extension(rev2, nbl_r1_1_animal_X_var_vals_var_val_r1_var_x_X_end, nbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))),
-	try(rev2, ground_X, ground(X)),
-	extension(rev2, v(X)).
-
-possible_head(rev2, v(X), pbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))) :-
-	head_extension(rev2, pbl_r1_1_mammal_X_var_vals_var_val_r1_var_x_X_end, pbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))),
-	try(rev2, ground_X, ground(X)),
-	extension(rev2, v(X)).
-
-possible_head(rev2, v(X), nbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))) :-
-	head_extension(rev2, nbl_r1_1_mammal_X_var_vals_var_val_r1_var_x_X_end, nbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))),
-	try(rev2, ground_X, ground(X)),
-	extension(rev2, v(X)).
-
-possible_head(rev2, v(X), null) :-
-	empty_head(rev2),
+possible_head(rev1, v(X), null) :-
+	empty_head(rev1),
 	ground(X).
 
-possible_head(rev2, v(X), null) :-
-	not empty_head(rev2),
-	not possible_head(rev2, v(X), pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))),
-	not possible_head(rev2, v(X), pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))),
-	not possible_head(rev2, v(X), nbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))),
-	not possible_head(rev2, v(X), pbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))),
-	not possible_head(rev2, v(X), nbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))),
+possible_head(rev1, v(X), null) :-
+	not empty_head(rev1),
+	not possible_head(rev1, v(X), pbl(r6, 1, animal(X), var_vals(var_val(r6, var_x, X), end))),
+	not possible_head(rev1, v(X), pbl(r6, 1, mammal(X), var_vals(var_val(r6, var_x, X), end))),
 	ground(X).
 
-empty_head(rev2) :-
-	head_delete(rev2, pbl_r1_1_animal_X_var_vals_var_val_r1_var_x_X_end),
-	not head_extension(rev2, pbl_r1_1_animal_X_var_vals_var_val_r1_var_x_X_end, pbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))),
-	not head_extension(rev2, nbl_r1_1_animal_X_var_vals_var_val_r1_var_x_X_end, nbl(r1, 1, animal(X), var_vals(var_val(r1, var_x, X), end))),
-	not head_extension(rev2, pbl_r1_1_mammal_X_var_vals_var_val_r1_var_x_X_end, pbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))),
-	not head_extension(rev2, nbl_r1_1_mammal_X_var_vals_var_val_r1_var_x_X_end, nbl(r1, 1, mammal(X), var_vals(var_val(r1, var_x, X), end))),
+empty_head(rev1) :-
+	head_delete(rev1, pbl_r6_1_animal_X_var_vals_var_val_r6_var_x_X_end),
+	not head_extension(rev1, pbl_r6_1_mammal_X_var_vals_var_val_r6_var_x_X_end, pbl(r6, 1, mammal(X), var_vals(var_val(r6, var_x, X), end))),
 	ground(X).
 
-:- empty_head(rev2),
-	try(rev2, ground_X, ground(X)),
-	extension(rev2, v(X)).
+:- empty_head(rev1),
+	try(rev1, ground_X, ground(X)),
+	extension(rev1, v(X)).
 
-:- not empty_head(rev2),
-	possible_head(rev2, v(X), null): ground(X).
+:- not empty_head(rev1),
+	possible_head(rev1, v(X), null): ground(X).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-try(rev2, ground_X, ground(X)) :- 
-	delete(rev2, ground_X),
+try(rev1, ground_X, ground(X)) :- 
+	delete(rev1, ground_X),
 	ground(X).
 
-try(rev2, ground_X, ground(X)) :- 
+try(rev1, ground_X, ground(X)) :- 
 	ground(X),
-	not delete(rev2, ground_X),
+	not delete(rev1, ground_X),
 	ground(X).
 
-tried(rev2, ground_X) :- 
-	try(rev2, ground_X, ground(X)),
+tried(rev1, ground_X) :- 
+	try(rev1, ground_X, ground(X)),
 	ground(X).
 
-extended(rev2) :- 
-	extension(rev2, v(X)),
+extended(rev1) :- 
+	extension(rev1, v(X)),
 	ground(X).
 
-:- not tried(rev2, ground_X).
+:- not tried(rev1, ground_X).
 
-:- not extended(rev2).
+:- not extended(rev1).
 

@@ -9,7 +9,7 @@ def make_rule_revisable(rule_id, program, counter):
                 found = True
             elif found:
                 break
-        elif found:
+        elif found and (isinstance(each.head[0], Literal_pbl) or isinstance(each.head[0], Literal_nbl)):
             head = each.head[0]
             revise_vars = join([x + ': ground' for x in var_vals_to_revisable_variables(head.var_vals)])
             each.make_revisable('rev' + str(counter), revise_vars)

@@ -30,8 +30,8 @@ body_true_upto(R, PX, X, VVS, PNX) :- satisfied(R, PX, X, VVS, PNX), PX > PY, bo
 body_exists(R) :- bl(R, P, X).
 body_true(R, VVS) :- rule(R), head(R, X, VVS), not body_exists(R).
 body_true(R, VVS) :- body_true_upto(R, P, X, VVS, PN), not bl_notlast(R, X).
-ground(cat).
 ground(dog).
+ground(cat).
 ground(fish).
 variable(var_x).
 rule(r1).

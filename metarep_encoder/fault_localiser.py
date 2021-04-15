@@ -59,7 +59,7 @@ def transform(ori, mapping=None):
 def get_answer_set(filename, mapping=None):
     stream = os.popen('clingo ' + filename)
     output = stream.read()
-    lines = output.split(' ')
+    lines = output.split('\n')[4].split(' ')
     meta_answer_set = []
     answer_set = []
     for each in lines:

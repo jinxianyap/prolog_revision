@@ -1,6 +1,12 @@
-metarep_encoder/__pycache__/
-metarep_encoder/test.txt
 .vscode
 examples/
 clingo/
+metarep_encoder/__pycache__/
+
 tr_ilasp/__pycache__/
+tr_ilasp/temp.txt
+tr_ilasp/workfile.las
+
+correct.las
+revisable.las
+user.las

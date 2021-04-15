@@ -138,6 +138,7 @@ def generateProgramRules(processed_rules):
     body_literals = {}
     rule_ids = []
     variables = set()
+    var_names = []
     ground_constants = set()
     
     rules = []
@@ -157,6 +158,9 @@ def generateProgramRules(processed_rules):
         rule_ids.append(rule.rule_id)
         variables.update(rule.variables)
         ground_constants.update(rule.constants)
+        for each in rule.var_dict.values():
+            if each not in var_names:
+                var_names.append(each)
     
     for each in ground_constants:
         program.append(Rule([Literal_ground(each)], []))
@@ -173,7 +177,7 @@ def generateProgramRules(processed_rules):
     program.append(Rule([Literal_var_num(str(len(variables) + 1), True)], []))
     program.append(Rule([Literal_var_max(str(len(variables) + 1))], []))
     
-    program = program + [Rule([Literal_variable_list(x)], []) for x in generateVariableListRules(sorted(list(rule.var_dict.values()))) if x is not 'end']
+    program = program + [Rule([Literal_variable_list(x)], []) for x in generateVariableListRules(sorted(var_names)) if x is not 'end']
     
     return body_literals, rule_ids, variables, ground_constants, program
 

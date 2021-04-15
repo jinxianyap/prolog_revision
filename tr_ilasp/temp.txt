@@ -1,4 +1,0 @@
-extension(rev1,v(V1)) :- ground(V1).
-head_extension(rev1,pbl_r6_1_mammal_X_var_vals_var_val_r6_var_x_X_end,pbl(r6,1,mammal(V1),var_vals(var_val(r6,var_x,V1),end))) :- ground(V1).
-head_delete(rev1,pbl_r6_1_animal_X_var_vals_var_val_r6_var_x_X_end).
-

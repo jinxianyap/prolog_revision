@@ -373,7 +373,7 @@ def possible_head_generate(id2literal, revisable_theories, output_file):
         empty_head_rules.append(rule)
 
         rule = ":- {},\n".format(empty_head)
-        rule = try_and_extend_literals_generation(extend_literals, rule, try_literals)
+        rule = try_and_extend_literals_generation(extend_literals, rule, try_literals, True)
         empty_head_rules.append(rule)
 
         # Empty possible_head generation
@@ -422,8 +422,9 @@ def possible_head_generate(id2literal, revisable_theories, output_file):
             output_file.write(rule)
 
 
-def try_and_extend_literals_generation(extend_literals, rule, try_literals):
+def try_and_extend_literals_generation(extend_literals, rule, try_literals, hehe=False):
     for try_literal in try_literals:
+        try_literal = try_literal.replace('try', 'delete').replace(', ground(X)', '') if hehe else try_literal
         rule += "\t{},\n".format(try_literal)
     for extend_literal in extend_literals:
         rule += "\t{},\n".format(extend_literal)

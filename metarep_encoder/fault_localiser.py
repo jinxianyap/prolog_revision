@@ -77,7 +77,10 @@ def group_by_rule_id(answer_set):
         groups[each.rule_id].add(each)
     return groups    
 
-def identify_discrepancies(set_a, set_b):
+def identify_discrepancies(map_a, map_b, index):
+    set_a = map_a[index] if index in map_a else set()
+    set_b = map_b[index] if index in map_b else set()
+    
     for i in set_a:
         for j in set_b:
             if i.equal_to(j):
@@ -104,13 +107,12 @@ def find_erroneous_rules(mapping):
         [print(x) for x in user_included]
     
     # Syntactic/Declarative checking
-    # cannot just check with rule id, need some measure of similarity between rules
     grouped_correct = group_by_rule_id(meta_correct)
     grouped_user = group_by_rule_id(meta_user)
-    
+
     discrepancies = {}
     for each in grouped_correct.keys():
-        rem_correct, rem_user = identify_discrepancies(grouped_correct[each], grouped_user[each])  
+        rem_correct, rem_user = identify_discrepancies(grouped_correct, grouped_user, each)  
         if len(rem_correct) > 0 or len(rem_user) > 0:
             discrepancies[each] = (rem_correct, rem_user)
             print('Consider modifying rule {}:'.format(each))

@@ -15,6 +15,19 @@ def make_rule_revisable(rule_id, program, counter):
             each.make_revisable('rev' + str(counter), revise_vars)
             counter += 1
     return counter
+  
+def find_head_literal_name(program, rule_id):
+    for each in program:
+        if isinstance(each.head[0], Literal_head) and each.head[0].rule_id == rule_id:
+            return each.head[0].literal.split('(')[0]
+        
+def filter_example(example, revisables):
+    relevant = False
+    for rev in revisables:
+        if rev in example.literal:
+            relevant = True
+            break
+    return relevant
 
 def generate_declarations(errors, answer_set, correct_body_literals, correct_rule_ids, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_variables, user_ground_constants, user_program):
     declarations = []
@@ -35,11 +48,16 @@ def generate_declarations(errors, answer_set, correct_body_literals, correct_rul
     negative_examples = []
     revise_counter = 1
 
+    revisable_literals = []
     for each in sorted(errors.keys()):
+        revisable_literals.append(find_head_literal_name(user_program, each))
         for neg in errors[each][1]:
             negative_examples.append(Declaration_neg_example(len(negative_examples), neg.original_str))
-        revise_counter = make_rule_revisable(each, user_program, revise_counter)   
-    
+        revise_counter = make_rule_revisable(each, user_program, revise_counter)
+
+    positive_examples = list(filter(lambda x: filter_example(x, revisable_literals), positive_examples))
+    negative_examples = list(filter(lambda x: filter_example(x, revisable_literals), negative_examples))   
+                
     declarations += positive_examples + negative_examples
     
     modehs = []
@@ -49,9 +67,9 @@ def generate_declarations(errors, answer_set, correct_body_literals, correct_rul
         literal = each + '(' + join(['var(ground)' for x in range(arity)]) + ')'
         var_vals = generate_var_vals_declaration(arity)
         pbl_string = 'pbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, var_vals)
-        nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, var_vals)
+        # nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, var_vals)
         modehs.append(Declaration_modeh(pbl_string))
-        modehs.append(Declaration_modeh(nbl_string))
+        # modehs.append(Declaration_modeh(nbl_string))
     
     declarations += modehs
     declarations.append(Declaration_modeb('ground(var(ground))'))

@@ -30,10 +30,59 @@ def join(literals):
     strings = (map(lambda x: x.__str__(), literals))
     return ', '.join(strings)
 
+def get_arguments(literal, built_in_type=None): 
+    args = []
+    if built_in_type is not None:
+        args = [trim_front_back_whitespace(x) for x in literal.split(built_in_type)]
+    else:
+        literal = literal[:-1].split('(', 1)
+        rem = literal[1]
+        
+        stack = []
+        i = 0
+        j = 0
+        
+        while j < len(rem):
+            if j == ',' and len(stack) == 0:
+                args.push(rem[i:j])
+                j += 1
+                i = j
+            elif j == '(':
+                stack.push(i + 1)
+                j += 1
+            elif j == ')':
+                start = stack.pop()
+                args.push(rem[start:j+1])
+                j += 1
+                i = j
+            else:
+                j += 1
+        
+        args.append(rem[i:j])
+            
+    return args        
+
 def get_name_count_arity(literal):
-    literal = literal[:-1].split('(', 1)
-    name = literal[0]
-    return name, len(literal[1].split(', '))
+    return literal.name, len(literal.args)
+
+def assign_built_in_type(rule, literal):
+    if is_eq_literal(literal):
+        rule.built_in_type = Built_in_type.EQ
+    elif is_neq_literal(literal):
+        rule.built_in_type = Built_in_type.NEQ
+
+# ------------------------------------------------------------------------------
+#  Built-in predicates
+
+class Built_in_type:
+    EQ = '='
+    NEQ = '!='
+
+def is_eq_literal(literal):
+    return '=' in literal and '!=' not in literal
+
+def is_neq_literal(literal):
+    return '!=' in literal
 
 # ------------------------------------------------------------------------------
 #  Parser

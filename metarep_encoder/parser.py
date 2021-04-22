@@ -3,15 +3,24 @@ from metarep_encoder.helper import *
 
 def parseLiteral(rule_id, literal):
     literal = trim_front_back_whitespace(literal)
-    split = literal.replace(')', '').split('(')
-    if len(split) == 1:
-        return ProcessingLiteral(rule_id, split[0].strip(), []), [], []
-    else:
-        args = [arg.replace(' ', '') for arg in split[1].split(',')]
+    if is_eq_literal(literal) or is_neq_literal(literal):
+        split = literal.split('!=' if '!=' in literal else '=')
+        front = trim_front_back_whitespace(split[0])
+        back = trim_front_back_whitespace(split[1])
+        args = [front, back]
         variables = [x for x in args if is_variable(x)]
         constants = [x for x in args if x not in variables]
-
         return ProcessingLiteral(rule_id, literal, args), constants, variables
+    else:
+        split = literal.replace(')', '').split('(')
+        if len(split) == 1:
+            return ProcessingLiteral(rule_id, split[0].strip(), []), [], []
+        else:
+            args = [arg.replace(' ', '') for arg in split[1].split(',')]
+            variables = [x for x in args if is_variable(x)]
+            constants = [x for x in args if x not in variables]
+
+            return ProcessingLiteral(rule_id, literal, args), constants, variables
 
 def parseRule(rule_text, index):
     rule_id = 'r' + str(index + 1)
@@ -50,7 +59,7 @@ def parseRule(rule_text, index):
     return ProcessingRule(rule_id, head_processing_literal, body_processing_literals, constants, variables, var_dict)
     
 def parseText(text):
-    rules = [x for x in text.split("\n") if len(x) > 0 and x[0] is not '%']
+    rules = [x for x in text.split("\n") if len(x) > 0 and x[0] is not '%' and x[0] is not '#']
     processed = []
     for i in range(len(rules)):
         if len(rules[i]) > 0:

@@ -1,16 +1,12 @@
 from metarep_encoder.helper import join, assert_type, assert_type_list, assert_type_is_list, assert_type_choice
- 
+
 class Rule:
     def __init__(self, head, body):
-        assert_type_list(head, Literal)
         self.head = head
         self.rev_id = None
         self.rev_vars = None
-        if body is None:
-            self.body = None
-        else:
-            assert_type_list(body, Literal)
-            self.body = body
+        self.built_in_type = None
+        self.body = body
     def __repr__(self):
         return 'Rule()'
     def __str__(self):
@@ -56,7 +52,7 @@ class Literal:
             similarity += 1
         else: differences += 1
         for i in range(min(len(self.args), len(other.args))):
-            if self.args[i] is not str:
+            if not isinstance(self.args[i], str):
                 sim, diff = self.args[i].compare_to(other.args)
                 similarity += sim
                 differences += diff
@@ -68,28 +64,51 @@ class Literal:
         return similarity, differences
         
 class EqualsLiteral(Literal):
-    def __init__(self, lhs, rhs):
+    def __init__(self, lhs, rhs, literal=False):
         assert_type(lhs, str)
         self.lhs = lhs
         self.rhs = rhs
+        self.literal = literal
     def __repr__(self):
         return 'EqualsLiteral()'
     def __str__(self):
+        return self.get_rep() if self.literal else 'equalsLiteral({}, {})'.format(self.lhs, self.rhs.__str__())
+    def get_rep(self):
         return self.lhs + ' = ' + self.rhs.__str__()
+    # def get_weight(self):
+    #     lhs_weight = 1
+    #     rhs_weight = self.rhs.get_weight() if isinstance(self.rhs, Literal) else 1
+    #     return lhs_weight + rhs_weight
+    
+class NotEqualsLiteral(Literal):
+    def __init__(self, lhs, rhs, literal=False):
+        assert_type(lhs, str)
+        self.lhs = lhs
+        self.rhs = rhs
+        self.literal = literal
+    def __repr__(self):
+        return 'NotEqualsLiteral()'
+    def __str__(self):
+        return self.get_rep() if self.literal else 'notEqualsLiteral({}, {})'.format(self.lhs, self.rhs.__str__())
+    def get_rep(self):
+        return self.lhs + ' != ' + self.rhs.__str__()
     # def get_weight(self):
     #     lhs_weight = 1
     #     rhs_weight = self.rhs.get_weight() if isinstance(self.rhs, Literal) else 1
     #     return lhs_weight + rhs_weight
 
 class GTLiteral(Literal):
-    def __init__(self, lhs, rhs):
+    def __init__(self, lhs, rhs, literal=False):
         assert_type(lhs, str)
         assert_type(rhs, str)
         self.lhs = lhs
         self.rhs = rhs
+        self.literal = literal
     def __repr__(self):
         return 'GTLiteral()'
     def __str__(self):
+        return self.get_rep() if self.literal else 'greaterThanLiteral({}, {})'.format(self.lhs, self.rhs.__str__())
+    def get_rep(self):
         return self.lhs + ' > ' + self.rhs
     # def get_weight(self):
     #     lhs_weight = 1
@@ -97,25 +116,31 @@ class GTLiteral(Literal):
     #     return lhs_weight + rhs_weight
         
 class LTLiteral(Literal):
-    def __init__(self, lhs, rhs):
+    def __init__(self, lhs, rhs, literal=False):
         assert_type(lhs, str)
         assert_type(rhs, str)
         self.lhs = lhs
         self.rhs = rhs
+        self.literal = literal
     def __repr__(self):
         return 'LTLiteral()'
     def __str__(self):
+        return self.get_rep() if self.literal else 'lesserThanLiteral({}, {})'.format(self.lhs, self.rhs.__str__())
+    def get_rep(self):
         return self.lhs + ' < ' + self.rhs
     
 class LELiteral(Literal):
-    def __init__(self, lhs, rhs):
+    def __init__(self, lhs, rhs, literal=False):
         assert_type(lhs, str)
         assert_type(rhs, str)
         self.lhs = lhs
         self.rhs = rhs
+        self.literal = literal
     def __repr__(self):
         return 'LELiteral()'
     def __str__(self):
+        return self.get_rep() if self.literal else 'lesserEqualsLiteral({}, {})'.format(self.lhs, self.rhs.__str__())
+    def get_rep(self):
         return self.lhs + ' <= ' + self.rhs
     
 class NotLiteral(Literal):

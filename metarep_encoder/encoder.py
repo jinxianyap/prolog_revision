@@ -71,28 +71,28 @@ def generateSeenOrderingRules():
 def generateSatisfiedRules():
     in_AS_rule = Rule([Literal_in_AS('X', 'R', 'VVXS')], [Literal_head('R', 'X', 'VVXS'), Literal_body_true('R', 'VVXS')])
     
-    bl_inbetween_rule = Rule([Literal_bl_inbetween('R', 'X', 'Y')], [Literal_bl('R', 'PX', 'X'), Literal_bl('R', 'PY', 'Y'), Literal_bl('R', 'PZ', 'Z'), LTLiteral('PX', 'PZ', True), LTLiteral('PZ', 'PY', True)])
-    bl_notlast_rule = Rule([Literal_bl_notlast('R', 'X')], [Literal_bl('R', 'PX', 'X'), Literal_bl('R', 'PY', 'Y'), LTLiteral('PX', 'PY', True)])
-    bl_notfirst_rule = Rule([Literal_bl_notfirst('R', 'X')], [Literal_bl('R', 'PX', 'X'), GTLiteral('PX', '1', True)])
+    bl_inbetween_rule = Rule([Literal_bl_inbetween('R', 'PX', 'PY')], [Literal_bl('R', 'PX', 'X'), Literal_bl('R', 'PY', 'Y'), Literal_bl('R', 'PZ', 'Z'), LTLiteral('PX', 'PZ', True), LTLiteral('PZ', 'PY', True)])
+    bl_notlast_rule = Rule([Literal_bl_notlast('R', 'PX', 'X')], [Literal_bl('R', 'PX', 'X'), Literal_bl('R', 'PY', 'Y'), LTLiteral('PX', 'PY', True)])
+    bl_first_rule = Rule([Literal_bl_first('1')], [])
     
     satisfied_pos_rule = Rule([Literal_satisfied('R', 'PX', 'X', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'X', 'VVXS'), Literal_in_AS('X', 'R_OTHER', 'VVS_OTHER'), Literal_rule('R_OTHER')])
     satisfied_neg_rule = Rule([Literal_satisfied('R', 'PX', 'X', 'VVYS', 'neg')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_nbl('R', 'PX', 'X', 'VVXS'), NotLiteral(Literal_in_AS('X', '_', '_'))])
     
-    # satisfied rules for built-in types
+        # satisfied rules for built-in types
     satisfied_equals_rule = Rule([Literal_satisfied('R', 'PX', 'equalsLiteral(X, Y)', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'equalsLiteral(X, Y)', 'VVXS'), 'X = Y'])
     satisfied_not_equals_rule = Rule([Literal_satisfied('R', 'PX', 'notEqualsLiteral(X, Y)', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'notEqualsLiteral(X, Y)', 'VVXS'), 'X != Y'])
     satisfied_greater_than_rule = Rule([Literal_satisfied('R', 'PX', 'greaterThanLiteral(X, Y)', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'greaterThanLiteral(X, Y)', 'VVXS'), 'X > Y'])
     satisfied_lesser_than_rule = Rule([Literal_satisfied('R', 'PX', 'lesserThanLiteral(X, Y)', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'lesserThanLiteral(X, Y)', 'VVXS'), 'X < Y'])
     satisfied_lesser_equals_rule = Rule([Literal_satisfied('R', 'PX', 'lesserEqualsLiteral(X, Y)', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'lesserEqualsLiteral(X, Y)', 'VVXS'), 'X <= Y'])
     
-    body_true_upto_rule_1 = Rule([Literal_body_true_upto('R', 'PX', 'X', 'VVYS', 'PN')], [Literal_satisfied('R', 'PX', 'X', 'VVYS', 'PN'), NotLiteral(Literal_bl_notfirst('R', 'X'))])
-    body_true_upto_rule_2 = Rule([Literal_body_true_upto('R', 'PX', 'X', 'VVS', 'PNX')], [Literal_satisfied('R', 'PX', 'X', 'VVS', 'PNX'), GTLiteral('PX', 'PY', True), Literal_body_true_upto('R', 'PY', 'Y', 'VVS', 'PNY'), NotLiteral(Literal_bl_inbetween('R', 'Y', 'X'))])
+    body_true_upto_rule_1 = Rule([Literal_body_true_upto('R', 'PX', 'X', 'VVYS', 'PN')], [Literal_satisfied('R', 'PX', 'X', 'VVYS', 'PN'), Literal_bl_first('PX')])
+    body_true_upto_rule_2 = Rule([Literal_body_true_upto('R', 'PX', 'X', 'VVS', 'PNX')], [Literal_satisfied('R', 'PX', 'X', 'VVS', 'PNX'), GTLiteral('PX', 'PY', True), Literal_body_true_upto('R', 'PY', 'Y', 'VVS', 'PNY'), NotLiteral(Literal_bl_inbetween('R', 'PY', 'PX'))])
     
     body_exists_rule = Rule([Literal_body_exists('R')], [Literal_bl('R', 'P', 'X')])
     body_true_rule_1 = Rule([Literal_body_true('R', 'VVS')], [Literal_rule('R'), Literal_head('R', 'X', 'VVS'), NotLiteral(Literal_body_exists('R'))])
-    body_true_rule_2 = Rule([Literal_body_true('R', 'VVS')], [Literal_body_true_upto('R', 'P', 'X', 'VVS', 'PN'), NotLiteral(Literal_bl_notlast('R', 'X'))])
+    body_true_rule_2 = Rule([Literal_body_true('R', 'VVS')], [Literal_body_true_upto('R', 'P', 'X', 'VVS', 'PN'), NotLiteral(Literal_bl_notlast('R', 'P', 'X'))])
     # satisfied_equals_rule, satisfied_not_equals_rule, satisfied_greater_than_rule, satisfied_lesser_than_rule, satisfied_lesser_equals_rule, 
-    return [in_AS_rule, bl_inbetween_rule, bl_notlast_rule, bl_notfirst_rule, satisfied_pos_rule, satisfied_neg_rule, body_true_upto_rule_1, body_true_upto_rule_2, body_exists_rule, body_true_rule_1, body_true_rule_2]
+    return [in_AS_rule, bl_inbetween_rule, bl_notlast_rule, bl_first_rule, satisfied_pos_rule, satisfied_neg_rule, satisfied_equals_rule, satisfied_not_equals_rule, satisfied_greater_than_rule, satisfied_lesser_than_rule, satisfied_lesser_equals_rule, body_true_upto_rule_1, body_true_upto_rule_2, body_exists_rule, body_true_rule_1, body_true_rule_2]
 
 def generateVariables(terms):
     if len(terms) == 0:

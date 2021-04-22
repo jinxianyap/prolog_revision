@@ -677,30 +677,28 @@ class Literal_bl_inbetween(Literal):
         return self.name + '(' + join(self.args) + ')'
     
 class Literal_bl_notlast(Literal):
-    def __init__(self, rule_id, literal):
+    def __init__(self, rule_id, position, literal):
         self.name = 'bl_notlast'
         assert_type(rule_id, str)
         assert_type_choice(literal, Literal, str)
         self.rule_id = rule_id
+        self.position = position
         self.literal = literal
-        self.args = [rule_id, literal]
+        self.args = [rule_id, position, literal]
     def __repr__(self):
         return 'Literal_bl_notlast()'
     def __str__(self):
         return self.name + '(' + join(self.args) + ')'
     
-class Literal_bl_notfirst(Literal):
-    def __init__(self, rule_id, literal):
-        self.name = 'bl_notfirst'
-        assert_type(rule_id, str)
-        assert_type_choice(literal, Literal, str)
-        self.rule_id = rule_id
-        self.literal = literal
-        self.args = [rule_id, literal]
+class Literal_bl_first(Literal):
+    def __init__(self, position):
+        self.name = 'bl_first'
+        assert_type(position, str)
+        self.position = position
     def __repr__(self):
-        return 'Literal_bl_notfirst()'
+        return 'Literal_bl_first()'
     def __str__(self):
-        return self.name + '(' + join(self.args) + ')'
+        return self.name + '(' + self.position + ')'
     
 class Literal_satisfied(Literal):
     def __init__(self, rule_id, index, literal, var_vals, posneg):

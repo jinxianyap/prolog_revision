@@ -24,7 +24,7 @@ def compare_terms(a, b):
     elif isinstance(a, Literal) and isinstance(b, Literal):
         sim, diff = a.compare_to(b)
         similarity += sim
-        differences += diff          
+        differences += diff       
     else:
         differences += 1   
     return similarity, differences
@@ -35,7 +35,7 @@ def compare_rules(a, b):
     head_similarity, head_differences = compare_terms(a.head[0], b.head[0])
     similarity += head_similarity
     differences += head_differences
-    
+
     if len(a.body) == len(b.body):
         similarity += 1
     else:
@@ -71,7 +71,7 @@ def assign_similarity(a, b):
     for i in range(min(len(a), len(b))):
         sim, diff = compare_rules(a[i], b[i])
         similarity += sim
-        differences == diff
+        differences += diff
         
     return similarity, differences
 
@@ -108,7 +108,11 @@ def generate_similarity_matrix(correct, user):
 
 def generate_mapping(correct, user):
     matrix = generate_similarity_matrix(correct, user)
+    final_matrix = {}
     mappings = {}
+    total_sim = 0
+    total_diff = 0
+
     for each in matrix:
         score = -1
         index = None
@@ -119,6 +123,10 @@ def generate_mapping(correct, user):
                 index = entry 
             
         mappings[each] = index
-
-    return mappings
+        sim, diff = matrix[each][index]
+        total_sim += sim
+        total_diff += diff
+        
+    score = '%.3f' % (total_sim / (total_sim + total_diff))
+    return mappings, score
             

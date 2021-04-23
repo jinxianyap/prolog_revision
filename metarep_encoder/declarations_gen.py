@@ -19,7 +19,7 @@ def make_rule_revisable(rule_id, program, counter):
 def find_head_literal_name(program, rule_id):
     for each in program:
         if isinstance(each.head[0], Literal_head) and each.head[0].rule_id == rule_id:
-            return each.head[0].literal.split('(')[0]
+            return each.head[0].literal.name
         
 def filter_example(example, revisables):
     relevant = False

@@ -8,9 +8,7 @@ def generateBLRules():
     # body literals
     bl_pbl_rule = Rule([Literal_bl('R', 'P', 'X')], [Literal_pbl('R', 'P', 'X', 'VARS')])
     bl_nbl_rule = Rule([Literal_bl('R', 'P', 'X')], [Literal_nbl('R', 'P', 'X', 'VARS')])
-    
-    # print(bl_pbl_rule)
-    # print(bl_nbl_rule)
+
     return [bl_pbl_rule, bl_nbl_rule]
 
     
@@ -21,10 +19,6 @@ def generateVarValRules():
     var_val_equal_rule = Rule([Literal_var_val_equal('VVX', 'VVY')], [Literal_is_var_val('VVX'), Literal_is_var_val('VVY'), EqualsLiteral('VVX', Literal_var_val('R', 'V', 'T'), True), EqualsLiteral('VVY', Literal_var_val('R', 'V', 'T'), True)])
     valid_var_val_rule = Rule([Literal_valid_var_val('RULE_NO', Literal_var_val('R', 'V', 'T'), 'VAR')], [Literal_variable('VAR'), Literal_rule('R'), EqualsLiteral('R', 'RULE_NO', True), EqualsLiteral('V', 'VAR', True), Literal_ground('T')])
     
-    # print(var_val_rule)
-    # print(is_var_val_rule)
-    # print(var_val_equal_rule)
-    # print(valid_var_val_rule)
     return [var_val_rule, is_var_val_rule, var_val_equal_rule, valid_var_val_rule]
     
 def generateSubsetRules():
@@ -41,17 +35,7 @@ def generateSubsetRules():
     is_subset_helper_recursive_rule_2 = Rule([Literal_is_subset_helper('R', Literal_var_vals('VVX', 'VVXS'), Literal_var_vals('VVY', 'VVYS'))], [Literal_check_sets_length('R', Literal_var_vals('VVX', 'VVXS'), Literal_var_vals('VVY', 'VVYS')), NotLiteral(Literal_var_val_equal('VVX', 'VVY')), Literal_is_subset_helper('R', Literal_var_vals('VVX', 'VVXS'), 'VVYS')])
     is_subset_pbl_rule = Rule([Literal_is_subset('R', 'VVXS', 'VVYS')], [Literal_pbl('R', 'PX', 'X', 'VVXS'), Literal_head('R', 'Y', 'VVYS'), Literal_is_subset_helper('R', 'VVXS', 'VVYS')])
     is_subset_nbl_rule = Rule([Literal_is_subset('R', 'VVXS', 'VVYS')], [Literal_nbl('R', 'PX', 'X', 'VVXS'), Literal_head('R', 'Y', 'VVYS'), Literal_is_subset_helper('R', 'VVXS', 'VVYS')])    
-    
-    # print(length_base_rule)
-    # print(length_recursive_rule)
-    # print(defined_length_base_rule)
-    # print(defined_length_recursive_rule)  
-    # print(check_sets_length_rule)  
-    # print(is_subset_helper_base_rule)
-    # print(is_subset_helper_recursive_rule_1)
-    # print(is_subset_helper_recursive_rule_2)
-    # print(is_subset_pbl_rule)
-    # print(is_subset_nbl_rule)
+
     return [length_base_rule, length_recursive_rule, defined_length_base_rule, defined_length_recursive_rule, check_sets_length_rule, is_subset_helper_base_rule, is_subset_helper_recursive_rule_1, is_subset_helper_recursive_rule_2, is_subset_pbl_rule, is_subset_nbl_rule]
     
 def generateSeenOrderingRules():
@@ -60,12 +44,7 @@ def generateSeenOrderingRules():
     rule_seen_rule_2 = Rule([Literal_seen_rule('R')], [NotLiteral(Literal_rule_not_first('R')), Literal_rule('R'), NotLiteral(Literal_in_AS('X', 'R', 'VVXS')), Literal_head('R', 'X', 'VVXS')])
     rule_seen_rule_3 = Rule([Literal_seen_rule('R')], [Literal_seen_rule('R_PREV'), Literal_order('R_PREV', 'R'), Literal_rule('R'), Literal_rule('R_PREV'), Literal_in_AS('X', 'R', 'VVXS'), Literal_head('R', 'X', 'VVXS')])
     rule_seen_rule_4 = Rule([Literal_seen_rule('R')], [Literal_seen_rule('R_PREV'), Literal_order('R_PREV', 'R'), Literal_rule('R'), Literal_rule('R_PREV'), NotLiteral(Literal_in_AS('X', 'R', 'VVXS')), Literal_head('R', 'X', 'VVXS')])
-    
-    # print(rule_not_first_rule)
-    # print(rule_seen_rule_1)
-    # print(rule_seen_rule_2)
-    # print(rule_seen_rule_3)
-    # print(rule_seen_rule_4)
+
     return [rule_not_first_rule, rule_seen_rule_1, rule_seen_rule_2, rule_seen_rule_3, rule_seen_rule_4]
     
 def generateSatisfiedRules():
@@ -78,7 +57,7 @@ def generateSatisfiedRules():
     satisfied_pos_rule = Rule([Literal_satisfied('R', 'PX', 'X', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'X', 'VVXS'), Literal_in_AS('X', 'R_OTHER', 'VVS_OTHER'), Literal_rule('R_OTHER')])
     satisfied_neg_rule = Rule([Literal_satisfied('R', 'PX', 'X', 'VVYS', 'neg')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_nbl('R', 'PX', 'X', 'VVXS'), NotLiteral(Literal_in_AS('X', '_', '_'))])
     
-        # satisfied rules for built-in types
+    # satisfied rules for built-in types
     satisfied_equals_rule = Rule([Literal_satisfied('R', 'PX', 'equalsLiteral(X, Y)', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'equalsLiteral(X, Y)', 'VVXS'), 'X = Y'])
     satisfied_not_equals_rule = Rule([Literal_satisfied('R', 'PX', 'notEqualsLiteral(X, Y)', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'notEqualsLiteral(X, Y)', 'VVXS'), 'X != Y'])
     satisfied_greater_than_rule = Rule([Literal_satisfied('R', 'PX', 'greaterThanLiteral(X, Y)', 'VVYS', 'pos')], [Literal_is_subset('R', 'VVXS', 'VVYS'), Literal_pbl('R', 'PX', 'greaterThanLiteral(X, Y)', 'VVXS'), 'X > Y'])
@@ -123,7 +102,7 @@ def generateLiteral(literal):
     
 def generateLiteralRule(rule_id, literal, args, var_dict, index = None):
     if index == None:
-        head = Literal_head(rule_id, literal, generateVarVals(rule_id, args, var_dict))
+        head = Literal_head(rule_id, generateLiteral(literal), generateVarVals(rule_id, args, var_dict))
         body = [Literal_ground(x) for x in args if is_variable(x)]
         return Rule([head], body)
     else:
@@ -148,7 +127,7 @@ def generateProgramRules(processed_rules):
     #     print(each)
     program = []
     
-    body_literals = {}
+    modeh_literals = {}
     rule_ids = []
     variables = set()
     var_names = []
@@ -163,13 +142,17 @@ def generateProgramRules(processed_rules):
         rules.append(rule_id)
         rules.append(head_rule)
         rules = rules + body_rules
+        
+        head_name, head_arity = get_name_count_arity(head_rule.head[0].literal)
+        if head_name not in modeh_literals:
+            modeh_literals[head_name] = head_arity
 
         for each in body_rules:
             if each.built_in_type is not None: 
                 continue
             name, arity = get_name_count_arity(each.head[0].literal)
-            if name not in body_literals:
-                body_literals[name] = arity
+            if name not in modeh_literals:
+                modeh_literals[name] = arity
                 
         rule_ids.append(rule.rule_id)
         variables.update(rule.variables)
@@ -195,7 +178,7 @@ def generateProgramRules(processed_rules):
     
     program = program + [Rule([Literal_variable_list(x)], []) for x in generateVariableListRules(sorted(var_names)) if x is not 'end']
     
-    return body_literals, rule_ids, variables, ground_constants, program
+    return modeh_literals, rule_ids, variables, ground_constants, program
 
 def generateStaticRules():
     return generateBLRules() + generateVarValRules() + generateSubsetRules() + generateSeenOrderingRules() + generateSatisfiedRules()

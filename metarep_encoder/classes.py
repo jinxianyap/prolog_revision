@@ -37,7 +37,7 @@ class Literal:
     def compare_to(self, other):
         similarity = 0
         differences = 0
-        if type(other) != Literal:
+        if not isinstance(other, Literal):
             return similarity, differences + 1
         
         if self.name == other.name:
@@ -50,7 +50,9 @@ class Literal:
             differences += 1
         if set(self.args) == set(other.args):
             similarity += 1
-        else: differences += 1
+        else: 
+            differences += 1
+              
         for i in range(min(len(self.args), len(other.args))):
             if not isinstance(self.args[i], str):
                 sim, diff = self.args[i].compare_to(other.args)
@@ -180,6 +182,7 @@ class Literal_head(Literal):
         differences = 0
         if type(other) != Literal_head:
             return similarity, differences + 1
+        
         if isinstance(self.literal, Literal):
             sim, diff = self.literal.compare_to(other.literal)
             similarity += sim
@@ -189,6 +192,7 @@ class Literal_head(Literal):
                 similarity += 1
             else:
                 differences += 1
+                
         if isinstance(self.var_vals, Literal_var_vals):
             sim, diff = self.var_vals.compare_to(other.var_vals)
             similarity += sim
@@ -198,7 +202,7 @@ class Literal_head(Literal):
                 similarity += 1
             else:
                 differences += 1
-                
+
         return similarity, differences
     
 class Literal_bl(Literal):
@@ -441,15 +445,21 @@ class Literal_var_vals(Literal):
             similarity += sim_arg
             differences += diff_arg
         else:
-            differences += 1
+            if self.arg == other.arg:
+                similarity += 1
+            else:
+                differences += 1
             
         if isinstance(self.others, Literal_var_vals):
             sim_others, diff_others = self.others.compare_to(other.others)
             similarity += sim_others
             differences += diff_others
         else:
-            differences += 1
-  
+            if self.others == other.others:
+                similarity += 1
+            else:
+                differences += 1
+                
         return similarity, differences
     
 class Literal_is_var_val(Literal):

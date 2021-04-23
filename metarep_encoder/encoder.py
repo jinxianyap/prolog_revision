@@ -98,7 +98,7 @@ def generateLiteral(literal):
         args = [generateLiteral(x) for x in get_arguments(literal)]
         return Literal(name, args)
     else:
-        return literal
+        return trim_front_back_whitespace(literal)
     
 def generateLiteralRule(rule_id, literal, args, var_dict, index = None):
     if index == None:

@@ -43,23 +43,23 @@ def get_arguments(literal, built_in_type=None):
         j = 0
         
         while j < len(rem):
-            if j == ',' and len(stack) == 0:
-                args.push(rem[i:j])
+            if rem[j] == ',' and len(stack) == 0:
+                args.append(rem[i:j])
                 j += 1
                 i = j
-            elif j == '(':
-                stack.push(i + 1)
+            elif rem[j] == '(':
+                stack.append(i + 1)
                 j += 1
-            elif j == ')':
+            elif rem[j] == ')':
                 start = stack.pop()
-                args.push(rem[start:j+1])
+                args.append(rem[start:j+1])
                 j += 1
                 i = j
             else:
                 j += 1
         
         args.append(rem[i:j])
-            
+
     return args        
 
 def get_name_count_arity(literal):

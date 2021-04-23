@@ -73,9 +73,9 @@ def build_modeh_from_tree(tree, types):
 
 
 def build_tree_from_modeh(literal):
-    if literal.startswith("var") and not literal.startswith("var_val"):
+    if literal.startswith("var(") and not literal.startswith("var_val("):
         return Variable(literal.split("var(")[1][:-1], "")
-    elif literal.startswith("const"):
+    elif literal.startswith("const("):
         return Constant(literal.split("const(")[1][:-1], "")
     else:
         split = literal.split('(', maxsplit=1)

@@ -1,5 +1,11 @@
 from metarep_encoder.messages import *
 
+def find_incorrect_arities(correct, user):
+    incorrect = {}
+    for each in user:
+        if each in correct and user[each] != correct[each]:
+            incorrect[each] = correct[each]
+    return incorrect
 # ------------------------------------------------------------------------------
 #  Declarations Generator
 

@@ -61,7 +61,11 @@ def generate_declarations(errors, answer_set, correct_body_literals, correct_rul
     declarations += positive_examples + negative_examples
     
     modehs = []
-    body_literals = {**correct_body_literals, **user_body_literals}
+    body_literals = correct_body_literals
+    for each in user_body_literals:
+        if each not in body_literals:
+            body_literals[each] = user_body_literals[each]
+        
     const_variable_symbols = [x.symbol for x in const_variables]
     
     for each in body_literals:

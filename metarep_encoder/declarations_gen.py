@@ -28,7 +28,7 @@ def filter_example(example, revisables):
             relevant = True
             break
     return relevant
-
+    
 def generate_declarations(errors, answer_set, correct_body_literals, correct_rule_ids, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_variables, user_ground_constants, user_program):
     declarations = []
     
@@ -37,7 +37,7 @@ def generate_declarations(errors, answer_set, correct_body_literals, correct_rul
     const_ground_constants = list(user_ground_constants.union(correct_ground_constants))
     
     const_rule_ids = [Declaration_const(RULE_ID_SYMBOL, x) for x in const_rule_ids if x in errors]
-    const_variables = [Declaration_const(VARIABLE_SYMBOL, x) for x in variable_pool[:len(const_variables)]] 
+    const_variables = [Declaration_const(VARIABLE_SYMBOL + x[-2:], x) for x in variable_pool[:len(const_variables)]] 
     const_ground_constants = [Declaration_const(GROUND_CONSTANT_SYMBOL, x) for x in const_ground_constants]
     const_positions = [Declaration_const(POS_SYMBOL, str(x + 1)) for x in range(MAX_POS)]
     const_var_vals_end = [Declaration_const(VAR_VALS_END_SYMBOL, 'end')]
@@ -62,17 +62,22 @@ def generate_declarations(errors, answer_set, correct_body_literals, correct_rul
     
     modehs = []
     body_literals = {**correct_body_literals, **user_body_literals}
+    const_variable_symbols = [x.symbol for x in const_variables]
+    
     for each in body_literals:
         arity = body_literals[each]
         literal = each + '(' + join(['var(ground)' for x in range(arity)]) + ')'
-        var_vals = generate_var_vals_declaration(arity)
-        pbl_string = 'pbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, var_vals)
-        # nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, var_vals)
-        modehs.append(Declaration_modeh(pbl_string))
-        # modehs.append(Declaration_modeh(nbl_string))
-    
+        var_vals = generate_var_vals_declarations(sorted(const_variable_symbols), arity)
+        for vv in var_vals:
+            if vv == 'const({})'.format(VAR_VALS_END_SYMBOL): continue
+            pbl_string = 'pbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
+            # nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, var_vals)
+            modehs.append(Declaration_modeh(pbl_string))
+            # modehs.append(Declaration_modeh(nbl_string))
+            
     declarations += modehs
     declarations.append(Declaration_modeb('ground(var(ground))'))
+    declarations.append(Declaration_maxv(max(body_literals.values())))
     
     user_program += declarations
         

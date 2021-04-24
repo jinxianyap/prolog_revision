@@ -1,4 +1,4 @@
-from metarep_encoder.helper import join, assert_type, assert_type_list, assert_type_is_list, assert_type_choice
+from metarep_encoder.helper import join, assert_type, assert_type_list, assert_type_is_list, assert_type_choice, RULE_ID_SYMBOL, VAR_VALS_END_SYMBOL
 
 class Rule:
     def __init__(self, head, body):
@@ -793,3 +793,12 @@ class Declaration_modeb(Declaration):
         return 'Declaration_modeb()'
     def __str__(self):
         return '#modeb({}).'.format(self.string)
+    
+class Declaration_maxv(Declaration):
+    def __init__(self, value):
+        assert_type(value, int)
+        self.value = value
+    def __repr__(self):
+        return 'Declaration_maxv()'
+    def __str__(self):
+        return '#maxv({}).'.format(str(self.value))

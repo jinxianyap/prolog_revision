@@ -23,6 +23,16 @@ def generate_var_vals_declaration(n):
     if n == 0: return 'const({})'.format(VAR_VALS_END_SYMBOL)
     else:
         return 'var_vals(var_val(const({}), const({}), var(ground)), {})'.format(RULE_ID_SYMBOL, VARIABLE_SYMBOL, generate_var_vals_declaration(n-1))
+    
+def generate_var_vals_declarations(symbols, arity):
+    if len(symbols) < arity or arity < 0: return []
+    ls = ['const({})'.format(VAR_VALS_END_SYMBOL)] if arity == 0 else []
+    for i in range(len(symbols)):
+        subs = generate_var_vals_declarations(symbols[i + 1:], arity-1)
+        for j in subs:
+            ls.append('var_vals(var_val(const({}), const({}), var(ground)), {})'.format(RULE_ID_SYMBOL, symbols[i], j))
+    return ls
+    
 # ------------------------------------------------------------------------------
 #  Encoder
 

@@ -12,23 +12,33 @@ def parseLiteral(rule_id, literal):
         elif is_lt_literal(literal): token = Built_in_type.LT
         elif is_le_literal(literal): token = Built_in_type.LE
 
-        split = literal.split(token)
-        front = trim_front_back_whitespace(split[0])
-        back = trim_front_back_whitespace(split[1])
-        args = [front, back]
+        args = get_arguments(literal, token)
         variables = [x for x in args if is_variable(x)]
         constants = [x for x in args if x not in variables]
         return ProcessingLiteral(rule_id, literal, args), constants, variables
     else:
-        split = literal.replace(')', '').split('(')
-        if len(split) == 1:
-            return ProcessingLiteral(rule_id, split[0].strip(), []), [], []
-        else:
-            args = [arg.replace(' ', '') for arg in split[1].split(',')]
-            variables = [x for x in args if is_variable(x)]
-            constants = [x for x in args if x not in variables]
+        if '(' not in literal:
+            return literal
+        
+        args = get_arguments(literal)
+        parsed_args = [parseLiteral(rule_id, x) for x in args]
+        final_args = []
+        variables = []
+        constants = []
+        
+        for each in parsed_args:
+            if isinstance(each, str):
+                final_args.append(each)
+                if is_variable(each):
+                    variables.append(each)
+                else:
+                    constants.append(each)
+            else:
+                final_args.append(each[0])
+                constants += each[1]
+                variables += each[2]
 
-            return ProcessingLiteral(rule_id, literal, args), constants, variables
+        return ProcessingLiteral(rule_id, literal, final_args), constants, variables
 
 def parseRule(rule_text, index):
     rule_id = 'r' + str(index + 1)
@@ -38,8 +48,8 @@ def parseRule(rule_text, index):
     
     constants = []
     variables = []
-    
-    head_processing_literal, head_constants, head_variables = parseLiteral(rule_id, head_text)
+
+    head_processing_literal, head_constants, head_variables = (None, [], []) if len(head_text) == 0 else parseLiteral(rule_id, head_text)
     
     constants = merge_stacks(constants, head_constants)
     variables = merge_stacks(variables, head_variables)
@@ -54,13 +64,19 @@ def parseRule(rule_text, index):
             variables = merge_stacks(variables, body_variables)
             
     var_dict = {}
-    for arg in head_processing_literal.args:
-        var_dict[arg] = VARIABLE_POOL[len(var_dict)]
     
-    for each in body_processing_literals:
-        for arg in each.args:
-            if not arg in var_dict.keys():
-                var_dict[arg] = VARIABLE_POOL[len(var_dict)]
+    for each in variables + constants:
+        var_dict[each] = VARIABLE_POOL[len(var_dict)]
+                
+    # if head_processing_literal is not None:
+    #     for arg in head_processing_literal.args:
+    #         if not isinstance(arg, ProcessingLiteral):
+    #             var_dict[arg] = VARIABLE_POOL[len(var_dict)]
+    
+    # for each in body_processing_literals:
+    #     for arg in each.args:
+    #         if not arg in var_dict.keys() and not isinstance(arg, ProcessingLiteral):
+    #             var_dict[arg] = VARIABLE_POOL[len(var_dict)]
     # print(constants)
     # print(variables)
     # print(var_dict)

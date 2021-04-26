@@ -46,6 +46,16 @@ def join(literals):
     strings = (map(lambda x: x.__str__(), literals))
     return ', '.join(strings)
 
+def flatten_args(args):
+    final_args = []
+    for each in args:
+        if isinstance(each, ProcessingLiteral):
+            final_args += sum([flatten_args(x) for x in each.args], [])
+        else:
+            assert_type(each, str)
+            final_args.append(each)
+    return final_args
+
 def get_arguments(literal, built_in_type=None): 
     args = []
     if built_in_type is not None:
@@ -60,7 +70,7 @@ def get_arguments(literal, built_in_type=None):
         
         while j < len(rem):
             if rem[j] == ',' and len(stack) == 0:
-                args.append(rem[i:j])
+                args.append(trim_front_back_whitespace(rem[i:j]))
                 j += 1
                 i = j
             elif rem[j] == '(':
@@ -74,8 +84,8 @@ def get_arguments(literal, built_in_type=None):
             else:
                 j += 1
         
-        args.append(rem[i:j])
-
+        if i != j:
+            args.append(trim_front_back_whitespace(rem[i:j]))
     return args        
 
 def get_name_count_arity(literal):

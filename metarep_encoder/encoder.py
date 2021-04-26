@@ -118,6 +118,7 @@ def generateLiteral(literal):
         return trim_front_back_whitespace(literal)
     
 def generateLiteralRule(rule_id, literal, args, var_dict, index = None):
+    args = flatten_args(args)
     dict_pairs = sorted([(var_dict[x], x) for x in var_dict if x in args])
     if index == None:
         head = Literal_head(rule_id, generateLiteral(literal), generateVarVals(rule_id, dict_pairs))
@@ -154,16 +155,18 @@ def generateProgramRules(processed_rules):
     rules = []
     for rule in processed_rules:
         rule_id = Rule([Literal_rule(rule.rule_id)], [])
-        head_rule = generateLiteralRule(rule.rule_id, rule.head.literal, list(rule.var_dict.keys()), rule.var_dict)
+        head_rule = None if rule.head is None else generateLiteralRule(rule.rule_id, rule.head.literal, list(rule.var_dict.keys()), rule.var_dict)
         body_rules = [generateLiteralRule(rule.rule_id, x.literal, x.args, rule.var_dict, str(i+1)) for i, x in enumerate(rule.body)]
         
         rules.append(rule_id)
-        rules.append(head_rule)
+        if head_rule is not None:
+            rules.append(head_rule)
         rules = rules + body_rules
         
-        head_name, head_arity = get_name_count_arity(head_rule.head[0].literal)
-        if head_name not in modeh_literals:
-            modeh_literals[head_name] = head_arity
+        if head_rule is not None:
+            head_name, head_arity = get_name_count_arity(head_rule.head[0].literal)
+            if head_name not in modeh_literals:
+                modeh_literals[head_name] = head_arity
 
         for each in body_rules:
             if each.built_in_type is not None: 

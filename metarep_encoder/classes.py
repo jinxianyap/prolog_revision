@@ -19,6 +19,7 @@ class Rule:
         else:
             return rule
     def make_revisable(self, rev_id, rev_vars=None):
+        if self.built_in_type is not None: return
         self.revisable = True
         assert_type(rev_id, str)
         self.rev_id = rev_id

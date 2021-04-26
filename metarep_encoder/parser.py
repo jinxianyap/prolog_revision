@@ -3,8 +3,16 @@ from metarep_encoder.helper import *
 
 def parseLiteral(rule_id, literal):
     literal = trim_front_back_whitespace(literal)
-    if is_eq_literal(literal) or is_neq_literal(literal):
-        split = literal.split('!=' if '!=' in literal else '=')
+    if is_comparator_literal(literal):
+        token = ''
+        if is_eq_literal(literal): token = Built_in_type.EQ
+        elif is_neq_literal(literal): token = Built_in_type.NEQ
+        elif is_gt_literal(literal): token = Built_in_type.GT
+        elif is_ge_literal(literal): token = Built_in_type.GE
+        elif is_lt_literal(literal): token = Built_in_type.LT
+        elif is_le_literal(literal): token = Built_in_type.LE
+
+        split = literal.split(token)
         front = trim_front_back_whitespace(split[0])
         back = trim_front_back_whitespace(split[1])
         args = [front, back]
@@ -47,12 +55,12 @@ def parseRule(rule_text, index):
             
     var_dict = {}
     for arg in head_processing_literal.args:
-        var_dict[arg] = variable_pool[len(var_dict)]
+        var_dict[arg] = VARIABLE_POOL[len(var_dict)]
     
     for each in body_processing_literals:
         for arg in each.args:
             if not arg in var_dict.keys():
-                var_dict[arg] = variable_pool[len(var_dict)]
+                var_dict[arg] = VARIABLE_POOL[len(var_dict)]
     # print(constants)
     # print(variables)
     # print(var_dict)

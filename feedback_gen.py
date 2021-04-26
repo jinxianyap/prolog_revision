@@ -17,8 +17,8 @@ def main(argv):
     rule_mapping, score = generate_mapping(correct_program, user_program)
     print('Similarity score: %s' % str(score))
     errors, answer_set = find_erroneous_rules(rule_mapping)
-    
-    if str(score) == '1.000' and len(errors) == 0:
+
+    if str(score) == '1.000' or len(errors) == 0:
         print('User program gives expected results. No revision needed.')
         return
     

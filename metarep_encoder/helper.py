@@ -86,6 +86,15 @@ def assign_built_in_type(rule, literal):
         rule.built_in_type = Built_in_type.EQ
     elif is_neq_literal(literal):
         rule.built_in_type = Built_in_type.NEQ
+    elif is_gt_literal(literal):
+        rule.built_in_type = Built_in_type.GT
+    elif is_ge_literal(literal):
+        rule.built_in_type = Built_in_type.GE
+    elif is_lt_literal(literal):
+        rule.built_in_type = Built_in_type.LT
+    elif is_le_literal(literal):
+        rule.built_in_type = Built_in_type.LE
+    
 
 # ------------------------------------------------------------------------------
 #  Built-in predicates
@@ -93,12 +102,34 @@ def assign_built_in_type(rule, literal):
 class Built_in_type:
     EQ = '='
     NEQ = '!='
+    GT = '>'
+    LT = '<'
+    LE = '<='
+    GE = '>='
+
+def is_comparator_literal(literal):
+    return is_eq_literal(literal) or is_neq_literal(literal) or \
+        is_gt_literal(literal) or is_ge_literal(literal) or \
+        is_lt_literal(literal) or is_le_literal(literal)
 
 def is_eq_literal(literal):
-    return '=' in literal and '!=' not in literal
+    return '=' in literal and not is_neq_literal(literal) and \
+        not is_ge_literal(literal) and not is_le_literal(literal)
 
 def is_neq_literal(literal):
     return '!=' in literal
+
+def is_gt_literal(literal):
+    return '>' in literal and '>=' not in literal
+
+def is_ge_literal(literal):
+    return '>=' in literal
+
+def is_lt_literal(literal):
+    return '<' in literal and '<=' not in literal
+
+def is_le_literal(literal):
+    return '<=' in literal
 
 # ------------------------------------------------------------------------------
 #  Parser
@@ -125,13 +156,29 @@ class ProcessingRule:
     def __str__(self):
         return 'ProcessingRule(' + join([self.rule_id, self.head, list(map(lambda x: x.__str__(), self.body)), self.constants, self.variables, self.var_dict]) + ')'
 
-variable_pool = ['var_x', 'var_y', 'var_z', 'var_p', 'var_q', 'var_r', 'var_s']
+VARIABLE_POOL = ['var_1', 'var_2', 'var_3', 'var_4', 'var_5', 'var_6', 'var_7']
 
 def is_variable(text):
     return text[0].isupper()
 
 def split_conjunction(text):
-    return text.replace('),', ')*').split('* ')
+    body = []
+    stack = []
+    i = 0
+    j = 0
+    
+    for j in range(len(text)):
+        if text[j] == '(':
+            stack.append(text[j])
+        elif text[j] == ')':
+            stack.pop()
+        elif text[j] == ',' and len(stack) == 0:
+            body.append(trim_front_back_whitespace(text[i:j]))
+            i = j + 1
+       
+    body.append(trim_front_back_whitespace(text[i:j+1]))
+    
+    return body
 
 def merge_stacks(a, b):
     # merges b into a

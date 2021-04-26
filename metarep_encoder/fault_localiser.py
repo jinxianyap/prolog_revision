@@ -1,4 +1,4 @@
-import os
+import subprocess
 from metarep_encoder.encoder import *
 
 class DerivableFact:
@@ -57,8 +57,11 @@ def transform(ori, mapping=None):
     return DerivableFact(rule_id, literal, variables_to_dict(variables), ori_str)    
 
 def get_answer_set(filename, mapping=None):
-    stream = os.popen('clingo ' + filename)
-    output = stream.read()
+    # stream = os.popen('clingo ' + filename)
+    # output = stream.read()
+    result = subprocess.run(['clingo', filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = result.stdout
+    output = output.decode('UTF-8').rstrip()
     lines = output.split('\n')[4].split(' ')
     meta_answer_set = []
     answer_set = []
@@ -94,7 +97,12 @@ def identify_discrepancies(map_a, map_b, index):
 
 def find_erroneous_rules(mapping):
     meta_correct, correct = get_answer_set('correct.las', mapping)
+    print('Generated AS for correct program.')
     meta_user, user = get_answer_set("user.las")
+    print('Generated AS for user program.')
+    
+    print(correct)
+    print(user)
     
     # Semantic checking
     correct_excluded = [x for x in correct if x not in user]

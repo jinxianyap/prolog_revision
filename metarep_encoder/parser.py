@@ -3,7 +3,8 @@ from metarep_encoder.helper import *
 
 def parseLiteral(rule_id, literal):
     literal = trim_front_back_whitespace(literal)
-    if is_comparator_literal(literal):
+    print(literal, is_arithmetic_literal(literal))
+    if is_arithmetic_literal(literal):
         token = ''
         if is_eq_literal(literal): token = Built_in_type.EQ
         elif is_neq_literal(literal): token = Built_in_type.NEQ
@@ -11,11 +12,33 @@ def parseLiteral(rule_id, literal):
         elif is_ge_literal(literal): token = Built_in_type.GE
         elif is_lt_literal(literal): token = Built_in_type.LT
         elif is_le_literal(literal): token = Built_in_type.LE
+        elif is_plus_literal(literal): token = Built_in_type.PLUS
+        elif is_minus_literal(literal): token = Built_in_type.MINUS
+        elif is_mult_literal(literal): token = Built_in_type.MULT
 
         args = get_arguments(literal, token)
-        variables = [x for x in args if is_variable(x)]
-        constants = [x for x in args if x not in variables]
-        return ProcessingLiteral(rule_id, literal, args), constants, variables
+        parsed_args = [parseLiteral(rule_id, x) for x in args]
+        final_args = []
+        variables = []
+        constants = []
+        
+        for each in parsed_args:
+            if isinstance(each, str):
+                final_args.append(each)
+                if is_variable(each):
+                    variables.append(each)
+                else:
+                    constants.append(each)
+            else:
+                final_args.append(each[0])
+                constants += each[1]
+                variables += each[2]
+        # variables = [x for x in args if is_variable(x)]
+        # constants = [x for x in args if x not in variables]
+        print(literal, final_args)
+        for each in final_args:
+            print(each)
+        return ProcessingLiteral(rule_id, literal, final_args), constants, variables
     else:
         if '(' not in literal:
             return literal
@@ -89,8 +112,8 @@ def parseText(text):
         if len(rules[i]) > 0:
             processed.append(parseRule(rules[i], i))
 
-    # for each in processed:
-    #     print(each)
+    for each in processed:
+        print(each)
     
     return processed    
     

@@ -242,6 +242,96 @@ class LELiteral(Literal):
             differences += 1
               
         return similarity, differences
+
+class PlusLiteral(Literal):
+    def __init__(self, lhs, rhs, literal=False):
+        assert_type(lhs, str)
+        assert_type(rhs, str)
+        self.lhs = lhs
+        self.rhs = rhs
+        self.literal = literal
+    def __repr__(self):
+        return 'PlusLiteral()'
+    def __str__(self):
+        return self.get_rep() if self.literal else 'plusLiteral({}, {})'.format(self.lhs, self.rhs.__str__())
+    def get_rep(self):
+        return self.lhs + ' + ' + self.rhs
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if not isinstance(other, PlusLiteral):
+            return similarity, differences + 1
+        
+        if self.lhs == other.lhs:
+            similarity += 1
+        else:
+            differences += 1
+        if self.rhs == other.rhs:
+            similarity += 1
+        else:
+            differences += 1
+              
+        return similarity, differences
+    
+class MinusLiteral(Literal):
+    def __init__(self, lhs, rhs, literal=False):
+        assert_type(lhs, str)
+        assert_type(rhs, str)
+        self.lhs = lhs
+        self.rhs = rhs
+        self.literal = literal
+    def __repr__(self):
+        return 'MinusLiteral()'
+    def __str__(self):
+        return self.get_rep() if self.literal else 'minusLiteral({}, {})'.format(self.lhs, self.rhs.__str__())
+    def get_rep(self):
+        return self.lhs + ' - ' + self.rhs
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if not isinstance(other, MinusLiteral):
+            return similarity, differences + 1
+        
+        if self.lhs == other.lhs:
+            similarity += 1
+        else:
+            differences += 1
+        if self.rhs == other.rhs:
+            similarity += 1
+        else:
+            differences += 1
+              
+        return similarity, differences
+    
+class MultLiteral(Literal):
+    def __init__(self, lhs, rhs, literal=False):
+        assert_type(lhs, str)
+        assert_type(rhs, str)
+        self.lhs = lhs
+        self.rhs = rhs
+        self.literal = literal
+    def __repr__(self):
+        return 'MultLiteral()'
+    def __str__(self):
+        return self.get_rep() if self.literal else 'multLiteral({}, {})'.format(self.lhs, self.rhs.__str__())
+    def get_rep(self):
+        return self.lhs + ' * ' + self.rhs
+    def compare_to(self, other):
+        similarity = 0
+        differences = 0
+        if not isinstance(other, MultLiteral):
+            return similarity, differences + 1
+        
+        if self.lhs == other.lhs:
+            similarity += 1
+        else:
+            differences += 1
+        if self.rhs == other.rhs:
+            similarity += 1
+        else:
+            differences += 1
+              
+        return similarity, differences
     
 class NotLiteral(Literal):
     def __init__(self, literal):

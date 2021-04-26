@@ -84,7 +84,7 @@ def get_arguments(literal, built_in_type=None):
             else:
                 j += 1
         
-        if i != j:
+        if i != j and not rem[i:j].isspace():
             args.append(trim_front_back_whitespace(rem[i:j]))
     return args        
 
@@ -104,6 +104,12 @@ def assign_built_in_type(rule, literal):
         rule.built_in_type = Built_in_type.LT
     elif is_le_literal(literal):
         rule.built_in_type = Built_in_type.LE
+    elif is_plus_literal(literal):
+        rule.built_in_type = Built_in_type.PLUS
+    elif is_minus_literal(literal):
+        rule.built_in_type = Built_in_type.MINUS
+    elif is_mult_literal(literal):
+        rule.built_in_type = Built_in_type.MULT
     
 
 # ------------------------------------------------------------------------------
@@ -116,11 +122,16 @@ class Built_in_type:
     LT = '<'
     LE = '<='
     GE = '>='
+    PLUS = '+'
+    MINUS = '-'
+    MULT = '*'
 
-def is_comparator_literal(literal):
+def is_arithmetic_literal(literal):
     return is_eq_literal(literal) or is_neq_literal(literal) or \
         is_gt_literal(literal) or is_ge_literal(literal) or \
-        is_lt_literal(literal) or is_le_literal(literal)
+        is_lt_literal(literal) or is_le_literal(literal) or \
+        is_plus_literal(literal) or is_minus_literal(literal) or \
+        is_mult_literal(literal)
 
 def is_eq_literal(literal):
     return '=' in literal and not is_neq_literal(literal) and \
@@ -140,6 +151,15 @@ def is_lt_literal(literal):
 
 def is_le_literal(literal):
     return '<=' in literal
+
+def is_plus_literal(literal):
+    return '+' in literal
+
+def is_minus_literal(literal):
+    return '-' in literal
+
+def is_mult_literal(literal):
+    return '*' in literal
 
 # ------------------------------------------------------------------------------
 #  Parser

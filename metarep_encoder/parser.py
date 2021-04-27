@@ -3,7 +3,7 @@ from metarep_encoder.helper import *
 
 def parseLiteral(rule_id, literal):
     literal = trim_front_back_whitespace(literal)
-    print(literal, is_arithmetic_literal(literal))
+
     if is_arithmetic_literal(literal):
         token = ''
         if is_eq_literal(literal): token = Built_in_type.EQ
@@ -37,7 +37,7 @@ def parseLiteral(rule_id, literal):
         # constants = [x for x in args if x not in variables]
         print(literal, final_args)
         for each in final_args:
-            print(each)
+            print(each, type(each))
         return ProcessingLiteral(rule_id, literal, final_args), constants, variables
     else:
         if '(' not in literal:

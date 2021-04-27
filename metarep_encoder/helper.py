@@ -1,3 +1,4 @@
+import re
 from metarep_encoder.messages import *
 
 def find_incorrect_arities(correct, user):
@@ -127,6 +128,9 @@ class Built_in_type:
     MULT = '*'
 
 def is_arithmetic_literal(literal):
+    matches = re.findall('^[A-Za-z0-9_]+\(.*\)$', literal)
+    if len(matches) > 0:
+        return False
     return is_eq_literal(literal) or is_neq_literal(literal) or \
         is_gt_literal(literal) or is_ge_literal(literal) or \
         is_lt_literal(literal) or is_le_literal(literal) or \

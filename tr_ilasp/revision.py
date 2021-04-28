@@ -1,9 +1,9 @@
 import argparse
 import subprocess
 
-from predicateTree import print_tree, build_tree, build_predicate, build_modeh_from_tree, build_tree_from_modeh, \
+from tr_ilasp.predicateTree import print_tree, build_tree, build_predicate, build_modeh_from_tree, build_tree_from_modeh, \
     generate_possible_head_from_tree, compareTrees
-from utils import split_literals, type_error, concat_literal, check_paren_literal, paren_error, fullstop_error, \
+from tr_ilasp.utils import split_literals, type_error, concat_literal, check_paren_literal, paren_error, fullstop_error, \
     variable_literals, build_inverse_dict
 
 
@@ -212,6 +212,7 @@ def parse_revisable_theories(revisable_theory_str, possible_head_list, disjunct_
         if revise_type == "disjunctive":
             for modeh in disjunct_modeh_general:
                 root = build_tree_from_modeh(modeh.split("#modeh(")[1].strip()[:-2])
+                # modified by jx
                 # print_tree(root)
                 inverse_dict = build_inverse_dict(type_dict)
                 # print(type_dict)
@@ -422,7 +423,7 @@ def possible_head_generate(id2literal, revisable_theories, output_file):
         for rule in max_head_choice_rules:
             output_file.write(rule)
 
-
+# modified by jx
 def try_and_extend_literals_generation(extend_literals, rule, try_literals, custom=False):
     for try_literal in try_literals:
         try_literal = try_literal.replace('try', 'delete').replace(', ground(X)', '') if custom else try_literal
@@ -815,12 +816,10 @@ def print_result(revisable_theories):
     variable_set = set()
     for theory in revisable_theories.values():
         buffer = ""
-        # print_tree(theory.head['pbl_r6_1_mammal_X_var_vals_var_val_r6_var_1_X_end'])
         for h in theory.head.values():
             buffer += "{}; ".format(build_predicate(h))
             variable_set = variable_set.union(extract_variables(h))
         buffer = buffer[:-2] + " :-\n"
-        # print_tree(theory.body['ground_X'])
         for b in theory.body.values():
             predicate = build_predicate(b)
             buffer += "\t{},\n".format(predicate)
@@ -851,6 +850,64 @@ def print_result(revisable_theories):
             buffer = buffer.strip()[:-1] + "."
         print(buffer)
 
+# modified by jx
+def revise_program(file_name):
+    global solver
+    global arbitrary_index
+    global revise_type
+    global max_head
+    global no_constraint
+    
+    solver = 'ILASP'
+    arbitrary_index = 1
+    revise_type = 'disjunctive'
+    max_head = -1
+    no_constraint = None
+    
+    try:
+        input_file = open(file_name, "r")
+    except IOError:
+        print("The file does not exist!")
+        print("Terminating...")
+        exit()
+    lines = read_file(input_file)
+    output_file, revisable_theory_str, possible_head_list, disjunct_modeh_general, disjunct_modeh_rule, constant_str = \
+        write_to_workfile(lines)
+
+    # Parsing revision rule
+    revisable_theories = parse_revisable_theories(revisable_theory_str, possible_head_list, disjunct_modeh_general,
+                                                  disjunct_modeh_rule, constant_str)
+    # Generate extension and deletion
+    generate_revision(revisable_theories, output_file)
+    
+    input_file.close()
+    output_file.close()
+
+    # solver
+    print("Running solver...")
+    temp_file_name = "temp.txt"
+
+    subprocess.call("rm " + temp_file_name, shell=True)
+
+    version = 4
+    subprocess.call(solver + " --version=" + str(version) + " --strict-types -q workfile.las > " + temp_file_name,
+                        shell=True,
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    temp_file = open(temp_file_name, "r")
+    solver_result = read_file(temp_file)
+    if len(solver_result) == 0 or solver_result[0].startswith("UNSATISFIABLE"):
+        print("The theory is unsatisfiable\nExiting...")
+        exit()
+    temp_file.close()
+
+    # Revise according to solver result
+    revise(solver_result, revisable_theories)
+    
+    # Print result
+    print_result(revisable_theories)
+    
+    return revisable_theories
 
 def main():
     global solver
@@ -938,9 +995,21 @@ def main():
 
     # Revise according to solver result
     revise(solver_result, revisable_theories)
-
+    
+    # modified by jx
+    # print(revisable_theories['rev1'].head)
+    # print(revisable_theories['rev1'].body)
+    # print(revisable_theories['rev1'].types)
+    # print(revisable_theories['rev1'].ground_literals_set)
+    # print(revisable_theories['rev1'].possible_head)
+    # print(revisable_theories['rev1'].mode_variable_rep)
+    # print(revisable_theories['rev1'].variable_rep)
+    # print(revisable_theories['rev1'].ground_literals_rep)
+    # print(revisable_theories['rev1'].union_variables_dict)
     # Print result
     print_result(revisable_theories)
+    # modified by jx
+    return revisable_theories
 
 
 if __name__ == "__main__":

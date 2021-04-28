@@ -14,15 +14,15 @@ def main(argv):
         print('Literals used with incorrect number of variables. Please refer to the correct arities: {}.'.format(incorrect_arities))
         return incorrect_arities
         
-    rule_mapping, score = generate_mapping(correct_program, user_program)
+    rule_mapping, score, correct_rules_grouped, user_rules_grouped = generate_mapping(correct_program, user_program)
     print('Similarity score: %s' % str(score))
-    errors, answer_set = find_erroneous_rules(rule_mapping)
-
+    errors, revisions_data, answer_set = find_erroneous_rules(rule_mapping, correct_rules_grouped, user_rules_grouped)
+    
     if str(score) == '1.000' or len(errors) == 0:
         print('User program gives expected results. No revision needed.')
         return
     
-    revisable = generate_declarations(errors, answer_set, correct_body_literals, correct_rule_ids, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_variables, user_ground_constants, user_program)
+    revisable = generate_declarations(errors, revisions_data, answer_set, correct_body_literals, correct_rule_ids, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_variables, user_ground_constants, user_program)
     
     revisable = static_rules + revisable
     

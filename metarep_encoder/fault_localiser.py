@@ -95,14 +95,46 @@ def identify_discrepancies(map_a, map_b, index):
     
     return set_a, set_b
 
-def find_erroneous_rules(mapping):
+def identify_rule_discrepancies(rule_a, rule_b):
+    # also enforces ordering of literals
+    # position number of literals
+    to_revise = []
+    # literal names to use in modehs
+    potential_revision = []
+    i = 0
+    
+    while i < max(len(rule_a), len(rule_b)):
+        # head_a = rule_a[i].head[0]
+        # head_b = rule_b[i].head[0]
+        if i >= len(rule_b) and not isinstance(rule_a[i].head[0], Literal_head):
+            potential_revision.append(rule_a[i].head[0].literal.split('(', maxsplit=1))
+        elif i >= len(rule_a) and not isinstance(rule_b[i].head[0], Literal_head):
+            to_revise.append(rule_b[i].head[0].index)
+        else:
+            head_a = rule_a[i].head[0]
+            head_b = rule_b[i].head[0]
+            
+            if isinstance(head_a, Literal_head) or isinstance(head_b, Literal_head):
+                i += 1
+                continue
+            else:
+                sim, diff = head_a.compare_to(head_b)
+                if diff > 0:
+                    # assume these are pbls/nbls
+                    to_revise.append(head_b.index)
+                    potential_revision.append(head_a.literal.name)
+        i += 1
+    
+    return (to_revise, potential_revision)
+
+def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
     meta_correct, correct = get_answer_set('correct.las', mapping)
     print('Generated AS for correct program.')
     meta_user, user = get_answer_set("user.las")
     print('Generated AS for user program.')
-    
-    print(correct)
-    print(user)
+    print('.\n.\n.')
+    # print(correct)
+    # print(user)
     
     # Semantic checking
     correct_excluded = [x for x in correct if x not in user]
@@ -118,16 +150,19 @@ def find_erroneous_rules(mapping):
     grouped_correct = group_by_rule_id(meta_correct)
     grouped_user = group_by_rule_id(meta_user)
 
-    discrepancies = {}
+    AS_discrepancies = {}
+    revisions_data = {}
+    
     for each in grouped_correct.keys():
         rem_correct, rem_user = identify_discrepancies(grouped_correct, grouped_user, each)  
         if len(rem_correct) > 0 or len(rem_user) > 0:
-            discrepancies[each] = (rem_correct, rem_user)
+            AS_discrepancies[each] = (rem_correct, rem_user)
             print('Consider modifying rule {}:'.format(each))
             print('-- {} positive example(s) not covered: {}'.format(len(rem_correct), '  '.join([x.__str__() for x in rem_correct])))
             print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
+            revisions_data[each] = identify_rule_discrepancies(correct_rules_grouped[mapping[each]], user_rules_grouped[each])
 
-    return discrepancies, meta_correct
+    return AS_discrepancies, revisions_data, meta_correct
 
 # def main():
 #     find_erroneous_rules()

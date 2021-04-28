@@ -77,6 +77,7 @@ def assign_similarity(a, b):
 
 def identify_rules(program):
     rule_start = {}
+    grouped_rules = {}
     curr_rule = None
     for i in range(len(program)):
         rule = program[i].head[0]
@@ -88,26 +89,31 @@ def identify_rules(program):
             isinstance(rule, Literal_nbl)) and \
             curr_rule is not None:
             ori = rule_start[curr_rule]
-            rule_start[curr_rule] = (ori[0], i)
-    return rule_start
+            rule_start[curr_rule] = (ori[0], i+1)
+            
+    for each in rule_start:
+        (start, end) = rule_start[each]
+        grouped_rules[each] = program[start:end]
+        
+    return rule_start, grouped_rules
 
 def generate_similarity_matrix(correct, user):
     matrix = {}
-    correct_rules = identify_rules(correct)
-    user_rules = identify_rules(user)
+    correct_rules, correct_rules_grouped = identify_rules(correct)
+    user_rules, user_rules_grouped = identify_rules(user)
     
     for i in correct_rules:
         inner = {}
         for j in user_rules:
             c_i = correct_rules[i]
             u_i = user_rules[j]
-            inner[j] = assign_similarity(correct[c_i[0]:c_i[1]+1], user[u_i[0]:u_i[1]+1])
+            inner[j] = assign_similarity(correct[c_i[0]:c_i[1]], user[u_i[0]:u_i[1]])
         matrix[i] = inner
         
-    return matrix
+    return matrix, correct_rules_grouped, user_rules_grouped
 
 def generate_mapping(correct, user):
-    matrix = generate_similarity_matrix(correct, user)
+    matrix, correct_rules_grouped, user_rules_grouped = generate_similarity_matrix(correct, user)
     final_matrix = {}
     mappings = {}
     total_sim = 0
@@ -128,5 +134,5 @@ def generate_mapping(correct, user):
         total_diff += diff
         
     score = '%.3f' % (total_sim / (total_sim + total_diff))
-    return mappings, score
+    return mappings, score, correct_rules_grouped, user_rules_grouped
             

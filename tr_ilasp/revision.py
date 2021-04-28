@@ -373,6 +373,7 @@ def possible_head_generate(id2literal, revisable_theories, output_file):
         empty_head_rules.append(rule)
 
         rule = ":- {},\n".format(empty_head)
+        # modified by jx
         rule = try_and_extend_literals_generation(extend_literals, rule, try_literals, True)
         empty_head_rules.append(rule)
 
@@ -422,9 +423,9 @@ def possible_head_generate(id2literal, revisable_theories, output_file):
             output_file.write(rule)
 
 
-def try_and_extend_literals_generation(extend_literals, rule, try_literals, hehe=False):
+def try_and_extend_literals_generation(extend_literals, rule, try_literals, custom=False):
     for try_literal in try_literals:
-        try_literal = try_literal.replace('try', 'delete').replace(', ground(X)', '') if hehe else try_literal
+        try_literal = try_literal.replace('try', 'delete').replace(', ground(X)', '') if custom else try_literal
         rule += "\t{},\n".format(try_literal)
     for extend_literal in extend_literals:
         rule += "\t{},\n".format(extend_literal)
@@ -814,11 +815,12 @@ def print_result(revisable_theories):
     variable_set = set()
     for theory in revisable_theories.values():
         buffer = ""
+        # print_tree(theory.head['pbl_r6_1_mammal_X_var_vals_var_val_r6_var_1_X_end'])
         for h in theory.head.values():
             buffer += "{}; ".format(build_predicate(h))
             variable_set = variable_set.union(extract_variables(h))
         buffer = buffer[:-2] + " :-\n"
-
+        # print_tree(theory.body['ground_X'])
         for b in theory.body.values():
             predicate = build_predicate(b)
             buffer += "\t{},\n".format(predicate)

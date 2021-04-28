@@ -112,8 +112,8 @@ def parseText(text):
         if len(rules[i]) > 0:
             processed.append(parseRule(rules[i], i))
 
-    for each in processed:
-        print(each)
+    # for each in processed:
+    #     print(each)
     
     return processed    
     

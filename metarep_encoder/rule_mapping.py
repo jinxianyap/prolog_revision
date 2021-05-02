@@ -3,31 +3,29 @@ from metarep_encoder.helper import *
 # DECAY = 0.8
 
 def compare_terms(a, b):
-    similarity = 0
-    differences = 0
-    if isinstance(a, str) and isinstance(b, str):
-        similarity += 1
-        if is_variable(a) and is_variable(b):
-            similarity += 1
-            if a == b: 
-                similarity += 1
-            else:
-                differences += 1
-        elif not is_variable(a) and not is_variable(b):
-            similarity += 1
-            if a == b: 
-                similarity += 1
-            else:
-                differences += 1
-        else:
-            differences += 1
-    elif isinstance(a, Literal) and isinstance(b, Literal):
+    # similarity = 0
+    # differences = 0
+    # if isinstance(a, str) and isinstance(b, str):
+    #     similarity += 1
+    #     if is_variable(a) and is_variable(b):
+    #         similarity += 1
+    #         if a == b: 
+    #             similarity += 1
+    #         else:
+    #             differences += 1
+    #     elif not is_variable(a) and not is_variable(b):
+    #         similarity += 1
+    #         if a == b: 
+    #             similarity += 1
+    #         else:
+    #             differences += 1
+    #     else:
+    #         differences += 1
+    if isinstance(a, Literal) and isinstance(b, Literal):
         sim, diff = a.compare_to(b)
-        similarity += sim
-        differences += diff       
+        return sim, diff     
     else:
-        differences += 1   
-    return similarity, differences
+        return 0, 1
 
 def compare_rules(a, b):
     similarity = 0
@@ -97,24 +95,24 @@ def identify_rules(program):
         
     return rule_start, grouped_rules
 
-def generate_similarity_matrix(correct, user):
+def generate_similarity_matrix(correct, correct_indexes, user, user_indexes):
     matrix = {}
-    correct_rules, correct_rules_grouped = identify_rules(correct)
-    user_rules, user_rules_grouped = identify_rules(user)
-    
-    for i in correct_rules:
+
+    for i in correct_indexes:
         inner = {}
-        for j in user_rules:
-            c_i = correct_rules[i]
-            u_i = user_rules[j]
+        for j in user_indexes:
+            c_i = correct_indexes[i]
+            u_i = user_indexes[j]
             inner[j] = assign_similarity(correct[c_i[0]:c_i[1]], user[u_i[0]:u_i[1]])
         matrix[i] = inner
         
-    return matrix, correct_rules_grouped, user_rules_grouped
+    return matrix
 
 def generate_mapping(correct, user):
-    matrix, correct_rules_grouped, user_rules_grouped = generate_similarity_matrix(correct, user)
-    final_matrix = {}
+    correct_indexes, correct_rules_grouped = identify_rules(correct)
+    user_indexes, user_rules_grouped = identify_rules(user)
+    
+    matrix = generate_similarity_matrix(correct, correct_indexes, user, user_indexes)
     mappings = {}
     total_sim = 0
     total_diff = 0

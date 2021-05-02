@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Revision tool</title>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th>Model program filename:</th>
+                <td>{{data['model_program_filename']}}</td>
+            </tr>
+            <tr>
+                <th>Model program:</th>
+                <td>
+                    <ul style="list-style-type:none; padding-left:0;">
+                    {% for each in data['model_program'] %}
+                        <li>{{each}}</li> 
+                    {% endfor %}  
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Student program filename:</th>
+                <td>{{data['student_program_filename']}}</td>
+            </tr>
+            <tr>
+                <th>Student program:</th>
+                <td>
+                    <ul style="list-style-type:none; padding-left:0;">
+                    {% for each in data['student_program'] %}
+                        {% if each in data['revisable_rule_ids'] %}
+                            <li style="color:red;">{{data['student_program'][each]}}</li> 
+                        {% else %}
+                            <li>{{data['student_program'][each]}}</li>  
+                        {% endif %}
+                    {% endfor %}  
+                    </ul>
+                </td>
+            </tr>
+            {% if data['success'] %}
+            <tr>
+                <th>Similarity Score:</th>
+                <td>{{data['similarity_score']}}</td>
+            </tr>
+            <tr>
+                <th>Positive examples not covered:</th>
+                <td>
+                    <ul style="list-style-type:none; padding-left:0;">
+                    {% for each in data['positive_examples'] %}
+                        <li>{{each}}</li> 
+                    {% endfor %}  
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Negative examples included:</th>
+                <td>
+                    <ul style="list-style-type:none; padding-left:0;">
+                    {% for each in data['negative_examples'] %}
+                        <li>{{each}}</li> 
+                    {% endfor %}  
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Revisions:</th>
+                <td>
+                    <ul style="list-style-type:none; padding-left:0;">
+                    {% for each in data['revisions'] %}
+                        <li>{{each}}</li> 
+                    {% endfor %}  
+                    </ul>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <th>Message:</th>
+                <td>{{data['message']}}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </body>
+</html>

@@ -97,19 +97,17 @@ def identify_discrepancies(map_a, map_b, index):
 
 def identify_rule_discrepancies(rule_a, rule_b):
     # also enforces ordering of literals
-    # position number of literals
-    to_revise = []
-    # literal names to use in modehs
-    potential_revision = []
+    # position number of literals - literal names to use in modehs
+    to_revise = {}
     i = 0
     
     while i < max(len(rule_a), len(rule_b)):
         # head_a = rule_a[i].head[0]
         # head_b = rule_b[i].head[0]
         if i >= len(rule_b) and not isinstance(rule_a[i].head[0], Literal_head):
-            potential_revision.append(rule_a[i].head[0].literal.split('(', maxsplit=1))
+            to_revise[str(i)] = rule_a[i].head[0].literal
         elif i >= len(rule_a) and not isinstance(rule_b[i].head[0], Literal_head):
-            to_revise.append(rule_b[i].head[0].index)
+            to_revise[rule_b[i].head[0].index] = None
         else:
             head_a = rule_a[i].head[0]
             head_b = rule_b[i].head[0]
@@ -121,11 +119,10 @@ def identify_rule_discrepancies(rule_a, rule_b):
                 sim, diff = head_a.compare_to(head_b)
                 if diff > 0:
                     # assume these are pbls/nbls
-                    to_revise.append(head_b.index)
-                    potential_revision.append(head_a.literal.name)
+                    to_revise[head_b.index] = head_a.literal
         i += 1
     
-    return (to_revise, potential_revision)
+    return to_revise
 
 def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
     meta_correct, correct = get_answer_set('correct.las', mapping)
@@ -162,7 +159,7 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
             print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
             revisions_data[each] = identify_rule_discrepancies(correct_rules_grouped[mapping[each]], user_rules_grouped[each])
 
-    return AS_discrepancies, revisions_data, meta_correct
+    return correct_excluded, user_included, AS_discrepancies, revisions_data, meta_correct
 
 # def main():
 #     find_erroneous_rules()

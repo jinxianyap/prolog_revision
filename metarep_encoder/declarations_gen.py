@@ -75,17 +75,21 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
         revisable_rules[each] = rules_to_revise
         
         if each in revisions_data:
-            modeh_literals = [x.name for x in revisions_data[each].values() if x is not None]
-            for each in modeh_literals:
-                arity = literal_arities[each]
-                literal = each + '(' + join(['var(ground)' for x in range(arity)]) + ')'
+            modeh_literals = [(x[0].name, x[1]) for x in revisions_data[each].values() if x is not None]
+            for x in modeh_literals:
+                literal_name = x[0]
+                is_pbl = x[1]
+                arity = literal_arities[literal_name]
+                literal = literal_name + '(' + join(['var(ground)' for x in range(arity)]) + ')'
                 var_vals = generate_var_vals_declarations(sorted(const_variable_symbols), arity)
                 for vv in var_vals:
                     if vv == 'const({})'.format(VAR_VALS_END_SYMBOL): continue
-                    pbl_string = 'pbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
-                    # nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, var_vals)
-                    modehs.append(Declaration_modeh(pbl_string))
-                    # modehs.append(Declaration_modeh(nbl_string)) 
+                    if is_pbl:
+                        pbl_string = 'pbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
+                        modehs.append(Declaration_modeh(pbl_string))
+                    else:
+                        nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
+                        modehs.append(Declaration_modeh(nbl_string))
                     
     for rule_id in revisions_data:
         for index in revisions_data[rule_id]:
@@ -103,17 +107,6 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
                 revise_counter += 1
                 revisable_rules[rule_id][index] = (rule, True)
                 user_program.append(rule)          
-    
-    # for each in literal_arities:
-    #     arity = literal_arities[each]
-    #     literal = each + '(' + join(['var(ground)' for x in range(arity)]) + ')'
-    #     var_vals = generate_var_vals_declarations(sorted(const_variable_symbols), arity)
-    #     for vv in var_vals:
-    #         if vv == 'const({})'.format(VAR_VALS_END_SYMBOL): continue
-    #         pbl_string = 'pbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
-    #         # nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, var_vals)
-    #         modehs.append(Declaration_modeh(pbl_string))
-    #         # modehs.append(Declaration_modeh(nbl_string))
             
     declarations += modehs
     positive_examples = list(filter(lambda x: filter_example(x, revisable_literals), positive_examples))

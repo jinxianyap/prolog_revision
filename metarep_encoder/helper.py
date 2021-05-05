@@ -7,6 +7,15 @@ def find_incorrect_arities(correct, user):
         if each in correct and user[each] != correct[each]:
             incorrect[each] = correct[each]
     return incorrect
+
+# ------------------------------------------------------------------------------
+#  Fault Localiser
+    
+def get_dict_key(dictionary, value):
+    for each in dictionary:
+        if dictionary[each] == value:
+            return each
+    return None
 # ------------------------------------------------------------------------------
 #  Declarations Generator
 

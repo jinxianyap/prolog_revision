@@ -136,13 +136,17 @@ def interpret_revisions(var_dicts, marked_rules, parsed_revisions):
             if rule_id in parsed_revisions and index in parsed_revisions[rule_id]:
                 revision = parsed_revisions[rule_id][index]
                 translated = [translate_revision_variables(rule_id, var_dicts[rule_id], x) for x in revision]
+                literal = translated[0].literal.__str__()
                 
+                if isinstance(translated[0], Literal_nbl):
+                    literal = 'not ' + literal
+                    
                 if len(translated) == 1:
-                    text = 'Rule: {}, Index: {} - {} with {}.'.format(rule_id, index, 'Extend' if extension else 'Replace', translated[0].literal)
+                    text = 'Rule: {}, Index: {} - {} with \'{}\'.'.format(rule_id, index, 'Extend' if extension else 'Replace', literal)
                     feedback_text.append(text)
                 else:
                     # to be completed
-                    text = 'Rule: {}, Index: {} - Replace with {}.'.format(rule_id, index, translated[0].literal)
+                    text = 'Rule: {}, Index: {} - Replace with \'{}\'.'.format(rule_id, index, literal)
                     feedback_text.append(text)
             else:
                 text = 'Rule: {}, Index: {} - Delete body literal.'.format(rule_id, index)
@@ -154,6 +158,10 @@ def main(argv):
     if output[0] == Output_type.REVISED:
         output_type, correct_excluded, user_included, score, revisable, var_dicts, marked_rules, revisable_rule_ids = output
         revised = revise_program('revisable.las')
+        
+        if revised is None:
+            return Output_type.UNSATISFIABLE, UNSATISFIABLE
+                    
         parsed_revisions = parse_revised_theories(revised)
         feedback_text = interpret_revisions(var_dicts, marked_rules, parsed_revisions)
                 

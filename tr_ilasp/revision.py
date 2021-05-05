@@ -898,7 +898,7 @@ def revise_program(file_name):
     solver_result = read_file(temp_file)
     if len(solver_result) == 0 or solver_result[0].startswith("UNSATISFIABLE"):
         print("The theory is unsatisfiable\nExiting...")
-        exit()
+        return None
     temp_file.close()
 
     # Revise according to solver result

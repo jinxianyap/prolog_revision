@@ -100,8 +100,8 @@ def generate_similarity_matrix(correct, correct_indexes, user, user_indexes):
 
     for i in correct_indexes:
         inner = {}
+        c_i = correct_indexes[i]
         for j in user_indexes:
-            c_i = correct_indexes[i]
             u_i = user_indexes[j]
             inner[j] = assign_similarity(correct[c_i[0]:c_i[1]], user[u_i[0]:u_i[1]])
         matrix[i] = inner

@@ -591,10 +591,10 @@ class Literal_var_val(Literal):
         if type(other) != Literal_var_val:
             return similarity, differences + 1
         
-        if self.rule_id == other.rule_id:
-            similarity += 1
-        else:
-            differences += 1
+        # if self.rule_id == other.rule_id:
+        #     similarity += 1
+        # else:
+        #     differences += 1
         if self.variable == other.variable:
             similarity += 1
         else:

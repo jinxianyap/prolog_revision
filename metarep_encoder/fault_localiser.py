@@ -95,7 +95,7 @@ def identify_discrepancies(map_a, map_b, index):
     
     return set_a, set_b
 
-def identify_rule_discrepancies(rule_a, rule_b):
+def identify_rule_discrepancies(rule_a, rule_b, mapping):
     # also enforces ordering of literals
     # position number of literals - literal names to use in modehs
     to_revise = {}
@@ -119,7 +119,7 @@ def identify_rule_discrepancies(rule_a, rule_b):
                 sim, diff = head_a.compare_to(head_b)
                 if diff > 0:
                     # assume these are pbls/nbls
-                    to_revise[head_b.index] = head_a.literal
+                    to_revise[head_b.index] = (head_a.literal, isinstance(head_a, Literal_pbl))
         i += 1
     
     return to_revise
@@ -144,12 +144,13 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
         [print(x) for x in user_included]
     
     # Syntactic/Declarative checking
+    # remember that meta_correct rule ids have already been mapped!
     grouped_correct = group_by_rule_id(meta_correct)
     grouped_user = group_by_rule_id(meta_user)
 
     AS_discrepancies = {}
     revisions_data = {}
-    
+
     for each in grouped_correct.keys():
         rem_correct, rem_user = identify_discrepancies(grouped_correct, grouped_user, each)  
         if len(rem_correct) > 0 or len(rem_user) > 0:
@@ -157,7 +158,8 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
             print('Consider modifying rule {}:'.format(each))
             print('-- {} positive example(s) not covered: {}'.format(len(rem_correct), '  '.join([x.__str__() for x in rem_correct])))
             print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
-            revisions_data[each] = identify_rule_discrepancies(correct_rules_grouped[mapping[each]], user_rules_grouped[each])
+
+            revisions_data[each] = identify_rule_discrepancies(correct_rules_grouped[get_dict_key(mapping, each)], user_rules_grouped[each], mapping)
 
     return correct_excluded, user_included, AS_discrepancies, revisions_data, meta_correct
 

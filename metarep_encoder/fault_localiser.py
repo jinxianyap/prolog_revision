@@ -130,8 +130,6 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
     meta_user, user = get_answer_set("user.las")
     print('Generated AS for user program.')
     print('.\n.\n.')
-    # print(correct)
-    # print(user)
     
     # Semantic checking
     correct_excluded = [x for x in correct if x not in user]

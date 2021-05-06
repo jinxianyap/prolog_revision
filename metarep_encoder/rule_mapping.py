@@ -122,8 +122,8 @@ def generate_mapping(correct, user):
         index = None
         for entry in matrix[each]:
             sim, diff = matrix[each][entry]
-            if sim - diff > score:
-                score = sim - diff
+            if sim > score:
+                score = sim
                 index = entry 
             
         mappings[each] = index

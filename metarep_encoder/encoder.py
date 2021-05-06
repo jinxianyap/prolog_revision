@@ -195,13 +195,14 @@ def generateProgramRules(processed_rules):
     for j in range(len(rule_ids)):
         if j < len(rule_ids) - 1:
             program.append(Rule([Literal_order(rule_ids[j], rule_ids[j+1])], []))
-            
-    program.append(Rule([Literal_var_num(str(len(var_names) + 1), True)], []))
-    program.append(Rule([Literal_var_max(str(len(var_names) + 1))], []))
+    
+    var_max = len(var_names) + 1
+    program.append(Rule([Literal_var_num(str(var_max), True)], []))
+    program.append(Rule([Literal_var_max(str(var_max))], []))
     
     program = program + [Rule([Literal_variable_list(x)], []) for x in generateVariableListRules(sorted(var_names)) if x is not 'end']
     
-    return modeh_literals, rule_ids, variables, ground_constants, var_dicts, program
+    return modeh_literals, rule_ids, var_max, variables, ground_constants, var_dicts, program
 
 def generateStaticRules():
     return generateBLRules() + generateVarValRules() + generateSubsetRules() + generateSeenOrderingRules() + generateSatisfiedRules()
@@ -210,14 +211,14 @@ def encode(text, output):
     f = open(text, 'r')
     dest = open(output, 'w')
     static_rules = generateStaticRules()
-    body_literals, rule_ids, variables, ground_constants, var_dicts, program = generateProgramRules(parseText(f.read()))
+    body_literals, rule_ids, var_max, variables, ground_constants, var_dicts, program = generateProgramRules(parseText(f.read()))
     rules = static_rules + program
     for rule in rules:
         dest.write(rule.__str__() + '\n')
     dest.write('#show in_AS/3.')
     dest.close()
     f.close()
-    return body_literals, rule_ids, variables, ground_constants, var_dicts, static_rules, program
+    return body_literals, rule_ids, var_max, variables, ground_constants, var_dicts, static_rules, program
 
 def main(argv):
     if (len(argv) == 2):

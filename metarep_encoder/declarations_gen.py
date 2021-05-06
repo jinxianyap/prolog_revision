@@ -1,6 +1,6 @@
 from metarep_encoder.classes import *
 from metarep_encoder.helper import *
-from metarep_encoder.encoder import generateVarVals
+from metarep_encoder.encoder import generateVarVals, generateVariableListRules
 
 def make_rule_revisable(rule_id, program, counter, revisions_data):
     found = False
@@ -35,7 +35,7 @@ def filter_example(example, revisables):
             break
     return relevant
     
-def generate_declarations(errors, revisions_data, answer_set, correct_body_literals, correct_rule_ids, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_variables, user_ground_constants, user_program):
+def generate_declarations(errors, revisions_data, answer_set, correct_body_literals, correct_rule_ids, correct_var_max, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_var_max, user_variables, user_ground_constants, user_program):
     declarations = []
     
     const_rule_ids = user_rule_ids + [x for x in correct_rule_ids if x not in user_rule_ids]
@@ -115,6 +115,31 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
     
     declarations.append(Declaration_modeb('ground(var(ground))'))
     declarations.append(Declaration_maxv(max(literal_arities.values())))
+    
+    # var_max additions
+    if user_var_max != correct_var_max:
+        i = len(user_program) - 1
+        while i > 0:
+            if isinstance(user_program[i].head[0], Literal_var_num):
+                break
+            else:
+                i -= 1
+        user_program = user_program[:i]
+    
+        var_names_extensions = []
+        
+        var_num_rule = Rule([Literal_var_num(str(correct_var_max), True)], [])
+        var_max_rule = Rule([Literal_var_max(str(correct_var_max))], [])
+        variable_list_rules = [Rule([Literal_variable_list(x)], []) for x in generateVariableListRules(sorted(VARIABLE_POOL[:correct_var_max-1])) if x is not 'end']
+        
+        var_names_extensions.append(var_num_rule)
+        var_names_extensions.append(var_max_rule)
+        var_names_extensions += variable_list_rules
+        
+        for i in range(user_var_max - 1, correct_var_max - 1):
+            var_names_extensions.append(Rule([Literal_variable(VARIABLE_POOL[i])], []))
+        
+        user_program += var_names_extensions
     
     user_program += declarations
         

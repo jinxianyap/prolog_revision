@@ -84,7 +84,12 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
                 var_vals = generate_var_vals_declarations(sorted(const_variable_symbols), arity)
                 for vv in var_vals:
                     if vv == 'const({})'.format(VAR_VALS_END_SYMBOL): continue
-                    if is_pbl:
+                    if is_pbl is None:
+                        pbl_string = 'pbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
+                        modehs.append(Declaration_modeh(pbl_string))
+                        nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
+                        modehs.append(Declaration_modeh(nbl_string))
+                    elif is_pbl:
                         pbl_string = 'pbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
                         modehs.append(Declaration_modeh(pbl_string))
                     else:
@@ -95,7 +100,7 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
         for index in revisions_data[rule_id]:
             # generating #revisable declarations for new rules
             if index not in revisable_rules[rule_id].keys():
-                literal = revisions_data[rule_id][index]
+                literal = revisions_data[rule_id][index][0]
                 # create dict pairs for Literal_var_vals generation
                 dict_pairs = [(VARIABLE_POOL[i], x) for i, x in enumerate(literal.args)]
                 var_vals = generateVarVals(rule_id, dict_pairs)             

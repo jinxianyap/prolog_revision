@@ -55,6 +55,13 @@ def compare_rules(a, b):
 def assign_similarity(a, b):
     similarity = 0
     differences = 0
+    
+    if a[0].head[0].literal.name == b[0].head[0].literal.name:
+        similarity += 1
+    else:
+        differences += 1
+        return similarity, differences
+    
     if len(a) == len(b):
         similarity += 1
     else:

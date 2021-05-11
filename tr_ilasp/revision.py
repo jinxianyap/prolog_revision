@@ -351,6 +351,8 @@ def possible_head_generate(id2literal, revisable_theories, output_file):
                 head_extension = "head_extension({}, {}, {})" \
                     .format(revid, possible_head_id, build_predicate(possible_head_literal))
                 rule += "\t{},\n".format(head_extension)
+                for each in head_deletes:
+                    rule += "\t{},\n".format(each)
                 rule = try_and_extend_literals_generation(extend_literals, rule, try_literals)
 
                 possible_head_rules.append(rule)

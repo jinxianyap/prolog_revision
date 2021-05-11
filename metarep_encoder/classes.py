@@ -940,22 +940,22 @@ class Declaration():
     def __init__(self):
         super.__init__() 
 class Declaration_pos_example(Declaration):
-    def __init__(self, rev_id, literal):
+    def __init__(self, rev_id, fact):
         self.rev_id = rev_id
-        self.literal = literal
+        self.fact = fact
     def __repr__(self):
         return 'Declaration_pos_example()'
     def __str__(self):
-        return '#pos(p{}, {{{}}}, {{}}, {{}}).'.format(self.rev_id, self.literal)
+        return '#pos(p{}, {{{}}}, {{}}, {{}}).'.format(self.rev_id, self.fact.original_str)
     
 class Declaration_neg_example(Declaration):
-    def __init__(self, rev_id, literal):
+    def __init__(self, rev_id, fact):
         self.rev_id = rev_id
-        self.literal = literal
+        self.fact = fact
     def __repr__(self):
         return 'Declaration_neg_example()'
     def __str__(self):
-        return '#neg(n{}, {{{}}}, {{}}, {{}}).'.format(self.rev_id, self.literal)
+        return '#neg(n{}, {{{}}}, {{}}, {{}}).'.format(self.rev_id, self.fact.original_str)
     
 class Declaration_const(Declaration):
     def __init__(self, symbol, constant):

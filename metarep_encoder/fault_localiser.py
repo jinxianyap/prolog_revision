@@ -11,9 +11,10 @@ class DerivableFact:
     def __repr__(self):
         return 'DerivableFact()'
     def __str__(self):
-        return 'in_AS(' + ', '.join([self.literal, self.rule_id, self.variables.__str__()]) + ')'   
+        return 'in_AS(' + ', '.join([self.rule_id, self.literal.__str__(), self.variables.__str__()]) + ')'   
     def equal_to(self, other):
-        return self.literal == other.literal and self.variables == other.variables
+        sim, diff = self.literal.compare_to(other.literal)
+        return sim > 0 and diff == 0 and self.variables == other.variables
 
 def variables_to_dict(variables):
     variables = [x.split(')')[0] for x in variables.split('var_val(')[1:]]
@@ -36,6 +37,9 @@ def transform(ori, mapping=None):
         if args[ptr] == ',' and len(stack) == 0:
             literal_found = True
             literal = args[:ptr]
+            name = literal.split('(')[0]
+            lit_args = literal.split('(')[1][:-1].split(',')
+            literal = Literal(name, lit_args)
         elif args[ptr] == '(':
             stack.append(args[ptr])
         elif args[ptr] == ')' and len(stack) > 0:
@@ -69,7 +73,7 @@ def get_answer_set(filename, mapping=None):
         if each[:5] == 'in_AS':
             fact_obj = transform(each, mapping)
             meta_answer_set.append(fact_obj)
-            answer_set.append(fact_obj.literal)
+            answer_set.append(fact_obj.literal.__str__())
     return meta_answer_set, answer_set
 
 def group_by_rule_id(answer_set):

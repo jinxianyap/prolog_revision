@@ -1,6 +1,8 @@
+import random
 from metarep_encoder.classes import *
 from metarep_encoder.helper import *
 from metarep_encoder.encoder import generateVarVals, generateVariableListRules
+from metarep_encoder.fault_localiser import DerivableFact
 
 def make_rule_revisable(rule_id, program, counter, revisions_data):
     found = False
@@ -22,18 +24,49 @@ def make_rule_revisable(rule_id, program, counter, revisions_data):
                 revisable_rules[head.index] = (each, False)
     return counter, revisable_rules
   
-def find_head_literal_name(program, rule_id):
+def find_head_literal_name_and_arity(program, rule_id):
     for each in program:
         if isinstance(each.head[0], Literal_head) and each.head[0].rule_id == rule_id:
-            return each.head[0].literal.name
+            return (rule_id, each.head[0].literal.name, len(each.head[0].literal.args))
         
 def filter_example(example, revisables):
     relevant = False
     for rev in revisables:
-        if rev in example.literal:
+        if rev[1] in example.fact.original_str:
             relevant = True
             break
     return relevant
+
+def variables_dict_to_var_vals(rule_id, variables_dict):
+    if len(variables_dict) == 0:
+        return 'end'
+    else:
+        return Literal_var_vals(Literal_var_val(rule_id, variables_dict[0][0], variables_dict[0][1]), variables_dict_to_var_vals(rule_id, variables_dict[1:]))
+
+def generate_negative_examples(rule_id, literal_name, arity, ground_constants, term_combos, max_num):
+    tries = max_num * 2
+    negs = []
+    print(term_combos)
+    while len(negs) < max_num and tries > 0:
+        tries -= 1
+        terms = []
+        variables_dict = {}
+        
+        while len(terms) < arity:
+            i = random.randint(0, len(ground_constants) - 1)
+            term = ground_constants[i]
+            terms.append(term)
+            variables_dict[VARIABLE_POOL[len(terms)]] = term
+
+        if tuple(terms) not in term_combos:
+            print(tuple(terms))
+            literal = Literal(literal_name, terms)
+            var_vals = variables_dict_to_var_vals(rule_id, list(variables_dict.items()))
+            original_str = 'in_AS(' + ', '.join([rule_id, literal.__str__(), var_vals.__str__()]) + ')'
+            negs.append(Declaration_neg_example('_{}_{}'.format(rule_id, len(negs)), DerivableFact(rule_id, literal, variables_dict, original_str)))
+            term_combos.add(tuple(terms))
+
+    return negs
     
 def generate_declarations(errors, revisions_data, answer_set, correct_body_literals, correct_rule_ids, correct_var_max, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_var_max, user_variables, user_ground_constants, user_program):
     declarations = []
@@ -59,7 +92,7 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
             literal_arities[each] = user_body_literals[each]
             
     const_variable_symbols = [x.symbol for x in const_variables]
-    positive_examples = [Declaration_pos_example(i, x.original_str) for i, x in enumerate(answer_set)]
+    positive_examples = [Declaration_pos_example(i, x) for i, x in enumerate(answer_set)]
     negative_examples = []
            
     revise_counter = 1
@@ -68,9 +101,9 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
     modehs = []     
     
     for each in sorted(errors.keys()):
-        revisable_literals.append(find_head_literal_name(user_program, each))
+        revisable_literals.append(find_head_literal_name_and_arity(user_program, each))
         for neg in errors[each][1]:
-            negative_examples.append(Declaration_neg_example(len(negative_examples), neg.original_str))
+            negative_examples.append(Declaration_neg_example(len(negative_examples), neg))
         revise_counter, rules_to_revise = make_rule_revisable(each, user_program, revise_counter, revisions_data)
         revisable_rules[each] = rules_to_revise
         
@@ -118,6 +151,15 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
     negative_examples = list(filter(lambda x: filter_example(x, revisable_literals), negative_examples))   
     declarations += positive_examples + negative_examples
     
+    # generate more negative examples, given ground_constants, revisable_literals, its arity and term_combos
+    term_combos = set()  
+    for each in positive_examples:
+        term_combos.add(tuple(each.fact.literal.args))
+    for each in negative_examples:
+        term_combos.add(tuple(each.fact.literal.args))
+    for each in revisable_literals:
+        declarations += generate_negative_examples(each[0], each[1], each[2], ground_constants, term_combos, 5)
+        
     declarations.append(Declaration_modeb('ground(var(ground))'))
     declarations.append(Declaration_maxv(max(literal_arities.values())))
     

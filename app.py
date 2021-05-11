@@ -9,10 +9,16 @@ def form():
     data = {}
     
     data['model_program_filename'] = app.config.get('model_filename')
-    data['model_program'] = load_program(data['model_program_filename'])
+    try:
+        data['model_program'] = load_program(data['model_program_filename'])
+    except:
+        return render_template('./error.html', data='Model program file not found.')
     
     data['student_program_filename'] = app.config.get('model_filename').replace('.lp', '_user.lp')
-    data['student_program'] = load_program(data['student_program_filename'], annotate=True)
+    try:
+        data['student_program'] = load_program(data['student_program_filename'], annotate=True)
+    except:
+        return render_template('./error.html', data='Student program file not found.')
     
     feedback = generate_feedback([data['model_program_filename']])
     

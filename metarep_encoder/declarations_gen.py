@@ -46,7 +46,7 @@ def variables_dict_to_var_vals(rule_id, variables_dict):
 def generate_negative_examples(rule_id, literal_name, arity, ground_constants, term_combos, max_num):
     tries = max_num * 2
     negs = []
-    print(term_combos)
+
     while len(negs) < max_num and tries > 0:
         tries -= 1
         terms = []
@@ -55,14 +55,13 @@ def generate_negative_examples(rule_id, literal_name, arity, ground_constants, t
         while len(terms) < arity:
             i = random.randint(0, len(ground_constants) - 1)
             term = ground_constants[i]
-            terms.append(term)
             variables_dict[VARIABLE_POOL[len(terms)]] = term
+            terms.append(term)
 
         if tuple(terms) not in term_combos:
-            print(tuple(terms))
             literal = Literal(literal_name, terms)
             var_vals = variables_dict_to_var_vals(rule_id, list(variables_dict.items()))
-            original_str = 'in_AS(' + ', '.join([rule_id, literal.__str__(), var_vals.__str__()]) + ')'
+            original_str = 'in_AS(' + ', '.join([literal.__str__(), rule_id, var_vals.__str__()]) + ')'
             negs.append(Declaration_neg_example('_{}_{}'.format(rule_id, len(negs)), DerivableFact(rule_id, literal, variables_dict, original_str)))
             term_combos.add(tuple(terms))
 
@@ -189,6 +188,9 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
         user_program += var_names_extensions
     
     user_program += declarations
+    
+    # testing purposes: to force unsatisfiable
+    # user_program.append('neg(p6, {in_AS(pet(cat),r6,var_vals(var_val(r6,var_1,cat),end))}, {}, {}).')
         
     # for each in user_program:
     #     print(each)

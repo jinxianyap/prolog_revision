@@ -11,7 +11,7 @@ class DerivableFact:
     def __repr__(self):
         return 'DerivableFact()'
     def __str__(self):
-        return 'in_AS(' + ', '.join([self.rule_id, self.literal.__str__(), self.variables.__str__()]) + ')'   
+        return 'in_AS(' + ', '.join([self.literal.__str__(), self.rule_id, self.variables.__str__()]) + ')'   
     def equal_to(self, other):
         sim, diff = self.literal.compare_to(other.literal)
         return sim > 0 and diff == 0 and self.variables == other.variables

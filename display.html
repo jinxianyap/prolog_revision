@@ -4,14 +4,14 @@
         <title>Revision tool</title>
     </head>
     <body>
-        <table>
+        <table style="border: 1px solid black;">
             <tr>
-                <th>Model program filename:</th>
-                <td>{{data['model_program_filename']}}</td>
+                <th style="border: 1px solid black;">Model program filename:</th>
+                <td style="border: 1px solid black;">{{data['model_program_filename']}}</td>
             </tr>
             <tr>
-                <th>Model program:</th>
-                <td>
+                <th style="border: 1px solid black;">Model program:</th>
+                <td style="border: 1px solid black;">
                     <ul style="list-style-type:none; padding-left:0;">
                     {% for each in data['model_program'] %}
                         <li>{{each}}</li> 
@@ -20,12 +20,12 @@
                 </td>
             </tr>
             <tr>
-                <th>Student program filename:</th>
-                <td>{{data['student_program_filename']}}</td>
+                <th style="border: 1px solid black;">Student program filename:</th>
+                <td style="border: 1px solid black;">{{data['student_program_filename']}}</td>
             </tr>
             <tr>
-                <th>Student program:</th>
-                <td>
+                <th style="border: 1px solid black;">Student program:</th>
+                <td style="border: 1px solid black;">
                     <ul style="list-style-type:none; padding-left:0;">
                     {% for each in data['student_program'] %}
                         {% if each in data['revisable_rule_ids'] %}
@@ -39,12 +39,12 @@
             </tr>
             {% if data['success'] %}
             <tr>
-                <th>Similarity Score:</th>
-                <td>{{data['similarity_score']}}</td>
+                <th style="border: 1px solid black;">Similarity Score:</th>
+                <td style="border: 1px solid black;">{{data['similarity_score']}}</td>
             </tr>
             <tr>
-                <th>Positive examples not covered:</th>
-                <td>
+                <th style="border: 1px solid black;">Incorrect facts derived:</th>
+                <td style="border: 1px solid black;">
                     <ul style="list-style-type:none; padding-left:0;">
                     {% for each in data['positive_examples'] %}
                         <li>{{each}}</li> 
@@ -53,8 +53,8 @@
                 </td>
             </tr>
             <tr>
-                <th>Negative examples included:</th>
-                <td>
+                <th style="border: 1px solid black;">Facts not derived:</th>
+                <td style="border: 1px solid black;">
                     <ul style="list-style-type:none; padding-left:0;">
                     {% for each in data['negative_examples'] %}
                         <li>{{each}}</li> 
@@ -63,8 +63,8 @@
                 </td>
             </tr>
             <tr>
-                <th>Revisions:</th>
-                <td>
+                <th style="border: 1px solid black;">Revisions:</th>
+                <td style="border: 1px solid black;">
                     <ul style="list-style-type:none; padding-left:0;">
                     {% for each in data['revisions'] %}
                         <li>{{each}}</li> 
@@ -74,8 +74,8 @@
             </tr>
             {% else %}
             <tr>
-                <th>Message:</th>
-                <td>{{data['message']}}</td>
+                <th style="border: 1px solid black;">Message:</th>
+                <td style="border: 1px solid black; color: red;">{{data['message']}}</td>
             </tr>
             {% endif %}
         </table>

@@ -33,14 +33,11 @@ def parseLiteral(rule_id, literal):
                 final_args.append(each[0])
                 constants += each[1]
                 variables += each[2]
-        # variables = [x for x in args if is_variable(x)]
-        # constants = [x for x in args if x not in variables]
-        print(literal, final_args)
-        for each in final_args:
-            print(each, type(each))
+
         return ProcessingLiteral(rule_id, literal, final_args), constants, variables
     else:
         if '(' not in literal:
+            # literal is an atom
             return literal
         
         args = get_arguments(literal)

@@ -139,7 +139,7 @@ def interpret_revisions(var_dicts, marked_rules, parsed_revisions):
                 literal = translated[0].literal.__str__()
                 
                 if isinstance(translated[0], Literal_nbl):
-                    literal = 'not ' + literal
+                    literal = '\+ ' + literal
                     
                 if len(translated) == 1:
                     text = 'Rule: {}, Index: {} - {} with \'{}\'.'.format(rule_id, index, 'Extend' if extension else 'Replace', literal)

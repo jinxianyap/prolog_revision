@@ -107,7 +107,7 @@ def identify_rule_discrepancies(rule_a, rule_b, mapping):
     
     while i < max(len(rule_a), len(rule_b)):
         if i >= len(rule_b) and not isinstance(rule_a[i].head[0], Literal_head):
-            to_revise[str(i)] = (rule_a[i].head[0].literal, None)
+            to_revise[str(i)] = (rule_a[i].head[0].literal, isinstance(rule_a[i].head[0], Literal_pbl))
         elif i >= len(rule_a) and not isinstance(rule_b[i].head[0], Literal_head):
             to_revise[rule_b[i].head[0].index] = None
         else:

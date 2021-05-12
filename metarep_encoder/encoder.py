@@ -115,6 +115,7 @@ def generateLiteral(literal):
         args = [generateLiteral(x) for x in get_arguments(literal)]
         return Literal(name, args)
     else:
+        # is an atom
         return trim_front_back_whitespace(literal)
     
 def generateLiteralRule(rule_id, literal, args, var_dict, index = None):
@@ -125,7 +126,7 @@ def generateLiteralRule(rule_id, literal, args, var_dict, index = None):
         body = [Literal_ground(x) for x in args if is_variable(x)]
         return Rule([head], body)
     else:
-        head = Literal_nbl(rule_id, index, generateLiteral(literal[4:]), generateVarVals(rule_id, dict_pairs)) if literal[:3] == 'not' else Literal_pbl(rule_id, index, generateLiteral(literal), generateVarVals(rule_id, dict_pairs))
+        head = Literal_nbl(rule_id, index, generateLiteral(literal[3:]), generateVarVals(rule_id, dict_pairs)) if literal[:2] == '\+' else Literal_pbl(rule_id, index, generateLiteral(literal), generateVarVals(rule_id, dict_pairs))
         body = [Literal_ground(x) for x in args if is_variable(x)]
         rule = Rule([head], body)
         assign_built_in_type(rule, literal)

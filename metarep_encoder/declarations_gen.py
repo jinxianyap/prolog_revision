@@ -133,11 +133,12 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
             # generating #revisable declarations for new rules
             if index not in revisable_rules[rule_id].keys():
                 literal = revisions_data[rule_id][index][0]
+                is_pbl = revisions_data[rule_id][index][1]
                 # create dict pairs for Literal_var_vals generation
                 dict_pairs = [(VARIABLE_POOL[i], x) for i, x in enumerate(literal.args)]
                 var_vals = generateVarVals(rule_id, dict_pairs)             
-                pbl = Literal_pbl(rule_id, index, literal, var_vals)
-                rule = Rule([pbl], [Literal_ground(x) for x in literal.args])
+                bl = Literal_pbl(rule_id, index, literal, var_vals) if is_pbl else Literal_nbl(rule_id, index, literal, var_vals)
+                rule = Rule([bl], [Literal_ground(x) for x in literal.args])
                 
                 revise_vars = join([x + ': ground' for x in var_vals_to_revisable_variables(var_vals)])
                 rule.make_revisable('rev' + str(revise_counter), revise_vars)

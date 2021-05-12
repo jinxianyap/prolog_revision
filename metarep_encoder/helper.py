@@ -166,13 +166,16 @@ def is_le_literal(literal):
     return '<=' in literal
 
 def is_plus_literal(literal):
-    return '+' in literal
+    return '+' in literal and not is_naf_literal(literal)
 
 def is_minus_literal(literal):
     return '-' in literal
 
 def is_mult_literal(literal):
     return '*' in literal
+
+def is_naf_literal(literal):
+    return '\+' in literal
 
 # ------------------------------------------------------------------------------
 #  Parser

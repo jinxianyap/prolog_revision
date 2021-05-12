@@ -2,7 +2,7 @@ from metarep_encoder.classes import *
 from metarep_encoder.helper import *
 # DECAY = 0.8
 
-def compare_terms(a, b):
+def compare_literals(a, b):
     # similarity = 0
     # differences = 0
     # if isinstance(a, str) and isinstance(b, str):
@@ -30,7 +30,7 @@ def compare_terms(a, b):
 def compare_rules(a, b):
     similarity = 0
     differences = 0
-    head_similarity, head_differences = compare_terms(a.head[0], b.head[0])
+    head_similarity, head_differences = compare_literals(a.head[0], b.head[0])
     similarity += head_similarity
     differences += head_differences
 
@@ -46,7 +46,7 @@ def compare_rules(a, b):
     differences += len(body_lits_a.difference(body_lits_b)) + len(body_lits_b.difference(body_lits_a))
         
     for i in range(min(len(a.body), len(b.body))):
-        sim, diff = compare_terms(a.body[i], b.body[i])
+        sim, diff = compare_literals(a.body[i], b.body[i])
         similarity += sim
         differences += diff
     
@@ -56,9 +56,7 @@ def assign_similarity(a, b):
     similarity = 0
     differences = 0
     
-    if a[0].head[0].literal.name == b[0].head[0].literal.name:
-        similarity += 1
-    else:
+    if a[0].head[0].literal.name != b[0].head[0].literal.name:
         differences += 1
         return similarity, differences
     

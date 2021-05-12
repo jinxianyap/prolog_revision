@@ -99,7 +99,7 @@ def identify_discrepancies(map_a, map_b, index):
     
     return set_a, set_b
 
-def identify_rule_discrepancies(rule_a, rule_b, mapping):
+def identify_rule_discrepancies(rule_a, rule_b):
     # also enforces ordering of literals
     # position number of literals - literal names to use in modehs
     to_revise = {}
@@ -158,7 +158,7 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
             print('-- {} positive example(s) not covered: {}'.format(len(rem_correct), '  '.join([x.__str__() for x in rem_correct])))
             print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
 
-            revisions_data[each] = identify_rule_discrepancies(correct_rules_grouped[get_dict_key(mapping, each)], user_rules_grouped[each], mapping)
+            revisions_data[each] = identify_rule_discrepancies(correct_rules_grouped[get_dict_key(mapping, each)], user_rules_grouped[each])
 
     return correct_excluded, user_included, AS_discrepancies, revisions_data, meta_correct
 

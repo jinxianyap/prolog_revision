@@ -29,9 +29,9 @@
                     <ul style="list-style-type:none; padding-left:0;">
                     {% for each in data['student_program'] %}
                         {% if each in data['revisable_rule_ids'] %}
-                            <li style="color:red;">{{data['student_program'][each]}}</li> 
+                            <li style="color:red;">{{each}}: {{data['student_program'][each]}}</li> 
                         {% else %}
-                            <li>{{data['student_program'][each]}}</li>  
+                            <li>{{each}}: {{data['student_program'][each]}}</li>  
                         {% endif %}
                     {% endfor %}  
                     </ul>

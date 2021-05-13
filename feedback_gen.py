@@ -20,13 +20,14 @@ def generate_revisable_program(file_name):
     rule_mapping, score, correct_rules_grouped, user_rules_grouped = generate_mapping(correct_program, user_program)
     print('Similarity score: %s' % str(score))
     correct_excluded, user_included, errors, revisions_data, answer_set = find_erroneous_rules(rule_mapping, correct_rules_grouped, user_rules_grouped)
-
+    # print(errors)
+    # print(revisions_data)
     if str(score) == '1.000' or len(errors) == 0:
         msg = 'User program gives expected results. No revision needed.'
         print(msg)
         return Output_type.NO_REVISION, msg
     
-    revisable_program, marked_rules = generate_declarations(errors, revisions_data, answer_set, correct_body_literals, correct_rule_ids, correct_var_max, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_var_max, user_variables, user_ground_constants, user_program)
+    revisable_program, marked_rules = generate_declarations(errors, revisions_data, rule_mapping, answer_set, correct_body_literals, correct_rule_ids, correct_var_max, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_var_max, user_variables, user_ground_constants, user_program)
     
     revisable_program = static_rules + revisable_program
     

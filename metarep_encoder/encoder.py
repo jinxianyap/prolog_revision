@@ -46,6 +46,14 @@ def generateSeenOrderingRules():
     rule_seen_rule_4 = Rule([Literal_seen_rule('R')], [Literal_seen_rule('R_PREV'), Literal_order('R_PREV', 'R'), Literal_rule('R'), Literal_rule('R_PREV'), NotLiteral(Literal_in_AS('X', 'R', 'VVXS')), Literal_head('R', 'X', 'VVXS')])
 
     return [rule_not_first_rule, rule_seen_rule_1, rule_seen_rule_2, rule_seen_rule_3, rule_seen_rule_4]
+
+def generateConstraintRules():
+    must_have_head_rule = Rule([], [Literal_bl('R', 'P', 'X'), NotLiteral(Literal_head('R', '_', '_'))])
+    # no_broken_rule = Rule([], [Literal_bl('R', 'P', 'X'), NotEqualsLiteral('P', '1', True), NotLiteral(Literal_bl('R', 'P - 1', '_'))])
+    # no_repeated_calls_rule = Rule([], [Literal_bl('R', 'PX', 'X'), Literal_bl('R', 'PY', 'X'), NotEqualsLiteral('PX', 'PY', True)])
+        
+    return [must_have_head_rule]
+    # return []
     
 def generateSatisfiedRules():
     in_AS_rule = Rule([Literal_in_AS('X', 'R', 'VVXS')], [Literal_head('R', 'X', 'VVXS'), Literal_body_true('R', 'VVXS')])
@@ -206,7 +214,7 @@ def generateProgramRules(processed_rules):
     return modeh_literals, rule_ids, var_max, variables, ground_constants, var_dicts, program
 
 def generateStaticRules():
-    return generateBLRules() + generateVarValRules() + generateSubsetRules() + generateSeenOrderingRules() + generateSatisfiedRules()
+    return generateBLRules() + generateVarValRules() + generateSubsetRules() + generateSeenOrderingRules() + generateConstraintRules() + generateSatisfiedRules()
 
 def encode(text, output):
     f = open(text, 'r')

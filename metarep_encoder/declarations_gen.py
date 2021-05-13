@@ -4,9 +4,11 @@ from metarep_encoder.helper import *
 from metarep_encoder.encoder import generateVarVals, generateVariableListRules
 from metarep_encoder.fault_localiser import DerivableFact
 
-def make_rule_revisable(rule_id, program, counter, revisions_data):
+def make_rule_revisable(rule_id, program, counter, revisions_data, rule_mapping):
     found = False
     revisable_rules = {}
+    head_rule = None
+    
     for i, each in enumerate(program):
         if isinstance(each.head[0], Literal_rule):
             if each.head[0].rule_id == rule_id and not found:
@@ -18,12 +20,24 @@ def make_rule_revisable(rule_id, program, counter, revisions_data):
                 continue     
             else:
                 head = each.head[0]
-                revise_vars = join([x + ': ground' for x in var_vals_to_revisable_variables(head.var_vals)])
-                each.make_revisable('rev' + str(counter), revise_vars)
-                counter += 1
-                revisable_rules[head.index] = (each, False)
+                if revisions_data[rule_id][head.index][2]:
+                    revise_vars = join([x + ': ground' for x in var_vals_to_revisable_variables(head.var_vals)])
+                    each.make_revisable('rev' + str(counter), revise_vars)
+                    counter += 1
+                    revisable_rules[head.index] = (each, False)
+        elif found and isinstance(each.head[0], Literal_head):
+            head_rule = each
+            
+    # making head revisable if all bls are modifiable (meaning rule may be deleted)
+    if found and rule_id not in rule_mapping.values():
+        head = head_rule.head[0]
+        revise_vars = join([x + ': ground' for x in var_vals_to_revisable_variables(head.var_vals)])
+        head_rule.make_revisable('rev' + str(counter), revise_vars)
+        counter += 1
+        # revisable_rules[head.index] = (each, False)
+        
     return counter, revisable_rules
-  
+
 def find_head_literal_name_and_arity(program, rule_id):
     for each in program:
         if isinstance(each.head[0], Literal_head) and each.head[0].rule_id == rule_id:
@@ -67,7 +81,7 @@ def generate_negative_examples(rule_id, literal_name, arity, ground_constants, t
 
     return negs
     
-def generate_declarations(errors, revisions_data, answer_set, correct_body_literals, correct_rule_ids, correct_var_max, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_var_max, user_variables, user_ground_constants, user_program):
+def generate_declarations(errors, revisions_data, rule_mapping, answer_set, correct_body_literals, correct_rule_ids, correct_var_max, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_var_max, user_variables, user_ground_constants, user_program):
     declarations = []
     
     const_rule_ids = user_rule_ids + [x for x in correct_rule_ids if x not in user_rule_ids]
@@ -78,8 +92,10 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
     const_variables = [Declaration_const(VARIABLE_SYMBOL + x[-2:], x) for x in VARIABLE_POOL[:len(const_variables)]] 
     const_ground_constants = [Declaration_const(GROUND_CONSTANT_SYMBOL, x) for x in ground_constants]
     const_positions = set()
-    for each in revisions_data:
-        const_positions.update(revisions_data[each].keys())
+    for rule_id in revisions_data:
+        for index in revisions_data[rule_id]:
+            if revisions_data[rule_id][index][2]:
+                const_positions.add(index)
     const_positions = [Declaration_const(POS_SYMBOL, x) for x in sorted(const_positions)]
     const_var_vals_end = [Declaration_const(VAR_VALS_END_SYMBOL, 'end')]
         
@@ -103,7 +119,7 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
         revisable_literals.append(find_head_literal_name_and_arity(user_program, each))
         for neg in errors[each][1]:
             negative_examples.append(Declaration_neg_example(len(negative_examples), neg))
-        revise_counter, rules_to_revise = make_rule_revisable(each, user_program, revise_counter, revisions_data)
+        revise_counter, rules_to_revise = make_rule_revisable(each, user_program, revise_counter, revisions_data, rule_mapping)
         revisable_rules[each] = rules_to_revise
         
         if each in revisions_data:
@@ -131,7 +147,7 @@ def generate_declarations(errors, revisions_data, answer_set, correct_body_liter
     for rule_id in revisions_data:
         for index in revisions_data[rule_id]:
             # generating #revisable declarations for new rules
-            if index not in revisable_rules[rule_id].keys():
+            if index not in revisable_rules[rule_id].keys() and revisions_data[rule_id][index][2]:
                 literal = revisions_data[rule_id][index][0]
                 is_pbl = revisions_data[rule_id][index][1]
                 # create dict pairs for Literal_var_vals generation

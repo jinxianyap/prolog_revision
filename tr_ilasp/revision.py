@@ -212,7 +212,6 @@ def parse_revisable_theories(revisable_theory_str, possible_head_list, disjunct_
         if revise_type == "disjunctive":
             for modeh in disjunct_modeh_general:
                 root = build_tree_from_modeh(modeh.split("#modeh(")[1].strip()[:-2])
-                # modified by jx
                 # print_tree(root)
                 inverse_dict = build_inverse_dict(type_dict)
                 # print(type_dict)
@@ -351,6 +350,7 @@ def possible_head_generate(id2literal, revisable_theories, output_file):
                 head_extension = "head_extension({}, {}, {})" \
                     .format(revid, possible_head_id, build_predicate(possible_head_literal))
                 rule += "\t{},\n".format(head_extension)
+                # modified by jx
                 for each in head_deletes:
                     rule += "\t{},\n".format(each)
                 rule = try_and_extend_literals_generation(extend_literals, rule, try_literals)
@@ -425,7 +425,7 @@ def possible_head_generate(id2literal, revisable_theories, output_file):
         for rule in max_head_choice_rules:
             output_file.write(rule)
 
-# modified by jx
+# modified by jx: custom=True to allow deletion of rules
 def try_and_extend_literals_generation(extend_literals, rule, try_literals, custom=False):
     for try_literal in try_literals:
         try_literal = try_literal.replace('try', 'delete').replace(', ground(X)', '') if custom else try_literal
@@ -1010,7 +1010,7 @@ def main():
     # print(revisable_theories['rev1'].union_variables_dict)
     # Print result
     print_result(revisable_theories)
-    # modified by jx
+
     return revisable_theories
 
 

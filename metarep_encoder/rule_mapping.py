@@ -135,7 +135,17 @@ def generate_mapping(correct, user):
         sim, diff = matrix[each][index]
         total_sim += sim
         total_diff += diff
-        
-    score = '%.3f' % (total_sim / (total_sim + total_diff))
+    
+    score = total_sim / (total_sim + total_diff)
+    
+    # handle unmatched user rules    
+    unmatched_user_rules = 0
+    for j in user_indexes:
+        if j not in mappings.values():
+            unmatched_user_rules += 1 
+            
+    score -= score * (unmatched_user_rules / len(user_indexes))
+    score = '%.3f' % score
+            
     return mappings, score, correct_rules_grouped, user_rules_grouped
             

@@ -158,6 +158,17 @@ def check_paren_and_split(rule_and_type):
 
     return split[0], head_dict, body_dict, type_dict
 
+# added by jx
+def filter_possible_head(head):
+    split = head.split('var_vals(')
+    variables = []
+    
+    for each in split:
+        if 'var_val' in each:
+            variable = [x for x in each if x.isupper()]
+            variables += variable
+        
+    return variables == sorted(variables) and len(variables) == len(set(variables))
 
 def parse_revisable_theories(revisable_theory_str, possible_head_list, disjunct_modeh_general, disjunct_modeh_rule,
                              constant_str):
@@ -219,7 +230,9 @@ def parse_revisable_theories(revisable_theory_str, possible_head_list, disjunct_
                 generate_possible_head_from_tree(root, inverse_dict, constant_dict, possible_head_raw)
                 # print(possible_head_raw)
                 for literal in possible_head_raw:
-                    possible_head[concat_literal(literal)] = build_tree(literal)
+                    # modified by jx
+                    if filter_possible_head(literal):
+                        possible_head[concat_literal(literal)] = build_tree(literal)
 
         rv = revisableTheory(head=head_dict, body=body_dict, types=type_dict, ground_literals_set=ground_literals_set,
                              variable_rep=variable_rep, mode_variable_rep=mode_variable_rep,
@@ -762,7 +775,14 @@ def head_extension_revision(head_extension_list, revisable_theories):
         predicate_tree = theory.possible_head[predicate_id]
         solver_tree = build_tree(solver_literal)
         union_variables_dict = theory.union_variables_dict
-        compareTrees(predicate_tree, solver_tree, union_variables_dict)
+        # modified by jx
+        # print('in predicate_tree', predicate_tree.children[3].children[0].children[2])
+        # print('in solver_tree', solver_tree.children[3].children[0].children[2])
+        # print('in predicate_tree', predicate_tree.children[3].children[1].children[0].children[2])
+        # print('in solver_tree', solver_tree.children[3].children[1].children[0].children[2])
+        # print(union_variables_dict)
+        # compareTrees(predicate_tree, solver_tree, union_variables_dict)
+        # print(union_variables_dict)
         theory.head[predicate_id] = predicate_tree
 
 

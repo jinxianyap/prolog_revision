@@ -8,3 +8,4 @@ class Output_type:
     NO_REVISION = 1
     INCORRECT_ARITIES = 2
     UNSATISFIABLE = 3
+    NEW_RULES = 4

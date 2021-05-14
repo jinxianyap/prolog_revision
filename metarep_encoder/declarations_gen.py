@@ -20,7 +20,8 @@ def make_rule_revisable(rule_id, program, counter, revisions_data, rule_mapping)
                 continue     
             else:
                 head = each.head[0]
-                if revisions_data[rule_id][head.index][2]:
+                # some rules may be correct, but not generating expected facts bc of other rules
+                if rule_id in revisions_data and revisions_data[rule_id][head.index][2]:
                     revise_vars = join([x + ': ground' for x in var_vals_to_revisable_variables(head.var_vals)])
                     each.make_revisable('rev' + str(counter), revise_vars)
                     counter += 1
@@ -38,10 +39,9 @@ def make_rule_revisable(rule_id, program, counter, revisions_data, rule_mapping)
         
     return counter, revisable_rules
 
-def find_head_literal_name_and_arity(program, rule_id):
-    for each in program:
-        if isinstance(each.head[0], Literal_head) and each.head[0].rule_id == rule_id:
-            return (rule_id, each.head[0].literal.name, len(each.head[0].literal.args))
+def find_head_literal_name_and_arity(facts):
+    for each in facts[0] + facts[1]:
+        return (each.rule_id, each.literal.name, len(each.literal.args))
         
 def filter_example(example, revisables):
     relevant = False
@@ -116,7 +116,8 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
     modehs = []     
     
     for each in sorted(errors.keys()):
-        revisable_literals.append(find_head_literal_name_and_arity(user_program, each))
+        revisable_literals.append(find_head_literal_name_and_arity(errors[each]))
+
         for neg in errors[each][1]:
             negative_examples.append(Declaration_neg_example(len(negative_examples), neg))
         revise_counter, rules_to_revise = make_rule_revisable(each, user_program, revise_counter, revisions_data, rule_mapping)
@@ -143,10 +144,27 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
                     else:
                         nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
                         modehs.append(Declaration_modeh(nbl_string))
-                    
+
+    new_rules = {}
+    # generating #revisable declarations for new rules                
     for rule_id in revisions_data:
+        # need to create a #revisable head rule for this new rule_id
+        if rule_id not in user_rule_ids:
+            literal_info = [x for x in revisable_literals if x[0] == rule_id][0]
+            literal_args = [(chr(x + 87) if x < 3  else chr(x + 62)) for x in list(range(1, literal_info[2] + 1))]
+            literal = Literal(literal_info[1], literal_args)
+            dict_pairs = [(VARIABLE_POOL[i], x) for i, x in enumerate(literal.args)]
+            var_vals = generateVarVals(rule_id, dict_pairs)
+            
+            rule = Rule([Literal_head(rule_id, literal, var_vals)], [Literal_ground(x) for x in literal.args])
+            # revise_vars = join([x + ': ground' for x in var_vals_to_revisable_variables(var_vals)])
+            # rule.make_revisable('rev' + str(revise_counter), revise_vars)
+            # revise_counter += 1
+            # revisable_rules[rule_id][index] = (rule, True)
+            user_program.append(rule)
+            new_rules[rule_id] = [rule]
+             
         for index in revisions_data[rule_id]:
-            # generating #revisable declarations for new rules
             if index not in revisable_rules[rule_id].keys() and revisions_data[rule_id][index][2]:
                 literal = revisions_data[rule_id][index][0]
                 is_pbl = revisions_data[rule_id][index][1]
@@ -154,13 +172,15 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
                 dict_pairs = [(VARIABLE_POOL[i], x) for i, x in enumerate(literal.args)]
                 var_vals = generateVarVals(rule_id, dict_pairs)             
                 bl = Literal_pbl(rule_id, index, literal, var_vals) if is_pbl else Literal_nbl(rule_id, index, literal, var_vals)
-                rule = Rule([bl], [Literal_ground(x) for x in literal.args])
                 
+                rule = Rule([bl], [Literal_ground(x) for x in literal.args])
                 revise_vars = join([x + ': ground' for x in var_vals_to_revisable_variables(var_vals)])
                 rule.make_revisable('rev' + str(revise_counter), revise_vars)
                 revise_counter += 1
                 revisable_rules[rule_id][index] = (rule, True)
-                user_program.append(rule)          
+                user_program.append(rule)      
+                if rule_id in new_rules:
+                    new_rules[rule_id].append(rule)
             
     declarations += modehs
     positive_examples = list(filter(lambda x: filter_example(x, revisable_literals), positive_examples))
@@ -211,7 +231,7 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
         
     # for each in user_program:
     #     print(each)
-    return user_program, revisable_rules
+    return user_program, revisable_rules, new_rules
 
 def main():
     generate_declarations()

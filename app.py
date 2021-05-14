@@ -22,7 +22,7 @@ def form():
     
     feedback = generate_feedback([data['model_program_filename']])
     
-    if feedback[0] == Output_type.REVISED:
+    if feedback[0] == Output_type.REVISED or feedback[0] == Output_type.NEW_RULES:
         _, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text = feedback
         
         data['success'] = True

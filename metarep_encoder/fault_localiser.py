@@ -104,45 +104,49 @@ def identify_discrepancies(index, model_AS=None, user_AS=None):
         
         return set_a, set_b
 
-def identify_rule_discrepancies(model_rule=None, user_rule=None):
+def identify_rule_discrepancies(index, model_rules=None, user_rules=None, mapping=None):
     # also enforces ordering of literals
     # position number of literals - literal names to use in modehs
     to_revise = {}
     i = 0
     # returns at each index of to_revise (literal, is_pbl, needs to be marked revisable)
     # for now tuple[2] is redundant
-    if model_rule is None and user_rule is not None:
+    if model_rules is None and user_rules is not None:
+        user_rule = user_rules[index]
         while i < len(user_rule):
             if isinstance(user_rule[i].head[0], Literal_head):
                 i += 1
                 continue
             to_revise[str(i)] = (user_rule[i].head[0].literal, isinstance(user_rule[i].head[0], Literal_pbl), True)
             i += 1
-    elif model_rule is not None and user_rule is None:
-        while i < len(model_rule):
-            if isinstance(model_rule[i].head[0], Literal_head):
-                i += 1
-                continue
-            to_revise[str(i)] = (model_rule[i].head[0].literal, isinstance(model_rule[i].head[0], Literal_pbl), True)
-            i += 1
-    elif model_rule is not None and user_rule is not None:   
-        while i < max(len(model_rule), len(user_rule)):
-            if i >= len(user_rule) and not isinstance(model_rule[i].head[0], Literal_head):
-                to_revise[str(i)] = (model_rule[i].head[0].literal, isinstance(model_rule[i].head[0], Literal_pbl), True)
-            elif i >= len(model_rule) and not isinstance(user_rule[i].head[0], Literal_head):
-                to_revise[user_rule[i].head[0].index] = (user_rule[i].head[0].literal, isinstance(user_rule[i].head[0], Literal_pbl), True)
-            else:
-                head_a = model_rule[i].head[0]
-                head_b = user_rule[i].head[0]
-                
-                if isinstance(head_a, Literal_head) or isinstance(head_b, Literal_head):
+    elif model_rules is not None and user_rules is not None:
+        model_rule = model_rules[get_dict_key(mapping, index)]
+        if index not in user_rules:
+            while i < len(model_rule):
+                if isinstance(model_rule[i].head[0], Literal_head):
                     i += 1
                     continue
+                to_revise[str(i)] = (model_rule[i].head[0].literal, isinstance(model_rule[i].head[0], Literal_pbl), True)
+                i += 1
+        else:
+            user_rule = user_rules[index]
+            while i < max(len(model_rule), len(user_rule)):
+                if i >= len(user_rule) and not isinstance(model_rule[i].head[0], Literal_head):
+                    to_revise[str(i)] = (model_rule[i].head[0].literal, isinstance(model_rule[i].head[0], Literal_pbl), True)
+                elif i >= len(model_rule) and not isinstance(user_rule[i].head[0], Literal_head):
+                    to_revise[user_rule[i].head[0].index] = (user_rule[i].head[0].literal, isinstance(user_rule[i].head[0], Literal_pbl), True)
                 else:
-                    sim, diff = head_a.compare_to(head_b)
-                    if diff > 0:
-                        to_revise[head_b.index] = (head_a.literal, isinstance(head_a, Literal_pbl), diff > 0)
-            i += 1
+                    head_a = model_rule[i].head[0]
+                    head_b = user_rule[i].head[0]
+                    
+                    if isinstance(head_a, Literal_head) or isinstance(head_b, Literal_head):
+                        i += 1
+                        continue
+                    else:
+                        sim, diff = head_a.compare_to(head_b)
+                        if diff > 0:
+                            to_revise[head_b.index] = (head_a.literal, isinstance(head_a, Literal_pbl), diff > 0)
+                i += 1
     
     return to_revise
 
@@ -182,8 +186,10 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
             print('-- {} positive example(s) not covered: {}'.format(len(rem_correct), '  '.join([x.__str__() for x in rem_correct])))
             print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
 
-            revisions_data[each] = identify_rule_discrepancies(correct_rules_grouped[get_dict_key(mapping, each)], user_rules_grouped[each])
-            
+            rule_discrepancies = identify_rule_discrepancies(each, correct_rules_grouped, user_rules_grouped, mapping)
+            if len(rule_discrepancies) > 0:
+                    revisions_data[each] = rule_discrepancies
+                    
     # unmatched user rules
     for each in grouped_user.keys():
         if each not in mapping.values():
@@ -193,7 +199,9 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
                 print('Consider modifying rule {}:'.format(each))
                 print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
                 
-                revisions_data[each] = identify_rule_discrepancies(user_rule=user_rules_grouped[each])
+                rule_discrepancies = identify_rule_discrepancies(each, user_rules=user_rules_grouped)
+                if len(rule_discrepancies) > 0:
+                    revisions_data[each] = rule_discrepancies
 
     return correct_excluded, user_included, AS_discrepancies, revisions_data, meta_correct
 

@@ -43,7 +43,7 @@
                 <td style="border: 1px solid black;">{{data['similarity_score']}}</td>
             </tr>
             <tr>
-                <th style="border: 1px solid black;">Incorrect facts derived:</th>
+                <th style="border: 1px solid black;">Facts not derived:</th>
                 <td style="border: 1px solid black;">
                     <ul style="list-style-type:none; padding-left:0;">
                     {% for each in data['positive_examples'] %}
@@ -53,7 +53,7 @@
                 </td>
             </tr>
             <tr>
-                <th style="border: 1px solid black;">Facts not derived:</th>
+                <th style="border: 1px solid black;">Incorrect facts derived:</th>
                 <td style="border: 1px solid black;">
                     <ul style="list-style-type:none; padding-left:0;">
                     {% for each in data['negative_examples'] %}

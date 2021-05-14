@@ -121,30 +121,35 @@ def generate_mapping(correct, user):
     mappings = {}
     total_sim = 0
     total_diff = 0
+    model_excess = 0
 
     for each in matrix:
         score = -1
         index = None
         for entry in matrix[each]:
             sim, diff = matrix[each][entry]
-            if sim > score:
+            if sim > score and sim > diff:
                 score = sim
                 index = entry 
-            
-        mappings[each] = index
-        sim, diff = matrix[each][index]
-        total_sim += sim
-        total_diff += diff
+        
+        if index is None:
+            model_excess += 1
+            index = 'r' + str(len(user_indexes) + model_excess)
+            mappings[each] = index
+        else:
+            mappings[each] = index
+            sim, diff = matrix[each][index]
+            total_sim += sim
+            total_diff += diff
     
     score = total_sim / (total_sim + total_diff)
     
     # handle unmatched user rules    
-    unmatched_user_rules = 0
+    unmatched_user = 0
     for j in user_indexes:
         if j not in mappings.values():
-            unmatched_user_rules += 1 
-            
-    score -= score * (unmatched_user_rules / len(user_indexes))
+            unmatched_user += 1 
+    score -= score * ((unmatched_user + model_excess) / len(correct_indexes))
     score = '%.3f' % score
             
     return mappings, score, correct_rules_grouped, user_rules_grouped

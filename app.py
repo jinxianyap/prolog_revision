@@ -1,7 +1,7 @@
 import sys
 from flask import Flask, request, jsonify, render_template
 from feedback_gen import main as generate_feedback
-from metarep_encoder.messages import Output_type
+from metarep_encoder.messages import Output_type, ERROR
 app = Flask(__name__, template_folder='./')
 
 @app.route('/')
@@ -20,7 +20,11 @@ def form():
     except:
         return render_template('./error.html', data='Student program file not found.')
     
-    feedback = generate_feedback([data['model_program_filename']])
+    feedback = None
+    try:
+        feedback = generate_feedback([data['model_program_filename']])
+    except:
+        feedback = Output_type.ERROR, ERROR
     
     if feedback[0] == Output_type.REVISED or feedback[0] == Output_type.NEW_RULES:
         _, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text = feedback

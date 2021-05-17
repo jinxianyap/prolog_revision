@@ -51,6 +51,7 @@ def generateConstraintRules():
     must_have_head_rule = Rule([], [Literal_bl('R', 'P', 'X'), NotLiteral(Literal_head('R', '_', '_'))])
     no_broken_rule = Rule([], [Literal_bl('R', 'P', 'X'), NotEqualsLiteral('P', '1', True), NotLiteral(Literal_bl('R', 'P - 1', '_'))])
     # no_repeated_calls_rule = Rule([], [Literal_bl('R', 'PX', 'X'), Literal_bl('R', 'PY', 'X'), NotEqualsLiteral('PX', 'PY', True)])
+    # naf_rule = Rule([], [Literal_nbl('R', 'PX', 'X', 'VVX'), Literal_pbl('R', 'PY', 'Y', 'VVY'), LTLiteral('PX', 'PY', True)])
         
     return [must_have_head_rule, no_broken_rule]
     # return []
@@ -162,6 +163,7 @@ def generateProgramRules(processed_rules):
     var_names = []
     ground_constants = set()
     var_dicts = {}
+    reorder_naf = False
     
     rules = []
     for rule in processed_rules:
@@ -170,6 +172,14 @@ def generateProgramRules(processed_rules):
         body_rules = [generateLiteralRule(rule.rule_id, x.literal, x.args, rule.var_dict, str(i+1)) for i, x in enumerate(rule.body)]
         rule_lengths[rule.rule_id] = len(body_rules)
         var_dicts[rule.rule_id] = rule.var_dict
+        
+        naf = False
+        for each in body_rules:
+            if naf and isinstance(each.head[0], Literal_pbl):
+                reorder_naf = True
+                break
+            elif not naf and isinstance(each.head[0], Literal_nbl):
+                naf = True
         
         rules.append(rule_id)
         if head_rule is not None:
@@ -213,7 +223,7 @@ def generateProgramRules(processed_rules):
     
     program = program + [Rule([Literal_variable_list(x)], []) for x in generateVariableListRules(sorted(var_names)) if x is not 'end']
     
-    return modeh_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, program
+    return modeh_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, reorder_naf, program
 
 def generateStaticRules():
     return generateBLRules() + generateVarValRules() + generateSubsetRules() + generateSeenOrderingRules() + generateConstraintRules() + generateSatisfiedRules()
@@ -222,14 +232,14 @@ def encode(text, output):
     f = open(text, 'r')
     dest = open(output, 'w')
     static_rules = generateStaticRules()
-    body_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, program = generateProgramRules(parseText(f.read()))
+    body_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, reorder_naf, program = generateProgramRules(parseText(f.read()))
     rules = static_rules + program
     for rule in rules:
         dest.write(rule.__str__() + '\n')
     dest.write('#show in_AS/3.')
     dest.close()
     f.close()
-    return body_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, static_rules, program
+    return body_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, reorder_naf, static_rules, program
 
 def main(argv):
     if (len(argv) == 2):

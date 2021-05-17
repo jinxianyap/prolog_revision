@@ -8,8 +8,11 @@ from metarep_encoder.messages import *
 from tr_ilasp.revision import revise_program, revisableTheory
 
 def generate_revisable_program(file_name):
-    correct_body_literals, correct_rule_ids, correct_rule_lengths, correct_var_max, correct_variables, correct_ground_constants, _, _, correct_program = encode(file_name, 'correct.las')
-    user_body_literals, user_rule_ids, user_rule_lengths, user_var_max, user_variables, user_ground_constants, var_dicts, static_rules, user_program = encode(file_name.replace('.lp', '_user.lp'), 'user.las')
+    correct_body_literals, correct_rule_ids, correct_rule_lengths, correct_var_max, correct_variables, correct_ground_constants, _, _, _, correct_program = encode(file_name, 'correct.las')
+    user_body_literals, user_rule_ids, user_rule_lengths, user_var_max, user_variables, user_ground_constants, var_dicts, reorder_naf, static_rules, user_program = encode(file_name.replace('.lp', '_user.lp'), 'user.las')
+    
+    if reorder_naf:
+        return Output_type.REORDER_NAF, REORDER_NAF
 
     incorrect_arities = find_incorrect_arities(correct_body_literals, user_body_literals)
     if len(incorrect_arities) > 0:

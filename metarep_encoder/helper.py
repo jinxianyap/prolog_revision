@@ -1,5 +1,5 @@
 import re
-from metarep_encoder.messages import *
+from metarep_encoder.constants import *
 
 def find_incorrect_arities(correct, user):
     incorrect = {}

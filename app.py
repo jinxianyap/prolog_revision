@@ -1,7 +1,7 @@
 import sys
 from flask import Flask, request, jsonify, render_template
 from feedback_gen import main as generate_feedback
-from metarep_encoder.messages import Output_type, ERROR
+from metarep_encoder.constants import Output_type, ERROR
 app = Flask(__name__, template_folder='./')
 
 @app.route('/')

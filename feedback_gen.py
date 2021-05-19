@@ -4,7 +4,7 @@ from metarep_encoder.encoder import encode, generateVarVals, generateStaticRules
 from metarep_encoder.fault_localiser import find_erroneous_rules, get_answer_set
 from metarep_encoder.declarations_gen import generate_declarations
 from metarep_encoder.rule_mapping import *
-from metarep_encoder.messages import *
+from metarep_encoder.constants import *
 from tr_ilasp.revision import revise_program, revisableTheory
 
 def generate_revisable_program(file_name, loop):

@@ -13,3 +13,15 @@ class Output_type:
     NEW_RULES = 4
     REORDER_NAF = 5
     ERROR = -1
+    
+class Revision_type:
+    REPLACE = 0
+    ADD_BODY = 1
+    DELETE_BODY = 2
+    ADD_RULE = 3
+    DELETE_RULE = 4
+    NEG_BODY = 5
+    REORDER_NAF = 6
+    ORDER_BODY = 7
+    ORDER_RULE = 8
+    LISTS = 9    

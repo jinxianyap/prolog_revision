@@ -194,8 +194,9 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
         term_combos.add(tuple(each.fact.literal.args))
     for each in negative_examples:
         term_combos.add(tuple(each.fact.literal.args))
-    for each in revisable_literals:
-        declarations += generate_negative_examples(each[0], each[1], each[2], ground_constants, term_combos, 5)
+    if len(negative_examples) < len(revisable_literals):
+        for each in revisable_literals:
+            declarations += generate_negative_examples(each[0], each[1], each[2], ground_constants, term_combos, 5)
         
     declarations.append(Declaration_modeb('ground(var(ground))'))
     declarations.append(Declaration_maxv(max(literal_arities.values())))

@@ -1,7 +1,10 @@
+import os
 import sys
+import glob
 import random
 
-PROGRAMS = 3
+FOLDER_NAME = 'random_programs'
+PROGRAMS = 20
 VARIABLES = ['X', 'Y', 'Z', 'A', 'B']
 JOIN_ELEMS = ', '
 JOIN_RULES = '\n'
@@ -30,18 +33,19 @@ def generateRule(objective, max_body_length, max_variables, predicates):
     
     return rule
 
-def generateProgram(i, objective, max_rules, max_body_length, max_variables, predicates, background):
+def generateProgram(objective, max_rules, max_body_length, max_variables, predicates, background):
     prog_length = random.randint(1, max_rules)
     prog = []
     
     while len(prog) < prog_length:
         rule = generateRule(objective, max_body_length, max_variables, predicates)
-        prog.append(rule)
         
-    program = JOIN_RULES.join(prog + background)
-    f = open('random_{}.lp'.format(i), 'w')
-    f.write(program)
-    f.close()
+        if rule not in prog:
+            prog.append(rule)
+        
+    full_program = JOIN_RULES.join(prog + background)
+    
+    return full_program, prog
 
 def parseSpecFile(file_text):
     if file_text is None:
@@ -79,14 +83,20 @@ def parseSpecFile(file_text):
             split = each.split(':')
             predicates[split[0].strip()] = int(split[1].strip())
 
-    # print(background)
-    # print(max_rules)
-    # print(max_body_length)
-    # print(max_variables)
-    # print(predicates)
+    traces = set()
+    max_tries = PROGRAMS * 3
     
-    for i in range(PROGRAMS):
-        generateProgram(str(i + 1), objective, max_rules, max_body_length, max_variables, predicates, background)
+    while len(traces) < PROGRAMS and max_tries > 0:
+        max_tries -= 1
+        full_program, program = generateProgram(objective, max_rules, max_body_length, max_variables, predicates, background)
+        prog_trace = ''.join(program)
+
+        if not prog_trace in traces:
+            f = open('{}/random_{}.lp'.format(FOLDER_NAME, str(len(traces) + 1)), 'w')
+            f.write(full_program)
+            f.close()
+            traces.add(prog_trace)
+            
     
 def main(argv):
     if (len(argv) == 1):
@@ -95,10 +105,17 @@ def main(argv):
             f = open(argv[0], 'r')
             text = f.read().split('\n')
             f.close()
-        except:
-            print('Spec file not found.')
-        
-        parseSpecFile(text)
+                        
+            if not os.path.exists(FOLDER_NAME):
+                os.makedirs(FOLDER_NAME)
+                
+            existing_files = glob.glob(FOLDER_NAME + '/*')
+            for each in existing_files:
+                os.remove(each)
+                
+            parseSpecFile(text)
+        except Exception as e:
+            print(e)
     else:
         print('Please provide a spec file.')
     

@@ -157,6 +157,7 @@ def interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revis
     # print(marked_rules)
     # print(parsed_revisions)
     feedback_text = []
+    revision_tags = set()
 
     for rule_id in marked_rules:
         deleted_body = 0
@@ -173,24 +174,32 @@ def interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revis
                 
                 if isinstance(translated[0], Literal_nbl):
                     literal = '\+ ' + literal
+                    revision_tags.add(Revision_type.NEG_BODY)
                     
                 if len(translated) == 1:
                     text = 'Rule: {}, Index: {} - {} with \'{}\'.'.format(rule_id, index, 'Extend' if is_extend else 'Replace', literal)
+                    if is_extend:
+                        revision_tags.add(Revision_type.ADD_BODY)
+                    else:
+                        revision_tags.add(Revision_type.REPLACE_BODY)
                     feedback_text.append(text)
                 else:
                     # to be completed
                     text = 'Rule: {}, Index: {} - Replace with \'{}\'.'.format(rule_id, index, literal)
+                    revision_tags.add(Revision_type.REPLACE_BODY)
                     feedback_text.append(text)
             else:
                 text = 'Rule: {}, Index: {} - Delete body literal.'.format(rule_id, index)
                 deleted_body += 1
+                revision_tags.add(Revision_type.DELETE_BODY)
                 feedback_text.append(text)
                 
             if deleted_body == user_rule_lengths[rule_id]:
                 text = 'Rule: {} - Delete rule.'.format(rule_id)
+                revision_tags.add(Revision_type.DELETE_RULE)
                 feedback_text.append(text)
                 
-    return feedback_text
+    return feedback_text, revision_tags
 
 def interpret_revisions_new_rule(new_rules):     
     feedback_text = []    
@@ -204,7 +213,7 @@ def interpret_revisions_new_rule(new_rules):
             else:
                 text = 'Rule: {}, Index: {} - Extend with \'{}\'.'.format(rule_id, str(i), (rules[i].head[0].literal).__str__())
                 feedback_text.append(text)
-    return feedback_text        
+    return feedback_text, set([Revision_type.ADD_RULE])    
 
 # ------------------------------------------------------------------------------
 #  Apply revisions
@@ -325,7 +334,7 @@ def calculate_similarity_score(syntax, semantics, revisions):
     REVISIONS = 0.3
     
     total = (syntax * SYNTAX) + (semantics * SEMANTICS) + (revisions * REVISIONS)
-    return '%.3f' % total
+    return round(total, 3)
             
 # ------------------------------------------------------------------------------
          
@@ -345,13 +354,16 @@ def main(argv):
         remove_revisable_declarations(user_program)
 
         if len(new_rules) > 0: # if user should add rules, suggest first and have them make changes
-            feedback_text = interpret_revisions_new_rule(new_rules)
+            feedback_text, revision_tags = interpret_revisions_new_rule(new_rules)
+            
+            revision_ratio = 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]) 
+            similarity_score = calculate_similarity_score(score[0], score[1], revision_ratio)
+            eval_data = (revision_tags, similarity_score)
+            print(eval_data)
             
             apply_new_rules_revisions(user_program, new_rules)
             success = check_revision_success() 
-            revision_ratio = 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]) 
-            similarity_score = calculate_similarity_score(score[0], score[1], revision_ratio)
-            
+
             return Output_type.NEW_RULES, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
         else:
             revised = revise_program('revisable.las')
@@ -360,10 +372,12 @@ def main(argv):
                 return Output_type.UNSATISFIABLE, UNSATISFIABLE
                         
             parsed_revisions = parse_revised_theories(revised)
-            feedback_text = interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revisions)
+            feedback_text, revision_tags = interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revisions)
 
             revision_ratio = 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]) 
             similarity_score = calculate_similarity_score(score[0], score[1], revision_ratio)
+            eval_data = (revision_tags, similarity_score)
+            print(eval_data)
             
             apply_revisions(user_program, marked_rules, user_rule_lengths, parsed_revisions)
             success = check_revision_success()

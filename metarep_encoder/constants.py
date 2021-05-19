@@ -6,22 +6,21 @@ REORDER_NAF = 'Prolog negation must appear at the end of rules to avoid unbounde
 ERROR = 'Encountered error during feedback generation.'
 
 class Output_type:
-    REVISED = 0
-    NO_REVISION = 1
-    INCORRECT_ARITIES = 2
-    UNSATISFIABLE = 3
-    NEW_RULES = 4
-    REORDER_NAF = 5
-    ERROR = -1
+    REVISED = 'REVISED'
+    NO_REVISION = 'NO_REVISION'
+    INCORRECT_ARITIES = 'INCORRECT_ARITIES'
+    UNSATISFIABLE = 'UNSATISFIABLE'
+    NEW_RULES = 'NEW_RULES'
+    REORDER_NAF = 'REORDER_NAF'
+    ERROR = 'ERROR'
     
 class Revision_type:
-    REPLACE = 0
-    ADD_BODY = 1
-    DELETE_BODY = 2
-    ADD_RULE = 3
-    DELETE_RULE = 4
-    NEG_BODY = 5
-    REORDER_NAF = 6
+    REPLACE_BODY = 'REPLACE_BODY'
+    ADD_BODY = 'ADD_BODY'
+    DELETE_BODY = 'DELETE_BODY'
+    ADD_RULE = 'ADD_RULE'
+    DELETE_RULE = 'DELETE_RULE'
+    NEG_BODY = 'NEG_BODY'
     ORDER_BODY = 7
     ORDER_RULE = 8
     LISTS = 9    

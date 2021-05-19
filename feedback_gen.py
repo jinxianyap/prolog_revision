@@ -1,5 +1,6 @@
 import sys
 import subprocess
+import functools
 from metarep_encoder.encoder import encode, generateVarVals, generateStaticRules
 from metarep_encoder.fault_localiser import find_erroneous_rules, get_answer_set
 from metarep_encoder.declarations_gen import generate_declarations
@@ -20,14 +21,17 @@ def generate_revisable_program(file_name, loop):
         print(msg)
         return Output_type.INCORRECT_ARITIES, msg
         
-    rule_mapping, score, correct_rules_grouped, user_rules_grouped = generate_mapping(correct_program, user_program)
-    print('Similarity score: %s' % str(score))
+    rule_mapping, syntax_score, correct_rules_grouped, user_rules_grouped = generate_mapping(correct_program, user_program)
     # print(rule_mapping)
 
     correct_excluded, user_included, errors, revisions_data, answer_set = find_erroneous_rules(rule_mapping, correct_rules_grouped, user_rules_grouped)
     # print(errors)
     # print(revisions_data)
-    if str(score) == '1.000' or len(errors) == 0:
+    semantic_errors = sum([len(errors[each][0]) + len(errors[each][1]) for each in errors])
+    semantics_score = 1 - (semantic_errors / len(answer_set))
+    
+    
+    if (syntax_score == 1 and semantic_score == 1) or len(errors) == 0:
         msg = 'User program gives expected results. No revision needed.'
         print(msg)
         return Output_type.NO_REVISION, msg
@@ -41,7 +45,7 @@ def generate_revisable_program(file_name, loop):
         dest.write(each.__str__() + '\n')
     dest.close()    
     
-    return Output_type.REVISED, correct_program, user_program, correct_excluded, user_included, score, revisable_program, var_dicts, user_rule_lengths, marked_rules, list(errors.keys()), new_rules
+    return Output_type.REVISED, correct_program, user_program, correct_excluded, user_included, (syntax_score, semantics_score), revisable_program, var_dicts, user_rule_lengths, marked_rules, list(errors.keys()), new_rules
 
 # ------------------------------------------------------------------------------
 #  Parse Revised Theories        
@@ -258,9 +262,17 @@ def apply_revisions(program, marked_rules, user_rule_lengths, parsed_revisions, 
 def apply_new_rules_revisions(program, new_rules):
     insertion = []
     for rule_id in new_rules:
+        rule_declaration = Rule([Literal_rule(rule_id)], [])
+        insertion.append(rule_declaration)
+        
         rules = new_rules[rule_id]
         remove_revisable_declarations(rules)
         insertion += rules
+        
+        prev_id = int(rule_id.split('r')[1]) - 1
+        ordering = Rule([Literal_order('r' + str(prev_id), rule_id)], [])
+        insertion.append(ordering)    
+    
     index = next(i for (i, rule) in enumerate(program) if isinstance(rule.head[0], Literal_order))
     
     for each in insertion:
@@ -296,6 +308,14 @@ def check_revision_success():
     else:
         print('Revision result: Failure')
         return False
+    
+def calculate_similarity_score(syntax, semantics, revisions):
+    SYNTAX = 0.2
+    SEMANTICS = 0.5
+    REVISIONS = 0.3
+    
+    total = (syntax * SYNTAX) + (semantics * SEMANTICS) + (revisions * REVISIONS)
+    return '%.3f' % total
             
 # ------------------------------------------------------------------------------
          
@@ -317,9 +337,11 @@ def main(argv):
             feedback_text = interpret_revisions_new_rule(new_rules)
             
             apply_new_rules_revisions(user_program, new_rules)
-            success = check_revision_success()      
-
-            return Output_type.NEW_RULES, correct_excluded, user_included, score, revisable_rule_ids, feedback_text, success
+            success = check_revision_success() 
+            revision_ratio = 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]) 
+            similarity_score = calculate_similarity_score(score[0], score[1], revision_ratio)
+            
+            return Output_type.NEW_RULES, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
         else:
             revised = revise_program('revisable.las')
             
@@ -329,10 +351,13 @@ def main(argv):
             parsed_revisions = parse_revised_theories(revised)
             feedback_text = interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revisions)
 
+            revision_ratio = 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]) 
+            similarity_score = calculate_similarity_score(score[0], score[1], revision_ratio)
+            
             apply_revisions(user_program, marked_rules, user_rule_lengths, parsed_revisions)
             success = check_revision_success()
             
-            return output_type, correct_excluded, user_included, score, revisable_rule_ids, feedback_text, success
+            return output_type, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
     else:
         return output
  

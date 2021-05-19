@@ -150,7 +150,7 @@ def generate_mapping(correct, user):
         if j not in mappings.values():
             unmatched_user += 1 
     score -= score * ((unmatched_user + model_excess) / len(correct_indexes))
-    score = '%.3f' % score
+    # score = '%.3f' % score
             
     return mappings, score, correct_rules_grouped, user_rules_grouped
             

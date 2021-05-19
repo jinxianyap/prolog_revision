@@ -3,6 +3,7 @@ from metarep_encoder.helper import join, assert_type, assert_type_list, assert_t
 class Rule:
     def __init__(self, head, body):
         self.head = head
+        self.revisable = False
         self.rev_id = None
         self.rev_vars = None
         self.built_in_type = None
@@ -11,19 +12,22 @@ class Rule:
         return 'Rule()'
     def __str__(self):
         rule = join(self.head) + ('' if len(self.body) == 0 else ' :- ' + join(self.body)) + '.'
-        if self.rev_id is not None:
+        if self.revisable and self.rev_id is not None:
             if self.rev_vars is not None:
                 return '#revisable({}, ({}), ({})).'.format(self.rev_id, rule, self.rev_vars)
             else:
                 return '#revisable({}, ({})).'.format(self.rev_id, rule)
         else:
             return rule
-    def make_revisable(self, rev_id, rev_vars=None):
+    def make_revisable(self, rev_id=None, rev_vars=None):
         if self.built_in_type is not None: return
         self.revisable = True
-        assert_type(rev_id, str)
-        self.rev_id = rev_id
-        self.rev_vars = rev_vars
+        if rev_id is not None:
+            self.rev_id = rev_id
+        if rev_vars is not None:
+            self.rev_vars = rev_vars
+    def make_non_revisable(self):
+        self.revisable = False
 
 class Literal:
     def __init__(self, name, args):

@@ -145,6 +145,7 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
                         nbl_string = 'nbl(const({}), const({}), {}, {})'.format(RULE_ID_SYMBOL, POS_SYMBOL, literal, vv)
                         modehs.append(Declaration_modeh(nbl_string))
 
+    revisable_program = list(user_program)
     new_rules = {}
     # generating #revisable declarations for new rules                
     for rule_id in revisions_data:
@@ -161,7 +162,7 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
             # rule.make_revisable('rev' + str(revise_counter), revise_vars)
             # revise_counter += 1
             # revisable_rules[rule_id][index] = (rule, True)
-            user_program.append(rule)
+            revisable_program.append(rule)
             new_rules[rule_id] = [rule]
              
         for index in revisions_data[rule_id]:
@@ -178,7 +179,7 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
                 rule.make_revisable('rev' + str(revise_counter), revise_vars)
                 revise_counter += 1
                 revisable_rules[rule_id][index] = (rule, True)
-                user_program.append(rule)      
+                revisable_program.append(rule)      
                 if rule_id in new_rules:
                     new_rules[rule_id].append(rule)
             
@@ -201,13 +202,13 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
     
     # var_max additions
     if user_var_max != correct_var_max:
-        i = len(user_program) - 1
+        i = len(revisable_program) - 1
         while i > 0:
-            if isinstance(user_program[i].head[0], Literal_var_num):
+            if isinstance(revisable_program[i].head[0], Literal_var_num):
                 break
             else:
                 i -= 1
-        user_program = user_program[:i]
+        revisable_program = revisable_program[:i]
     
         var_names_extensions = []
         
@@ -222,16 +223,16 @@ def generate_declarations(errors, revisions_data, rule_mapping, answer_set, corr
         for i in range(user_var_max - 1, correct_var_max - 1):
             var_names_extensions.append(Rule([Literal_variable(VARIABLE_POOL[i])], []))
         
-        user_program += var_names_extensions
+        revisable_program += var_names_extensions
     
-    user_program += declarations
+    revisable_program += declarations
     
     # testing purposes: to force unsatisfiable
-    # user_program.append('neg(p6, {in_AS(pet(cat),r6,var_vals(var_val(r6,var_1,cat),end))}, {}, {}).')
+    # revisable_program.append('neg(p6, {in_AS(pet(cat),r6,var_vals(var_val(r6,var_1,cat),end))}, {}, {}).')
         
-    # for each in user_program:
+    # for each in revisable_program:
     #     print(each)
-    return user_program, revisable_rules, new_rules
+    return revisable_program, revisable_rules, new_rules
 
 def main():
     generate_declarations()

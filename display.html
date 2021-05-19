@@ -37,7 +37,7 @@
                     </ul>
                 </td>
             </tr>
-            {% if data['success'] %}
+            {% if data['feedback_gen_success'] %}
             <tr>
                 <th style="border: 1px solid black;">Similarity Score:</th>
                 <td style="border: 1px solid black;">{{data['similarity_score']}}</td>
@@ -71,6 +71,10 @@
                     {% endfor %}  
                     </ul>
                 </td>
+            </tr>
+            <tr>
+                <th style="border: 1px solid black;">Revision Success:</th>
+                <td style="border: 1px solid black;">{{data['revision_success']}}</td>
             </tr>
             {% else %}
             <tr>

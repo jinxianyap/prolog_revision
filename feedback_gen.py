@@ -1,13 +1,13 @@
 import sys
 import subprocess
-from metarep_encoder.encoder import encode, generateVarVals
-from metarep_encoder.fault_localiser import find_erroneous_rules
+from metarep_encoder.encoder import encode, generateVarVals, generateStaticRules
+from metarep_encoder.fault_localiser import find_erroneous_rules, get_answer_set
 from metarep_encoder.declarations_gen import generate_declarations
 from metarep_encoder.rule_mapping import *
 from metarep_encoder.messages import *
 from tr_ilasp.revision import revise_program, revisableTheory
 
-def generate_revisable_program(file_name):
+def generate_revisable_program(file_name, loop):
     correct_body_literals, correct_rule_ids, correct_rule_lengths, correct_var_max, correct_variables, correct_ground_constants, _, _, _, correct_program = encode(file_name, 'correct.las')
     user_body_literals, user_rule_ids, user_rule_lengths, user_var_max, user_variables, user_ground_constants, var_dicts, reorder_naf, static_rules, user_program = encode(file_name.replace('.lp', '_user.lp'), 'user.las')
     
@@ -33,7 +33,7 @@ def generate_revisable_program(file_name):
         return Output_type.NO_REVISION, msg
     
     revisable_program, marked_rules, new_rules = generate_declarations(errors, revisions_data, rule_mapping, answer_set, correct_body_literals, correct_rule_ids, correct_var_max, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_var_max, user_variables, user_ground_constants, user_program)
-    
+
     revisable_program = static_rules + revisable_program
     
     dest = open('revisable.las', 'w')
@@ -41,7 +41,10 @@ def generate_revisable_program(file_name):
         dest.write(each.__str__() + '\n')
     dest.close()    
     
-    return Output_type.REVISED, correct_excluded, user_included, score, revisable_program, var_dicts, user_rule_lengths, marked_rules, list(errors.keys()), new_rules
+    return Output_type.REVISED, correct_program, user_program, correct_excluded, user_included, score, revisable_program, var_dicts, user_rule_lengths, marked_rules, list(errors.keys()), new_rules
+
+# ------------------------------------------------------------------------------
+#  Parse Revised Theories        
 
 def parse_revised_theories(theories):
     parsed = {}
@@ -198,20 +201,125 @@ def interpret_revisions_new_rule(new_rules):
                 text = 'Rule: {}, Index: {} - Extend with \'{}\'.'.format(rule_id, str(i), (rules[i].head[0].literal).__str__())
                 feedback_text.append(text)
     return feedback_text        
+
+# ------------------------------------------------------------------------------
+#  Apply revisions
+
+def remove_revisable_declarations(program):
+    for each in program:
+        each.make_non_revisable()
+        
+def find_rule_index(program, rule_id):
+    for i, each in enumerate(program):
+        if isinstance(each, Rule):
+            head = each.head[0]
+            if isinstance(head, Literal_rule):
+                if head.rule_id == rule_id:
+                    return i
+                
+def generate_grounding(args):
+    return [Literal_ground(x) for x in args if is_variable(x)]              
             
+def apply_revisions(program, marked_rules, user_rule_lengths, parsed_revisions, new_rule=False):
+    for rule_id in parsed_revisions:
+        if rule_id is None: continue
+        for index in parsed_revisions[rule_id]:
+            marked_info = marked_rules[rule_id][index]
+            rule_index = find_rule_index(program, rule_id)
+            
+            if marked_info[1]: # extension of body
+                head = parsed_revisions[rule_id][index][0]
+                body = generate_grounding(head.literal.args)
+                rule = Rule([head], body)
+                program.insert(rule_index + 1 + int(index), rule)
+            else: # replacement
+                head = parsed_revisions[rule_id][index][0]
+                body = generate_grounding(head.literal.args)
+                rule = Rule([head], body)
+                program[rule_index + 1 + int(index)] = rule
+            
+            marked_rules[rule_id].pop(index)
+            if len(marked_rules[rule_id]) == 0:
+                marked_rules.pop(rule_id)
+                
+    for rule_id in marked_rules:
+        indexes = sorted(marked_rules[rule_id], reverse=True)
+        for index in indexes:
+            rule_index = find_rule_index(program, rule_id)
+            program.pop(rule_index + 1 + int(index))
+            
+        # whole rule should be deleted
+        if len(indexes) == user_rule_lengths[rule_id]:
+            program.pop(rule_index + 1)
+            program.pop(rule_index)
+            
+    save_revised_program(program)
+                        
+def apply_new_rules_revisions(program, new_rules):
+    insertion = []
+    for rule_id in new_rules:
+        rules = new_rules[rule_id]
+        remove_revisable_declarations(rules)
+        insertion += rules
+    index = next(i for (i, rule) in enumerate(program) if isinstance(rule.head[0], Literal_order))
+    
+    for each in insertion:
+        program.insert(index, each)
+        index += 1
+        
+    save_revised_program(program)
+        
+def save_revised_program(program):
+    dest = open('revised.las', 'w')
+    rules = generateStaticRules() + program
+    for rule in rules:
+        dest.write(rule.__str__() + '\n')
+    dest.write('#show in_AS/3.')
+    dest.close()
+    
+def check_revision_success():
+    meta_correct, correct = get_answer_set('correct.las')
+    meta_revised, revised = get_answer_set("revised.las")
+    
+    correct_excluded = [x for x in correct if x not in revised]
+    if len(correct_excluded) > 0:
+        print('Positive examples not covered:')
+        [print(x) for x in correct_excluded]
+    user_included = [x for x in revised if x not in correct]
+    if len(user_included) > 0:
+        print('Negative examples covered:')
+        [print(x) for x in user_included]
+        
+    if len(correct_excluded) == 0 and len(user_included) == 0:
+        print('Revision result: Success')
+        return True
+    else:
+        print('Revision result: Failure')
+        return False
+            
+# ------------------------------------------------------------------------------
+         
 def main(argv):
     if argv[0] == '--revise-only':
         revise_program('revisable.las')
         return
     
-    output = generate_revisable_program(argv[0])
+    loop = True
+    
+    output = generate_revisable_program(argv[0], loop)
     
     if output[0] == Output_type.REVISED:
-        output_type, correct_excluded, user_included, score, revisable, var_dicts, user_rule_lengths, marked_rules, revisable_rule_ids, new_rules = output
+        output_type, correct_program, user_program, correct_excluded, user_included, score, revisable, var_dicts, user_rule_lengths, marked_rules, revisable_rule_ids, new_rules = output
         
+        remove_revisable_declarations(user_program)
+
         if len(new_rules) > 0: # if user should add rules, suggest first and have them make changes
             feedback_text = interpret_revisions_new_rule(new_rules)
-            return Output_type.NEW_RULES, correct_excluded, user_included, score, revisable_rule_ids, feedback_text
+            
+            apply_new_rules_revisions(user_program, new_rules)
+            success = check_revision_success()      
+
+            return Output_type.NEW_RULES, correct_excluded, user_included, score, revisable_rule_ids, feedback_text, success
         else:
             revised = revise_program('revisable.las')
             
@@ -221,7 +329,10 @@ def main(argv):
             parsed_revisions = parse_revised_theories(revised)
             feedback_text = interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revisions)
 
-            return output_type, correct_excluded, user_included, score, revisable_rule_ids, feedback_text
+            apply_revisions(user_program, marked_rules, user_rule_lengths, parsed_revisions)
+            success = check_revision_success()
+            
+            return output_type, correct_excluded, user_included, score, revisable_rule_ids, feedback_text, success
     else:
         return output
  

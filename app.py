@@ -27,9 +27,10 @@ def form():
         feedback = Output_type.ERROR, ERROR
     
     if feedback[0] == Output_type.REVISED or feedback[0] == Output_type.NEW_RULES:
-        _, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text = feedback
+        _, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, revision_success = feedback
         
-        data['success'] = True
+        data['feedback_gen_success'] = True
+        data['revision_success'] = revision_success
         data['positive_examples'] = correct_excluded
         data['negative_examples'] = user_included
         data['similarity_score'] = similarity_score

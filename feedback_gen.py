@@ -45,7 +45,7 @@ def generate_revisable_program(file_name, loop):
         dest.write(each.__str__() + '\n')
     dest.close()    
     
-    return Output_type.REVISED, correct_program, user_program, correct_excluded, user_included, (syntax_score, semantics_score), revisable_program, var_dicts, user_rule_lengths, marked_rules, list(errors.keys()), new_rules
+    return Output_type.REVISED, user_program, errors, (syntax_score, semantics_score), revisable_program, var_dicts, user_rule_lengths, marked_rules, list(errors.keys()), new_rules
 
 # ------------------------------------------------------------------------------
 #  Parse Revised Theories        
@@ -209,6 +209,16 @@ def interpret_revisions_new_rule(new_rules):
 # ------------------------------------------------------------------------------
 #  Apply revisions
 
+def translate_errors(errors):
+    positive = []
+    negative = []
+    
+    for rule_id in sorted(errors):
+        positive += ['{}: {}'.format(rule_id, x.literal.__str__()) for x in errors[rule_id][0]]
+        negative += ['{}: {}'.format(rule_id, x.literal.__str__()) for x in errors[rule_id][1]]
+        
+    return positive, negative
+
 def remove_revisable_declarations(program):
     for each in program:
         each.make_non_revisable()
@@ -329,8 +339,9 @@ def main(argv):
     output = generate_revisable_program(argv[0], loop)
     
     if output[0] == Output_type.REVISED:
-        output_type, correct_program, user_program, correct_excluded, user_included, score, revisable, var_dicts, user_rule_lengths, marked_rules, revisable_rule_ids, new_rules = output
+        output_type, user_program, errors, score, revisable, var_dicts, user_rule_lengths, marked_rules, revisable_rule_ids, new_rules = output
         
+        correct_excluded, user_included = translate_errors(errors)
         remove_revisable_declarations(user_program)
 
         if len(new_rules) > 0: # if user should add rules, suggest first and have them make changes

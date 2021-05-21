@@ -1,9 +1,9 @@
 import argparse
 import subprocess
 
-from tr_ilasp.predicateTree import print_tree, build_tree, build_predicate, build_modeh_from_tree, build_tree_from_modeh, \
+from .predicateTree import print_tree, build_tree, build_predicate, build_modeh_from_tree, build_tree_from_modeh, \
     generate_possible_head_from_tree, compareTrees
-from tr_ilasp.utils import split_literals, type_error, concat_literal, check_paren_literal, paren_error, fullstop_error, \
+from .utils import split_literals, type_error, concat_literal, check_paren_literal, paren_error, fullstop_error, \
     variable_literals, build_inverse_dict
 
 

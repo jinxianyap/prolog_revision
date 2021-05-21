@@ -1,8 +1,8 @@
 import sys
 import itertools
-from metarep_encoder.classes import *
-from metarep_encoder.parser import *
-from metarep_encoder.helper import *
+from .classes import *
+from .parser import *
+from .helper import *
 
 def generateBLRules():
     # body literals

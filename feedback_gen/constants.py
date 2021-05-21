@@ -1,5 +1,3 @@
-INCORRECT_TYPE = 'Incorrect type assigned.'
-INCORRECT_VARS_LENGTH = 'Incorrect number of variables provided.'
 INCORRECT_ARITIES = 'Literals used with incorrect number of variables. Please refer to the correct arities: '
 UNSATISFIABLE = 'The theory is unsatisfiable. Unable to revise program.'
 REORDER_NAF = 'Prolog negation must appear at the end of rules to avoid unbounded NAF.'

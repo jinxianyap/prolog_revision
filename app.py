@@ -1,7 +1,7 @@
 import sys
 from flask import Flask, request, jsonify, render_template
-from feedback_gen import main as generate_feedback
-from metarep_encoder.constants import Output_type, ERROR
+from feedback_gen.feedback_gen import main as generate_feedback
+from feedback_gen.constants import Output_type, ERROR
 app = Flask(__name__, template_folder='./')
 
 @app.route('/')
@@ -22,7 +22,7 @@ def form():
     
     feedback = None
     try:
-        feedback = generate_feedback([data['model_program_filename']])
+        feedback = generate_feedback([data['model_program_filename'], data['student_program_filename']])
     except:
         feedback = Output_type.ERROR, ERROR
     

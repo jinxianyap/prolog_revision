@@ -3,7 +3,7 @@ examples/
 clingo/
 metarep_encoder/__pycache__/
 tr_ilasp/__pycache__/
-program_generator/spec_files/
+spec_files/
 random_programs/
 
 __pycache__/

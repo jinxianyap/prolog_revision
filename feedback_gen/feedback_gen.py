@@ -1,16 +1,20 @@
-import sys
-import subprocess
 import functools
-from metarep_encoder.encoder import encode, generateVarVals, generateStaticRules
-from metarep_encoder.fault_localiser import find_erroneous_rules, get_answer_set
-from metarep_encoder.declarations_gen import generate_declarations
-from metarep_encoder.rule_mapping import *
-from metarep_encoder.constants import *
-from tr_ilasp.revision import revise_program, revisableTheory
+import subprocess
+import sys
 
-def generate_revisable_program(file_name, loop):
-    correct_body_literals, correct_rule_ids, correct_rule_lengths, correct_var_max, correct_variables, correct_ground_constants, _, _, _, correct_program = encode(file_name, 'correct.las')
-    user_body_literals, user_rule_ids, user_rule_lengths, user_var_max, user_variables, user_ground_constants, var_dicts, reorder_naf, static_rules, user_program = encode(file_name.replace('.lp', '_user.lp'), 'user.las')
+from .constants import *
+from .metarep_encoder.declarations_gen import generate_declarations
+from .metarep_encoder.encoder import (encode, generateStaticRules,
+                                     generateVarVals)
+from .metarep_encoder.fault_localiser import (find_erroneous_rules,
+                                             get_answer_set)
+from .metarep_encoder.rule_mapping import *
+from .tr_ilasp.revision import revisableTheory, revise_program
+
+
+def generate_revisable_program(model_filename, user_filename, loop):
+    correct_body_literals, correct_rule_ids, correct_rule_lengths, correct_var_max, correct_variables, correct_ground_constants, _, _, _, correct_program = encode(model_filename, 'correct.las')
+    user_body_literals, user_rule_ids, user_rule_lengths, user_var_max, user_variables, user_ground_constants, var_dicts, reorder_naf, static_rules, user_program = encode(user_filename, 'user.las')
     
     if reorder_naf:
         return Output_type.REORDER_NAF, REORDER_NAF
@@ -31,7 +35,7 @@ def generate_revisable_program(file_name, loop):
     semantics_score = 1 - (semantic_errors / len(answer_set))
     
     
-    if (syntax_score == 1 and semantic_score == 1) or len(errors) == 0:
+    if (syntax_score == 1 and semantics_score == 1) or len(errors) == 0:
         msg = 'User program gives expected results. No revision needed.'
         print(msg)
         return Output_type.NO_REVISION, msg
@@ -338,14 +342,16 @@ def calculate_similarity_score(syntax, semantics, revisions):
             
 # ------------------------------------------------------------------------------
          
-def main(argv):
+def main(argv, is_eval=False):
     if argv[0] == '--revise-only':
         revise_program('revisable.las')
         return
     
-    loop = True
+    if len(argv) < 2:
+        print('Please provide a model program and a user program.')
+        return
     
-    output = generate_revisable_program(argv[0], loop)
+    output = generate_revisable_program(argv[0], argv[1], True)
     
     if output[0] == Output_type.REVISED:
         output_type, user_program, errors, score, revisable, var_dicts, user_rule_lengths, marked_rules, revisable_rule_ids, new_rules = output
@@ -358,13 +364,14 @@ def main(argv):
             
             revision_ratio = 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]) 
             similarity_score = calculate_similarity_score(score[0], score[1], revision_ratio)
-            eval_data = (revision_tags, similarity_score)
-            print(eval_data)
             
             apply_new_rules_revisions(user_program, new_rules)
             success = check_revision_success() 
 
-            return Output_type.NEW_RULES, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
+            if is_eval:
+                return similarity_score, revision_tags, success
+            else:
+                return Output_type.NEW_RULES, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
         else:
             revised = revise_program('revisable.las')
             
@@ -376,13 +383,14 @@ def main(argv):
 
             revision_ratio = 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]) 
             similarity_score = calculate_similarity_score(score[0], score[1], revision_ratio)
-            eval_data = (revision_tags, similarity_score)
-            print(eval_data)
             
             apply_revisions(user_program, marked_rules, user_rule_lengths, parsed_revisions)
             success = check_revision_success()
             
-            return output_type, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
+            if is_eval:
+                return similarity_score, revision_tags, success
+            else:
+                return output_type, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
     else:
         return output
  

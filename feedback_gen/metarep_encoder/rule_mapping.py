@@ -1,6 +1,5 @@
-from metarep_encoder.classes import *
-from metarep_encoder.helper import *
-# DECAY = 0.8
+from .classes import *
+from .helper import *
 
 def compare_literals(a, b):
     # similarity = 0

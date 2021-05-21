@@ -1,5 +1,4 @@
 import re
-from metarep_encoder.constants import *
 
 def find_incorrect_arities(correct, user):
     incorrect = {}
@@ -242,6 +241,8 @@ def trim_front_back_whitespace(text):
 
 # ------------------------------------------------------------------------------
 #  Assertions
+INCORRECT_TYPE = 'Incorrect type assigned.'
+INCORRECT_VARS_LENGTH = 'Incorrect number of variables provided.'
     
 def assert_type(object, target):
     assert isinstance(object, target), INCORRECT_TYPE

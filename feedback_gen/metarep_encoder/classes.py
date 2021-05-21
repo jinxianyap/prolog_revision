@@ -1,4 +1,4 @@
-from metarep_encoder.helper import join, assert_type, assert_type_list, assert_type_is_list, assert_type_choice, RULE_ID_SYMBOL, VAR_VALS_END_SYMBOL
+from .helper import join, assert_type, assert_type_list, assert_type_is_list, assert_type_choice, RULE_ID_SYMBOL, VAR_VALS_END_SYMBOL
 
 class Rule:
     def __init__(self, head, body):

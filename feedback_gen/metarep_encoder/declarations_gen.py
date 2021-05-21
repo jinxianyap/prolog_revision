@@ -1,8 +1,8 @@
 import random
-from metarep_encoder.classes import *
-from metarep_encoder.helper import *
-from metarep_encoder.encoder import generateVarVals, generateVariableListRules
-from metarep_encoder.fault_localiser import DerivableFact
+from .classes import *
+from .helper import *
+from .encoder import generateVarVals, generateVariableListRules
+from .fault_localiser import DerivableFact
 
 def make_rule_revisable(rule_id, program, counter, revisions_data, rule_mapping):
     found = False

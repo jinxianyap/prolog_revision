@@ -1,4 +1,4 @@
-from tr_ilasp.utils import split_literals
+from .utils import split_literals
 
 
 class Node:

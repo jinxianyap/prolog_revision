@@ -100,6 +100,7 @@ def parseSpecFile(file_text):
     
 def main(argv):
     if (len(argv) == 1):
+        print(argv[0])
         text = None
         try:
             f = open(argv[0], 'r')
@@ -118,6 +119,7 @@ def main(argv):
             print(e)
     else:
         print('Please provide a spec file.')
+        print(argv)
     
 if __name__ == '__main__':
     main(sys.argv[1:])

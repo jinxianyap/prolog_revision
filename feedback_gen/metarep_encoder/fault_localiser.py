@@ -1,5 +1,5 @@
 import subprocess
-from metarep_encoder.encoder import *
+from .encoder import *
 
 class DerivableFact:
     def __init__(self, rule_id, literal, variables_dict, original):

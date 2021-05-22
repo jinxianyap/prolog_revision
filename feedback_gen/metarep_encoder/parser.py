@@ -101,18 +101,30 @@ def parseRule(rule_text, index):
     # print(variables)
     # print(var_dict)
     return ProcessingRule(rule_id, head_processing_literal, body_processing_literals, constants, variables, var_dict)
+
+def parseProgramData(line):
+    line = line[1:].split('-')
+    rules = line[0]
+    max_body_length = line[1]
+    variables = line[2]
+    
+    return rules, max_body_length, variables
     
 def parseText(text):
     rules = [x for x in text.split("\n") if len(x) > 0 and x[0] is not '%' and x[0] is not '#']
     processed = []
+    program_data = None
     for i in range(len(rules)):
         if len(rules[i]) > 0:
-            processed.append(parseRule(rules[i], i))
+            if rules[i][0] is '$':
+                program_data = parseProgramData(rules[i])
+            else:
+                processed.append(parseRule(rules[i], i))
 
     # for each in processed:
     #     print(each)
     
-    return processed    
+    return processed, program_data
     
 # f = open("./test.txt", "r")
 # parseText(f.read())

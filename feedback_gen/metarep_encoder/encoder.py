@@ -231,15 +231,25 @@ def generateStaticRules():
 def encode(text, output):
     f = open(text, 'r')
     dest = open(output, 'w')
+    
+    program_data = None
     static_rules = generateStaticRules()
-    body_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, reorder_naf, program = generateProgramRules(parseText(f.read()))
+    
+    parsed = parseText(f.read())
+    if len(parsed) == 2:
+        program_data = parsed[1]
+        parsed = parsed[0]
+
+    body_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, reorder_naf, program = generateProgramRules(parsed)
     rules = static_rules + program
+    
     for rule in rules:
         dest.write(rule.__str__() + '\n')
     dest.write('#show in_AS/3.')
     dest.close()
     f.close()
-    return body_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, reorder_naf, static_rules, program
+    
+    return body_literals, rule_ids, rule_lengths, var_max, variables, ground_constants, var_dicts, reorder_naf, static_rules, program_data, program
 
 def main(argv):
     if (len(argv) == 2):

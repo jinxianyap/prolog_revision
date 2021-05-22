@@ -1,6 +1,7 @@
 import functools
 import subprocess
 import sys
+import signal
 
 from .constants import *
 from .metarep_encoder.declarations_gen import generate_declarations
@@ -13,8 +14,8 @@ from .tr_ilasp.revision import revisableTheory, revise_program
 
 
 def generate_revisable_program(model_filename, user_filename, loop):
-    correct_body_literals, correct_rule_ids, correct_rule_lengths, correct_var_max, correct_variables, correct_ground_constants, _, _, _, correct_program = encode(model_filename, 'correct.las')
-    user_body_literals, user_rule_ids, user_rule_lengths, user_var_max, user_variables, user_ground_constants, var_dicts, reorder_naf, static_rules, user_program = encode(user_filename, 'user.las')
+    correct_body_literals, correct_rule_ids, correct_rule_lengths, correct_var_max, correct_variables, correct_ground_constants, _, _, _, _, correct_program = encode(model_filename, 'correct.las')
+    user_body_literals, user_rule_ids, user_rule_lengths, user_var_max, user_variables, user_ground_constants, var_dicts, reorder_naf, static_rules, program_data, user_program = encode(user_filename, 'user.las')
     
     if reorder_naf:
         return Output_type.REORDER_NAF, REORDER_NAF
@@ -33,9 +34,8 @@ def generate_revisable_program(model_filename, user_filename, loop):
     # print(revisions_data)
     semantic_errors = sum([len(errors[each][0]) + len(errors[each][1]) for each in errors])
     semantics_score = 1 - (semantic_errors / len(answer_set))
-    
-    
-    if (syntax_score == 1 and semantics_score == 1) or len(errors) == 0:
+
+    if len(correct_excluded) == 0 and len(user_included) == 0:
         msg = 'User program gives expected results. No revision needed.'
         print(msg)
         return Output_type.NO_REVISION, msg
@@ -49,7 +49,7 @@ def generate_revisable_program(model_filename, user_filename, loop):
         dest.write(each.__str__() + '\n')
     dest.close()    
     
-    return Output_type.REVISED, user_program, errors, (syntax_score, semantics_score), revisable_program, var_dicts, user_rule_lengths, marked_rules, list(errors.keys()), new_rules
+    return Output_type.REVISED, user_program, program_data, errors, (syntax_score, semantics_score), revisable_program, var_dicts, user_rule_lengths, marked_rules, list(errors.keys()), new_rules
 
 # ------------------------------------------------------------------------------
 #  Parse Revised Theories        
@@ -332,13 +332,24 @@ def check_revision_success():
         print('Revision result: Failure')
         return False
     
-def calculate_similarity_score(syntax, semantics, revisions):
-    SYNTAX = 0.2
-    SEMANTICS = 0.5
-    REVISIONS = 0.3
-    
-    total = (syntax * SYNTAX) + (semantics * SEMANTICS) + (revisions * REVISIONS)
-    return round(total, 3)
+def calculate_similarity_score(syntax, semantics, revisions=None):
+    if revisions is None:
+        SYNTAX = 0.3
+        SEMANTICS = 0.7
+        
+        total = (syntax * SYNTAX) + (semantics * SEMANTICS)
+        
+        return round(total, 3)
+    else:
+        SYNTAX = 0.2
+        SEMANTICS = 0.5
+        REVISIONS = 0.3
+        
+        total = (syntax * SYNTAX) + (semantics * SEMANTICS) + (revisions * REVISIONS)
+        return round(total, 3)
+
+def revision_timeout_handler(signum, frame):
+    raise Exception('Timeout')
             
 # ------------------------------------------------------------------------------
          
@@ -354,7 +365,7 @@ def main(argv, is_eval=False):
     output = generate_revisable_program(argv[0], argv[1], True)
     
     if output[0] == Output_type.REVISED:
-        output_type, user_program, errors, score, revisable, var_dicts, user_rule_lengths, marked_rules, revisable_rule_ids, new_rules = output
+        output_type, user_program, program_data, errors, score, revisable, var_dicts, user_rule_lengths, marked_rules, revisable_rule_ids, new_rules = output
         
         correct_excluded, user_included = translate_errors(errors)
         remove_revisable_declarations(user_program)
@@ -369,14 +380,24 @@ def main(argv, is_eval=False):
             success = check_revision_success() 
 
             if is_eval:
-                return similarity_score, revision_tags, success
+                return Output_type.NEW_RULES, similarity_score, program_data, revision_tags, success
             else:
                 return Output_type.NEW_RULES, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
         else:
-            revised = revise_program('revisable.las')
+            revised = None
+            signal.signal(signal.SIGALRM, revision_timeout_handler)
+            signal.alarm(30)
+            try:
+                revised = revise_program('revisable.las')
+            except Exception as e:
+                print(e)
             
             if revised is None:
-                return Output_type.UNSATISFIABLE, UNSATISFIABLE
+                if is_eval:
+                    similarity_score = calculate_similarity_score(score[0], score[1])
+                    return Output_type.UNSATISFIABLE, similarity_score, program_data, None, False
+                else:
+                    return Output_type.UNSATISFIABLE, UNSATISFIABLE
                         
             parsed_revisions = parse_revised_theories(revised)
             feedback_text, revision_tags = interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revisions)
@@ -388,7 +409,7 @@ def main(argv, is_eval=False):
             success = check_revision_success()
             
             if is_eval:
-                return similarity_score, revision_tags, success
+                return output_type, similarity_score, program_data, revision_tags, success
             else:
                 return output_type, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
     else:

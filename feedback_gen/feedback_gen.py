@@ -161,7 +161,7 @@ def interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revis
     # print(marked_rules)
     # print(parsed_revisions)
     feedback_text = []
-    revision_tags = set()
+    revision_tags = []
 
     for rule_id in marked_rules:
         deleted_body = 0
@@ -178,29 +178,29 @@ def interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revis
                 
                 if isinstance(translated[0], Literal_nbl):
                     literal = '\+ ' + literal
-                    revision_tags.add(Revision_type.NEG_BODY)
+                    revision_tags.append(Revision_type.NEG_BODY)
                     
                 if len(translated) == 1:
                     text = 'Rule: {}, Index: {} - {} with \'{}\'.'.format(rule_id, index, 'Extend' if is_extend else 'Replace', literal)
                     if is_extend:
-                        revision_tags.add(Revision_type.ADD_BODY)
+                        revision_tags.append(Revision_type.ADD_BODY)
                     else:
-                        revision_tags.add(Revision_type.REPLACE_BODY)
+                        revision_tags.append(Revision_type.REPLACE_BODY)
                     feedback_text.append(text)
                 else:
                     # to be completed
                     text = 'Rule: {}, Index: {} - Replace with \'{}\'.'.format(rule_id, index, literal)
-                    revision_tags.add(Revision_type.REPLACE_BODY)
+                    revision_tags.append(Revision_type.REPLACE_BODY)
                     feedback_text.append(text)
             else:
                 text = 'Rule: {}, Index: {} - Delete body literal.'.format(rule_id, index)
                 deleted_body += 1
-                revision_tags.add(Revision_type.DELETE_BODY)
+                revision_tags.append(Revision_type.DELETE_BODY)
                 feedback_text.append(text)
                 
             if deleted_body == user_rule_lengths[rule_id]:
                 text = 'Rule: {} - Delete rule.'.format(rule_id)
-                revision_tags.add(Revision_type.DELETE_RULE)
+                revision_tags.append(Revision_type.DELETE_RULE)
                 feedback_text.append(text)
                 
     return feedback_text, revision_tags
@@ -217,7 +217,7 @@ def interpret_revisions_new_rule(new_rules):
             else:
                 text = 'Rule: {}, Index: {} - Extend with \'{}\'.'.format(rule_id, str(i), (rules[i].head[0].literal).__str__())
                 feedback_text.append(text)
-    return feedback_text, set([Revision_type.ADD_RULE])    
+    return feedback_text, [Revision_type.ADD_RULE]
 
 # ------------------------------------------------------------------------------
 #  Apply revisions
@@ -361,8 +361,12 @@ def main(argv, is_eval=False):
     if len(argv) < 2:
         print('Please provide a model program and a user program.')
         return
-    
-    output = generate_revisable_program(argv[0], argv[1], True)
+
+    try:
+        output = generate_revisable_program(argv[0], argv[1], True)
+    except:
+        print(GROUNDING_FAILED)
+        return Output_type.GROUNDING_FAILED, GROUNDING_FAILED
     
     if output[0] == Output_type.REVISED:
         output_type, user_program, program_data, errors, score, revisable, var_dicts, user_rule_lengths, marked_rules, revisable_rule_ids, new_rules = output

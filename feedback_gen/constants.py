@@ -1,4 +1,5 @@
 INCORRECT_ARITIES = 'Literals used with incorrect number of variables. Please refer to the correct arities: '
+GROUNDING_FAILED = "Failed to generate revisable program."
 UNSATISFIABLE = 'The theory is unsatisfiable. Unable to revise program.'
 REORDER_NAF = 'Prolog negation must appear at the end of rules to avoid unbounded NAF.'
 ERROR = 'Encountered error during feedback generation.'
@@ -7,6 +8,7 @@ class Output_type:
     REVISED = 'REVISED'
     NO_REVISION = 'NO_REVISION'
     INCORRECT_ARITIES = 'INCORRECT_ARITIES'
+    GROUNDING_FAILED = 'GROUNDING_FAILED'
     UNSATISFIABLE = 'UNSATISFIABLE'
     NEW_RULES = 'NEW_RULES'
     REORDER_NAF = 'REORDER_NAF'

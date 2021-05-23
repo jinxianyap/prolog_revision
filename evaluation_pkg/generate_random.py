@@ -4,19 +4,21 @@ import glob
 import random
 
 FOLDER_NAME = 'random_programs'
-PROGRAMS = 5
+PROGRAMS = 50
 VARIABLES = ['X', 'Y', 'Z', 'A', 'B']
 JOIN_ELEMS = ', '
 JOIN_RULES = '\n'
 
-def generatePredicate(name, arity, variables):
+def generatePredicate(name, arity, variables, head=False):
     args = random.sample(variables, arity)
+    if head:
+        args = sorted(args)
     pred_string = '{}({})'.format(name, JOIN_ELEMS.join(args))
     return pred_string, args
 
 def generateRule(objective, max_body_length, max_variables, predicates):
     variables = VARIABLES[0:max_variables]
-    head_string, head_args = generatePredicate(objective, predicates[objective], variables)
+    head_string, head_args = generatePredicate(objective, predicates[objective], variables, head=True)
         
     body_length = random.randint(1, max_body_length)
     body = []

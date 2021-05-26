@@ -4,7 +4,7 @@ import glob
 import random
 
 FOLDER_NAME = 'random_programs'
-PROGRAMS = 50
+PROGRAMS = 100
 VARIABLES = ['X', 'Y', 'Z', 'A', 'B']
 JOIN_ELEMS = ', '
 JOIN_RULES = '\n'
@@ -23,9 +23,11 @@ def generateRule(objective, max_body_length, max_variables, predicates):
     body_length = random.randint(1, max_body_length)
     body = []
     variables_used = set(head_args)
+    body_predicates = predicates.copy()
+    body_predicates.pop(objective)
     
     while len(body) < body_length:
-        pred_name, arity = random.choice(list(predicates.items()))
+        pred_name, arity = random.choice(list(body_predicates.items()))
         
         pred_string, args = generatePredicate(pred_name, arity, variables)
         if pred_string not in body and pred_string != head_string:

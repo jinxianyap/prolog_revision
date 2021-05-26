@@ -33,7 +33,7 @@ def generate_revisable_program(model_filename, user_filename, loop):
     # print(errors)
     # print(revisions_data)
     semantic_errors = sum([len(errors[each][0]) + len(errors[each][1]) for each in errors])
-    semantics_score = 1 - (semantic_errors / len(answer_set))
+    semantics_score = max(0, 1 - (semantic_errors / len(answer_set)))
 
     if len(correct_excluded) == 0 and len(user_included) == 0:
         msg = 'User program gives expected results. No revision needed.'
@@ -98,14 +98,14 @@ def parse_theory(theory):
             literal = parse_literal_node(head_elems[2])
             var_vals = parse_var_vals_node(head_elems[3])
             
-            bl = Literal_pbl(rule_id, index, literal, var_vals) if each.val == 'pbl' else Literal_nbl(rule_id, index, literal, var_vals)
-            literals.append(bl)
+
             if r_id is None and pos is None:
                 r_id = rule_id
                 pos = index
-            else:
-                assert(r_id == rule_id)
-                assert(pos == index)
+                
+            if r_id == rule_id and pos == index:
+                bl = Literal_pbl(rule_id, index, literal, var_vals) if each.val == 'pbl' else Literal_nbl(rule_id, index, literal, var_vals)
+                literals.append(bl)
                 
     return r_id, pos, literals
     
@@ -251,6 +251,7 @@ def apply_revisions(program, marked_rules, user_rule_lengths, parsed_revisions, 
     for rule_id in parsed_revisions:
         if rule_id is None: continue
         for index in parsed_revisions[rule_id]:
+            if index not in marked_rules[rule_id]: continue
             marked_info = marked_rules[rule_id][index]
             rule_index = find_rule_index(program, rule_id)
             
@@ -377,13 +378,14 @@ def main(argv, is_eval=False):
         if len(new_rules) > 0: # if user should add rules, suggest first and have them make changes
             feedback_text, revision_tags = interpret_revisions_new_rule(new_rules)
             
-            revision_ratio = 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]) 
+            revision_ratio = max(0, 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]))
             similarity_score = calculate_similarity_score(score[0], score[1], revision_ratio)
             
             apply_new_rules_revisions(user_program, new_rules)
             success = check_revision_success() 
 
             if is_eval:
+                similarity_score = (score[0], score[1], revision_ratio)
                 return Output_type.NEW_RULES, similarity_score, program_data, revision_tags, success
             else:
                 return Output_type.NEW_RULES, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success
@@ -398,7 +400,8 @@ def main(argv, is_eval=False):
             
             if revised is None:
                 if is_eval:
-                    similarity_score = calculate_similarity_score(score[0], score[1])
+                    # similarity_score = calculate_similarity_score(score[0], score[1])
+                    similarity_score = (score[0], score[1], None)
                     return Output_type.UNSATISFIABLE, similarity_score, program_data, None, False
                 else:
                     return Output_type.UNSATISFIABLE, UNSATISFIABLE
@@ -406,13 +409,14 @@ def main(argv, is_eval=False):
             parsed_revisions = parse_revised_theories(revised)
             feedback_text, revision_tags = interpret_revisions(var_dicts, user_rule_lengths, marked_rules, parsed_revisions)
 
-            revision_ratio = 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]) 
+            revision_ratio = max(0, 1 - len(feedback_text) / sum([x[1] + 1 for x in user_rule_lengths.items()]))
             similarity_score = calculate_similarity_score(score[0], score[1], revision_ratio)
             
             apply_revisions(user_program, marked_rules, user_rule_lengths, parsed_revisions)
             success = check_revision_success()
             
             if is_eval:
+                similarity_score = (score[0], score[1], revision_ratio)
                 return output_type, similarity_score, program_data, revision_tags, success
             else:
                 return output_type, correct_excluded, user_included, similarity_score, revisable_rule_ids, feedback_text, success

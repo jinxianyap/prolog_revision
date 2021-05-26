@@ -1,6 +1,7 @@
 import sys
 import os
 import csv
+import time
 from feedback_gen.feedback_gen import main as generate_feedback
 from feedback_gen.constants import Output_type
 from evaluation_pkg.generate_random import main as generate_random_programs
@@ -9,13 +10,14 @@ RANDOM_FOLDER = 'random_programs'
 EVAL_DATA_FILE = 'eval_data.csv'
 
 class TestProgram:
-    def __init__(self, number, output_type, similarity_score, program_data, revision_tags, success):
+    def __init__(self, number, output_type, similarity_score=None, program_data=None, revision_tags=None, success=None, duration=None):
         self.number = number
         self.output_type = output_type
         self.similarity_score = similarity_score
         self.program_data = program_data
         self.revision_tags = revision_tags
         self.success = success
+        self.duration = duration
 
 def run_evaluation(model_filename, random_programs):
     test_programs = []
@@ -25,14 +27,16 @@ def run_evaluation(model_filename, random_programs):
     
     for i, each in enumerate(random_programs):
         print(i)
+        start_time = time.time()
         result = generate_feedback([model_filename, each], True)
         test_program = None
         if result[0] in [Output_type.NO_REVISION, Output_type.INCORRECT_ARITIES, Output_type.REORDER_NAF]:
-            test_program = TestProgram(i, result[0], None, None, None, True)
+            test_program = TestProgram(i, result[0], success=True)
             not_applicables += 1
         else:
             output_type, similarity_score, program_data, revision_tags, success = result
-            test_program = TestProgram(i, output_type, similarity_score, program_data, revision_tags, success)
+            duration = time.time() - start_time
+            test_program = TestProgram(i, output_type, similarity_score, program_data, revision_tags, success, duration)
             if success: 
                 successes += 1
             else:
@@ -46,13 +50,23 @@ def write_result(model_filename, test_program):
     with open(EVAL_DATA_FILE, 'a', newline='') as file:
         writer = csv.writer(file)
         
-        # writer.writerow(["MODEL FILENAME", "NUMBER", "OUTPUT TYPE", "SIMILARITY SCORE", "RULES", "MAX_BODY_LENGTH", "VARIABLES", "REVISIONS", "SUCCESS"])
+        # writer.writerow(["MODEL FILENAME", "NUMBER", "OUTPUT TYPE", "SYNTAX SCORE", "SEMANTICS SCORE", "REVISIONS SCORE", "RULES", "MAX_BODY_LENGTH", "VARIABLES", "REVISIONS", "SUCCESS", "DURATION"])
+        
+        syntax_score = None
+        semantics_score = None
+        revisions_score = None
+        
+        if test_program.similarity_score is not None:
+            syntax_score = test_program.similarity_score[0]
+            semantics_score = test_program.similarity_score[1]
+            revisions_score = test_program.similarity_score[2]
+        
         rules = None if test_program.program_data is None else test_program.program_data[0]
         max_body_length = None if test_program.program_data is None else test_program.program_data[1]
         variables = None if test_program.program_data is None else test_program.program_data[2]
         revision_tags = None if test_program.revision_tags is None else ','.join(test_program.revision_tags)
         
-        writer.writerow([model_filename, test_program.number, test_program.output_type, test_program.similarity_score, rules, max_body_length, variables, revision_tags, test_program.success])         
+        writer.writerow([model_filename, test_program.number, test_program.output_type, syntax_score, semantics_score, revisions_score, rules, max_body_length, variables, revision_tags, test_program.success, test_program.duration])         
 
 def main(argv):
     if len(argv) < 2:

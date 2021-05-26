@@ -14,7 +14,7 @@ def form():
     except:
         return render_template('./error.html', data='Model program file not found.')
     
-    data['student_program_filename'] = app.config.get('model_filename').replace('.lp', '_user.lp')
+    data['student_program_filename'] = app.config.get('student_filename')
     try:
         data['student_program'] = load_program(data['student_program_filename'], annotate=True)
     except:
@@ -58,8 +58,9 @@ def load_program(filename, annotate=False):
     return lines     
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print('File name for program required')
+    if len(sys.argv) < 3:
+        print('File names for model program and user program required')
     else:
         app.config['model_filename'] = sys.argv[1]
+        app.config['student_filename'] = sys.argv[2]
         app.run(threaded=False, port=5000)

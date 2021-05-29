@@ -397,7 +397,7 @@ def main(argv, is_eval=False):
                 revised = revise_program('revisable.las')
             except Exception as e:
                 print(e)
-            
+            signal.alarm(0)
             if revised is None:
                 if is_eval:
                     # similarity_score = calculate_similarity_score(score[0], score[1])

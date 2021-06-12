@@ -84,9 +84,11 @@ def group_by_rule_id(answer_set):
         groups[each.rule_id].add(each)
     return groups    
 
-def identify_discrepancies(index, model_AS=None, user_AS=None):
+def identify_discrepancies(index, actual_AS, model_AS=None, user_AS=None):
     if model_AS is None:
-        return [], list(set(user_AS[index]))
+        correct_excluded = list(set(user_AS[index]))
+        correct_excluded = [x for x in correct_excluded if x.literal.__str__() not in actual_AS]
+        return [], correct_excluded
     elif user_AS is None:
         return list(set(model_AS[index])), []
     else:
@@ -98,10 +100,10 @@ def identify_discrepancies(index, model_AS=None, user_AS=None):
                 if i.equal_to(j):
                     i.match_exists = True
                     j.match_exists = True
-        
+
         set_a = [x for x in set_a if not x.match_exists]  
-        set_b = [x for x in set_b if not x.match_exists]            
-        
+        set_b = [x for x in set_b if not x.match_exists and x.literal not in actual_AS]      
+
         return set_a, set_b
 
 def identify_rule_discrepancies(index, model_rules=None, user_rules=None, mapping=None):
@@ -179,7 +181,7 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
     revisions_data = {}
 
     for each in grouped_correct.keys():
-        rem_correct, rem_user = identify_discrepancies(each, grouped_correct, grouped_user)  
+        rem_correct, rem_user = identify_discrepancies(each, correct, grouped_correct, grouped_user)  
         if len(rem_correct) > 0 or len(rem_user) > 0:
             AS_discrepancies[each] = (rem_correct, rem_user)
             print('Consider modifying rule {}:'.format(each))
@@ -193,7 +195,7 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
     # unmatched user rules
     for each in grouped_user.keys():
         if each not in mapping.values():
-            rem_correct, rem_user = identify_discrepancies(each, user_AS=grouped_user)
+            rem_correct, rem_user = identify_discrepancies(each, correct, user_AS=grouped_user)
             if len(rem_correct) > 0 or len(rem_user) > 0:
                 AS_discrepancies[each] = (rem_correct, rem_user)
                 print('Consider modifying rule {}:'.format(each))

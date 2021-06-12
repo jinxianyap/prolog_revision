@@ -10,6 +10,7 @@ from .metarep_encoder.encoder import (encode, generateStaticRules,
 from .metarep_encoder.fault_localiser import (find_erroneous_rules,
                                              get_answer_set)
 from .metarep_encoder.rule_mapping import *
+from .metarep_encoder.decoder import decode
 from .tr_ilasp.revision import revisableTheory, revise_program
 
 
@@ -306,12 +307,18 @@ def apply_new_rules_revisions(program, new_rules):
     save_revised_program(program)
         
 def save_revised_program(program):
-    dest = open('revised.las', 'w')
+    decoded = decode(program)
+    dest_lp = open('revised.lp', 'w')
+    for rule in decoded:
+        dest_lp.write(rule + '\n')
+    dest_lp.close()
+        
     rules = generateStaticRules() + program
+    dest_las = open('revised.las', 'w')
     for rule in rules:
-        dest.write(rule.__str__() + '\n')
-    dest.write('#show in_AS/3.')
-    dest.close()
+        dest_las.write(rule.__str__() + '\n')
+    dest_las.write('#show in_AS/3.')
+    dest_las.close()
     
 def check_revision_success():
     meta_correct, correct = get_answer_set('correct.las')

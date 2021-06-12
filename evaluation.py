@@ -2,6 +2,7 @@ import sys
 import os
 import csv
 import time
+import subprocess
 from feedback_gen.feedback_gen import main as generate_feedback
 from feedback_gen.constants import Output_type
 from evaluation_pkg.generate_random import main as generate_random_programs
@@ -26,7 +27,10 @@ def run_evaluation(model_filename, random_programs):
     not_applicables = 0
     
     for i, each in enumerate(random_programs):
+        subprocess.run(['killall', 'clingo'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(['killall', 'ILASP'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print(i)
+        print(random_programs[i])
         start_time = time.time()
         result = generate_feedback([model_filename, each], True)
         test_program = None

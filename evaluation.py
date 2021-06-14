@@ -54,8 +54,6 @@ def write_result(model_filename, test_program):
     with open(EVAL_DATA_FILE, 'a', newline='') as file:
         writer = csv.writer(file)
         
-        # writer.writerow(["MODEL FILENAME", "NUMBER", "OUTPUT TYPE", "SYNTAX SCORE", "SEMANTICS SCORE", "REVISIONS SCORE", "RULES", "MAX_BODY_LENGTH", "VARIABLES", "REVISIONS", "SUCCESS", "DURATION"])
-        
         syntax_score = None
         semantics_score = None
         revisions_score = None
@@ -88,6 +86,11 @@ def main(argv):
     
     random_programs = sorted([os.path.join(RANDOM_FOLDER, f) for f in os.listdir(RANDOM_FOLDER) if os.path.isfile(os.path.join(RANDOM_FOLDER, f))])
     
+    with open(EVAL_DATA_FILE, 'w', newline='') as file:
+        writer = csv.writer(file)
+        
+        writer.writerow(["MODEL FILENAME", "NUMBER", "OUTPUT TYPE", "SYNTAX SCORE", "SEMANTICS SCORE", "REVISIONS SCORE", "RULES", "MAX_BODY_LENGTH", "VARIABLES", "REVISIONS", "SUCCESS", "DURATION"])
+        
     test_programs, successes, failures, not_applicables = run_evaluation(model_filename, random_programs)
     print('Successes:', successes, 'out of', successes + failures)
 

@@ -1,4 +1,5 @@
 import subprocess
+import clingo
 from .encoder import *
 
 class DerivableFact:
@@ -63,13 +64,20 @@ def transform(ori, mapping=None):
 def get_answer_set(filename, mapping=None):
     # stream = os.popen('clingo ' + filename)
     # output = stream.read()
-    result = subprocess.run(['clingo', filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = result.stdout
-    output = output.decode('UTF-8').rstrip()
-    lines = output.split('\n')[4].split(' ')
+    # result = subprocess.run(['clingo', filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    raw_answer_set = []
+    
+    ctl = clingo.Control(logger=lambda x, y: x)
+    ctl.load(filename)
+    ctl.ground([("base", [])])
+    solving_result = ctl.solve(on_model=lambda m: raw_answer_set.extend(map(lambda x: x.__str__(), m.symbols(shown=True))))
+        
+    if not solving_result.satisfiable:
+        raise Exception('Failed to solve answer set for {}.'.format(filename))
+    
     meta_answer_set = []
     answer_set = []
-    for each in lines:
+    for each in raw_answer_set:
         if each[:5] == 'in_AS':
             fact_obj = transform(each, mapping)
             meta_answer_set.append(fact_obj)

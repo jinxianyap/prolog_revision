@@ -372,7 +372,8 @@ def main(argv, is_eval=False):
 
     try:
         output = generate_revisable_program(argv[0], argv[1], True)
-    except:
+    except Exception as e:
+        print(e)
         print(GROUNDING_FAILED)
         return Output_type.GROUNDING_FAILED, GROUNDING_FAILED
     

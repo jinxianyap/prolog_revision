@@ -62,9 +62,6 @@ def transform(ori, mapping=None):
     return DerivableFact(rule_id, literal, variables_to_dict(variables), ori_str)    
 
 def get_answer_set(filename, mapping=None):
-    # stream = os.popen('clingo ' + filename)
-    # output = stream.read()
-    # result = subprocess.run(['clingo', filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     raw_answer_set = []
     
     ctl = clingo.Control(logger=lambda x, y: x)
@@ -165,20 +162,20 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
     print('Generated AS for correct program.')
     meta_user, user = get_answer_set("user.las")
     print('Generated AS for user program.')
-    print('.\n.\n.')
+    # print('.\n.\n.')
     
     # print(correct)
     # print(user)
     
     # Semantic checking
     correct_excluded = [x for x in correct if x not in user]
-    if len(correct_excluded) > 0:
-        print('Positive examples not covered:')
-        [print(x) for x in correct_excluded]
+    # if len(correct_excluded) > 0:
+    #     print('Positive examples not covered:')
+    #     [print(x) for x in correct_excluded]
     user_included = [x for x in user if x not in correct]
-    if len(user_included) > 0:
-        print('Negative examples covered:')
-        [print(x) for x in user_included]
+    # if len(user_included) > 0:
+    #     print('Negative examples covered:')
+    #     [print(x) for x in user_included]
     
     # Syntactic/Declarative checking
     # remember that meta_correct rule ids have already been mapped!
@@ -192,9 +189,9 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
         rem_correct, rem_user = identify_discrepancies(each, correct, grouped_correct, grouped_user)  
         if len(rem_correct) > 0 or len(rem_user) > 0:
             AS_discrepancies[each] = (rem_correct, rem_user)
-            print('Consider modifying rule {}:'.format(each))
-            print('-- {} positive example(s) not covered: {}'.format(len(rem_correct), '  '.join([x.__str__() for x in rem_correct])))
-            print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
+            # print('Consider modifying rule {}:'.format(each))
+            # print('-- {} positive example(s) not covered: {}'.format(len(rem_correct), '  '.join([x.literal.__str__() for x in rem_correct])))
+            # print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.literal.__str__() for x in rem_user])))
 
             rule_discrepancies = identify_rule_discrepancies(each, correct_rules_grouped, user_rules_grouped, mapping)
             if len(rule_discrepancies) > 0:
@@ -206,8 +203,8 @@ def find_erroneous_rules(mapping, correct_rules_grouped, user_rules_grouped):
             rem_correct, rem_user = identify_discrepancies(each, correct, user_AS=grouped_user)
             if len(rem_correct) > 0 or len(rem_user) > 0:
                 AS_discrepancies[each] = (rem_correct, rem_user)
-                print('Consider modifying rule {}:'.format(each))
-                print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
+                # print('Consider modifying rule {}:'.format(each))
+                # print('-- {} negative example(s) included: {}'.format(len(rem_user), '  '.join([x.__str__() for x in rem_user])))
                 
                 rule_discrepancies = identify_rule_discrepancies(each, user_rules=user_rules_grouped)
                 if len(rule_discrepancies) > 0:

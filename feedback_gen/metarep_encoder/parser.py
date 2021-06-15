@@ -88,15 +88,6 @@ def parseRule(rule_text, index):
     for each in variables + constants:
         var_dict[each] = VARIABLE_POOL[len(var_dict)]
                 
-    # if head_processing_literal is not None:
-    #     for arg in head_processing_literal.args:
-    #         if not isinstance(arg, ProcessingLiteral):
-    #             var_dict[arg] = VARIABLE_POOL[len(var_dict)]
-    
-    # for each in body_processing_literals:
-    #     for arg in each.args:
-    #         if not arg in var_dict.keys() and not isinstance(arg, ProcessingLiteral):
-    #             var_dict[arg] = VARIABLE_POOL[len(var_dict)]
     # print(constants)
     # print(variables)
     # print(var_dict)
@@ -125,7 +116,3 @@ def parseText(text):
     #     print(each)
     
     return processed, program_data
-    
-# f = open("./test.txt", "r")
-# parseText(f.read())
-# f.close()

@@ -72,7 +72,3 @@ def decode(program):
         ordered_rules.append(generate_clause(rules[each]))
 
     return ordered_rules
-
-# order literals
-# order rules
-# check with test cases

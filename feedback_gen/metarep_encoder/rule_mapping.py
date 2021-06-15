@@ -2,24 +2,6 @@ from .classes import *
 from .helper import *
 
 def compare_literals(a, b):
-    # similarity = 0
-    # differences = 0
-    # if isinstance(a, str) and isinstance(b, str):
-    #     similarity += 1
-    #     if is_variable(a) and is_variable(b):
-    #         similarity += 1
-    #         if a == b: 
-    #             similarity += 1
-    #         else:
-    #             differences += 1
-    #     elif not is_variable(a) and not is_variable(b):
-    #         similarity += 1
-    #         if a == b: 
-    #             similarity += 1
-    #         else:
-    #             differences += 1
-    #     else:
-    #         differences += 1
     if isinstance(a, Literal) and isinstance(b, Literal):
         sim, diff = a.compare_to(b)
         return sim, diff     

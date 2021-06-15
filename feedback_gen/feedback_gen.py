@@ -18,19 +18,23 @@ def generate_revisable_program(model_filename, user_filename, loop):
     correct_body_literals, correct_rule_ids, correct_rule_lengths, correct_var_max, correct_variables, correct_ground_constants, _, _, _, _, correct_program = encode(model_filename, 'correct.las')
     user_body_literals, user_rule_ids, user_rule_lengths, user_var_max, user_variables, user_ground_constants, var_dicts, reorder_naf, static_rules, program_data, user_program = encode(user_filename, 'user.las')
     
+    print('Encoded model and user programs in ASP.')
+    
     if reorder_naf:
         return Output_type.REORDER_NAF, REORDER_NAF
 
     incorrect_arities = find_incorrect_arities(correct_body_literals, user_body_literals)
     if len(incorrect_arities) > 0:
         msg = INCORRECT_ARITIES + '{}.'.format(incorrect_arities)
-        print(msg)
+        # print(msg)
         return Output_type.INCORRECT_ARITIES, msg
         
     rule_mapping, syntax_score, correct_rules_grouped, user_rules_grouped = generate_mapping(correct_program, user_program)
+    print('Clause matching complete.')
     # print(rule_mapping)
 
     correct_excluded, user_included, errors, revisions_data, answer_set = find_erroneous_rules(rule_mapping, correct_rules_grouped, user_rules_grouped)
+    print('Fault localisation complete.')
     # print(errors)
     # print(revisions_data)
     semantic_errors = sum([len(errors[each][0]) + len(errors[each][1]) for each in errors])
@@ -38,7 +42,7 @@ def generate_revisable_program(model_filename, user_filename, loop):
 
     if len(correct_excluded) == 0 and len(user_included) == 0:
         msg = 'User program gives expected results. No revision needed.'
-        print(msg)
+        # print(msg)
         return Output_type.NO_REVISION, msg
     
     revisable_program, marked_rules, new_rules = generate_declarations(errors, revisions_data, rule_mapping, answer_set, correct_body_literals, correct_rule_ids, correct_var_max, correct_variables, correct_ground_constants, correct_program, user_body_literals, user_rule_ids, user_var_max, user_variables, user_ground_constants, user_program)
@@ -49,6 +53,8 @@ def generate_revisable_program(model_filename, user_filename, loop):
     for each in revisable_program:
         dest.write(each.__str__() + '\n')
     dest.close()    
+    
+    print('Revisable theory and mode declarations generated.')
     
     return Output_type.REVISED, user_program, program_data, errors, (syntax_score, semantics_score), revisable_program, var_dicts, user_rule_lengths, marked_rules, list(errors.keys()), new_rules
 
@@ -325,19 +331,19 @@ def check_revision_success():
     meta_revised, revised = get_answer_set("revised.las")
     
     correct_excluded = [x for x in correct if x not in revised]
-    if len(correct_excluded) > 0:
-        print('Positive examples not covered:')
-        [print(x) for x in correct_excluded]
+    # if len(correct_excluded) > 0:
+    #     print('Positive examples not covered:')
+    #     [print(x) for x in correct_excluded]
     user_included = [x for x in revised if x not in correct]
-    if len(user_included) > 0:
-        print('Negative examples covered:')
-        [print(x) for x in user_included]
+    # if len(user_included) > 0:
+    #     print('Negative examples covered:')
+    #     [print(x) for x in user_included]
         
     if len(correct_excluded) == 0 and len(user_included) == 0:
-        print('Revision result: Success')
+        # print('Revision result: Success')
         return True
     else:
-        print('Revision result: Failure')
+        # print('Revision result: Failure')
         return False
     
 def calculate_similarity_score(syntax, semantics, revisions=None):
@@ -361,7 +367,7 @@ def revision_timeout_handler(signum, frame):
             
 # ------------------------------------------------------------------------------
          
-def main(argv, is_eval=False):
+def main(argv, is_eval=False, timeout=30):
     if argv[0] == '--revise-only':
         revise_program('revisable.las')
         return
@@ -374,7 +380,7 @@ def main(argv, is_eval=False):
         output = generate_revisable_program(argv[0], argv[1], True)
     except Exception as e:
         print(e)
-        print(GROUNDING_FAILED)
+        # print(GROUNDING_FAILED)
         return Output_type.GROUNDING_FAILED, GROUNDING_FAILED
     
     if output[0] == Output_type.REVISED:
@@ -400,7 +406,7 @@ def main(argv, is_eval=False):
         else:
             revised = None
             signal.signal(signal.SIGALRM, revision_timeout_handler)
-            signal.alarm(30)
+            signal.alarm(30 if timeout is None else timeout)
             try:
                 revised = revise_program('revisable.las')
             except Exception as e:

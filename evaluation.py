@@ -32,7 +32,7 @@ def run_evaluation(model_filename, random_programs):
         print(i)
         print(random_programs[i])
         start_time = time.time()
-        result = generate_feedback([model_filename, each], True)
+        result = generate_feedback([model_filename, each], is_eval=True)
         test_program = None
         if result[0] in [Output_type.NO_REVISION, Output_type.INCORRECT_ARITIES, Output_type.REORDER_NAF]:
             test_program = TestProgram(i, result[0], success=True)

@@ -28,7 +28,7 @@
                 <td style="border: 1px solid black;">
                     <ul style="list-style-type:none; padding-left:0;">
                     {% for each in data['student_program'] %}
-                        {% if each in data['revisable_rule_ids'] %}
+                        {% if data['feedback_gen_success'] and each in data['revisable_rule_ids'] %}
                             <li style="color:red;">{{each}}: {{data['student_program'][each]}}</li> 
                         {% else %}
                             <li>{{each}}: {{data['student_program'][each]}}</li>  

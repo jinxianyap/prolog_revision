@@ -4,7 +4,7 @@ Troop is an automated feedback generation tool for Prolog. Troop transforms Prol
 
   
 ## Setting up Locally
-Requirements: Python 3.7, pip v21.1.2, ILASP v4 (install [here](https://github.com/marklaw/ILASP-releases/releases), visit the [official website](http://www.ilasp.com) for more information)
+Requirements: Python 3.7, pip v21.1.2, ILASP v4 (install [here](https://github.com/marklaw/ILASP-releases/releases), visit the [installation guide](https://doc.ilasp.com/installation.html) for more information)
   
 Extract project files into chosen directory. Change into that directory.
 

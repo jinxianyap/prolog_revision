@@ -4,15 +4,17 @@ Troop is an automated feedback generation tool for Prolog. Troop transforms Prol
 
   
 ## Setting up Locally
-Requirements: Python 3.7, pip v21.1.2, ILASP v4 (install [here](https://github.com/marklaw/ILASP-releases/releases), visit the [installation guide](https://doc.ilasp.com/installation.html) for more information)
-  
-Extract project files into chosen directory. Change into that directory.
+Requirements: Python 3.7, pip v21.1.2, ILASP v4
 
-To install required modules (flask, clingo) using pip, run `pip install -r requirements.txt`. If necessary, run `pip install --upgrade pip` to upgrade to the latest version.
+Please install ILASP v4, and the necessary packages (visit the [installation guide](https://doc.ilasp.com/installation.html), repository [here](https://github.com/marklaw/ILASP-releases/releases)). Make sure that ILASP is added to the PATH environment variable. 
+  
+Extract Troop project files into chosen directory. Change into that directory.
+
+To install required modules (flask, clingo) for Troop using pip, run `pip install -r requirements.txt`. If necessary, run `pip install --upgrade pip` to upgrade to the latest version.
   
 ## Usage
 Troop takes in a model Prolog program and a student Prolog program, and attempts to identify errors in the student program and generate fixes. To run Troop with the interface, run
-```python3 troop.py <model program filename> <user program filename>```
+```python3 troop.py <model program filepath> <user program filepath>```
 then navigate to http://127.0.0.1:5000/ on a web browser.
 
 To run Troop from the command line, run the same command with an additional `-d` flag. The `--timeout` option can be used to set the timeout duration for Troop. The default is 30 seconds.
@@ -49,7 +51,7 @@ Revision Success:			True
 ```
 Each rule in the student program is assigned a rule identifier. *Similarity Score* indicates how far the student's attempt differs from the given model program, in terms of syntactic and semantic differences and the number of revisions required. *Erroneous Rule(s)* refers to rule identifiers associated with rules that contain errors and should be amended. *Facts not derived* refers to those facts that are derivable from the model program, but not from the student program. *Incorrect facts derived* refers to those facts that are derivable from the student program, but not from the model program. *Revisions* indicate the necessary steps to amend the student program, giving the exact locations and corrections. *Revision Success* indicates whether or not the amended version of the student program, after applying the revisions generated, actually fulfils the specification defined by the model program. The HTML interface presents similar information, with erroneous rules in the original student program highlighted in red.
 
-A collection of pairs of sample input programs have been included in the `sample_programs/` directory. For example, if a model program is named `add_body_1.lp`, then the corresponding student program is named `add_body_1_user.lp`.
+A collection of pairs of sample input programs have been included in the `sample_programs/` directory. For example, if a model program is named `add_body_1.lp`, then the corresponding student program is named `add_body_1_user.lp`. For example, run ```python3 troop.py sample_programs/add_body_1.lp sample_programs/add_body_1_user.lp```
 
 
 ## Evaluation Guide

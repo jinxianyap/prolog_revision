@@ -6,11 +6,13 @@ Troop is an automated feedback generation tool for Prolog. Troop transforms Prol
 ## Setting up Locally
 Requirements: Python 3.7, pip v21.1.2, ILASP v4
 
+If necessary, run `pip install --upgrade pip` to upgrade to the latest version.
+
 Please install ILASP v4, and the necessary packages (visit the [installation guide](https://doc.ilasp.com/installation.html), repository [here](https://github.com/marklaw/ILASP-releases/releases)). Make sure that ILASP is added to the PATH environment variable. 
   
 Extract Troop project files into chosen directory. Change into that directory.
 
-To install required modules (flask, clingo) for Troop using pip, run `pip install -r requirements.txt`. If necessary, run `pip install --upgrade pip` to upgrade to the latest version.
+To install required modules (flask, clingo) for Troop using pip, run `pip install -r requirements.txt`.
   
 ## Usage
 Troop takes in a model Prolog program and a student Prolog program, and attempts to identify errors in the student program and generate fixes. To run Troop with the interface, run
